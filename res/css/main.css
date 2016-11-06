@@ -3,10 +3,18 @@
 }
 
 .tab {
-    -fx-padding: 3em 0.5em 3em 0.5em;
+    -fx-padding: 5em 0em 5em 0em;
+    -fx-text-wrap: true;
     outline :0;
 }
 
 .tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
      -fx-border-width: 0;
+}
+
+.H1 {
+    -fx-font-size: 3em;
+    -fx-text-fill: #696969;
+    -fx-alignment: center;
+    -fx-text-wrap: 1;
 }

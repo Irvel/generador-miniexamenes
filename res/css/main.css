@@ -18,3 +18,9 @@
     -fx-alignment: center;
     -fx-text-wrap: 1;
 }
+
+.inputBtn {
+    -fx-button-type: RAISED;
+    -fx-text-fill: WHITE;
+    -fx-background-color: rgb(77,102,204);
+}

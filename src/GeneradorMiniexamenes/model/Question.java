@@ -6,8 +6,8 @@ public class Question {
     private String mQuestion;
     private ArrayList<Answer> mAnswers;
 
-    public Question(String mQuestion) {
-
+    public Question(ArrayList<Answer> mAnswers, String mQuestion) {
+        this.mAnswers = mAnswers;
         this.mQuestion = mQuestion;
     }
 

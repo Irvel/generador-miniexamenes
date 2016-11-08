@@ -1,5 +1,9 @@
 package GeneradorMiniexamenes.controllers;
 
+import GeneradorMiniexamenes.model.Answer;
+import GeneradorMiniexamenes.model.Block;
+import GeneradorMiniexamenes.model.Question;
+import GeneradorMiniexamenes.model.Subject;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.stage.FileChooser;
@@ -8,6 +12,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -19,6 +24,11 @@ import java.util.Scanner;
  * format from the menu
  */
 public class Import {
+
+    private ArrayList<Block> mBlocks = new ArrayList<>();
+    private ArrayList<Question> mQuestions = new ArrayList<>();
+    private ArrayList<Answer> mAnswers = new ArrayList<>();
+    private Subject mSubject;
 
     /**
      * onClick
@@ -64,14 +74,65 @@ public class Import {
      * @param file that contains miniexam
      */
     private void importFromText(File file, String fileName){
+        // line and number of stars in a line
+        String line;
+        String questionName = "";
+        int iSequence = 1;
+        String answer;
+        int iWeight;
         // Tries to open the file
-        System.out.println(file.getPath());
         try {
             Scanner in = new Scanner(new FileReader(file.getPath()));
-            String line = "";
             while(in.hasNextLine()){
                 line = in.nextLine();
+
+                // found new block
+                if(line.equals("**")){
+                    // ignores O
+                    in.nextLine();
+                    if(!mQuestions.isEmpty()){ // if there are questions, adds the block
+                        this.mBlocks.add(new Block(mQuestions, iSequence++));
+                    }
+                    mQuestions.clear();
+                    mAnswers.clear();
+                }
+
+                // found new question
+                else if(line.equals("*")){
+                    if(!mAnswers.isEmpty()){ // if there are answers, add the block
+                        this.mQuestions.add(new Question(mAnswers, questionName));
+                    }
+                    mAnswers.clear();
+                    questionName = in.nextLine();
+                }
+
+                else{
+                    iWeight = Integer.parseInt(line);
+                    answer = in.nextLine();
+                    mAnswers.add(new Answer(answer, iWeight));
+                }
             }
+            // Checks if there is info needed to add
+            if(!mAnswers.isEmpty())
+                this.mQuestions.add(new Question(mAnswers, questionName));
+            if(!mQuestions.isEmpty())
+                this.mBlocks.add(new Block(mQuestions, iSequence));
+
+            // Creates the Subject
+            this.mSubject = new Subject(mBlocks, fileName);
+
+            // prints (for debugging) comment when done
+            System.out.println("sequence " + mSubject.getmSubject());
+            for(Block b : mSubject.getmBlocks()){
+                System.out.println(b.getSequenceNumber());
+                for(Question q : b.getmQuestions()){
+                    System.out.println(q.getQuestion());
+                    for(Answer a : q.getAnswers()){
+                        System.out.println(a.getWeight() + " " + a.getAnswer());
+                    }
+                }
+            }
+
         } catch (FileNotFoundException e) {
             System.out.println("El archivo no pudo ser abierto");
         }

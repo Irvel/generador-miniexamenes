@@ -9,7 +9,22 @@ import java.util.ArrayList;
 public class QuestionBank {
     ArrayList<Subject> mSubjects;
 
-    public int getSubjectQuantity(){ return mSubjects.size(); }
+    public QuestionBank() {
+        this.mSubjects = new ArrayList<>();
+    }
 
-    public void addSubject(Subject mSubject){ this.mSubjects.add(mSubject); }
+    public QuestionBank(ArrayList<Subject> subjects) {
+        this.mSubjects = subjects;
+    }
+
+    public ArrayList<Subject> getSubjects() {
+        return mSubjects;
+    }
+
+    public void addSubject(Subject mSubject){
+        if (mSubjects == null) {
+            mSubjects = new ArrayList<>();
+        }
+        mSubjects.add(mSubject);
+    }
 }

@@ -26,10 +26,10 @@ public class MainController {
      * @param actionEvent
      */
     public void importAction(ActionEvent actionEvent) {
-        mImport.onClick(actionEvent);
+        mQuestionBank = mImport.onClick(actionEvent, mQuestionBank);
     }
 
-    public void generateAction(ActionEvent actionEvent){
-
+    public void exportAction(ActionEvent actionEvent) {
+        mExport.onClick(actionEvent, mQuestionBank);
     }
 }

@@ -1,9 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.Answer;
-import GeneradorMiniexamenes.model.Block;
-import GeneradorMiniexamenes.model.Question;
-import GeneradorMiniexamenes.model.Subject;
+import GeneradorMiniexamenes.model.*;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.stage.FileChooser;
@@ -24,120 +21,168 @@ import java.util.Scanner;
  * format from the menu
  */
 public class Import {
-
-    private ArrayList<Block> mBlocks = new ArrayList<>();
-    private ArrayList<Question> mQuestions = new ArrayList<>();
-    private ArrayList<Answer> mAnswers = new ArrayList<>();
     private Subject mSubject;
 
     /**
      * onClick
      *
-     * method that opens a file to import data
+     * Imports a set of questions from a single subject when importing from the
+     * legacy .txt format or imports questions form a set of subjects when importing
+     * from the new .json format.
+     * TODO(Irvel): Clarify if each .json file should contain a single or multiple subjects
+     * TODO(Irvel): Implement program startup import functionality
      *
      * @param ae actionEvent to get the Window
      */
-    public void onClick(ActionEvent ae){
+    public QuestionBank onClick(ActionEvent ae, QuestionBank questionBank) {
         Node source = (Node) ae.getSource();
         Stage theStage = (Stage) source.getScene().getWindow();
-
-        // Opens file chooser
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Selecciona tu archivo (txt o json)");
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home"))
-        );
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("TXT", "*.txt"),
-                new FileChooser.ExtensionFilter("JSON", "*.json")
-        );
-        File file = fileChooser.showOpenDialog(theStage);
+        File file = getFile(theStage);
 
         // Checks the extension of the file selected (txt or json)
         String extension = "";
         String name = "";
         int i = file.getName().lastIndexOf('.');
-        if(i > 0)
+        if (i > 0) {
             extension = file.getName().substring(i + 1);
+        }
+        // Get the filename without the extension
         name = file.getName().substring(0, i);
 
-        if(extension.equals("txt"))
+        if (extension.equals("txt")) {
             importFromText(file, name);
-        else
+            return appendToModel(questionBank);
+        }
+        else {
             importFromJson(file, name);
+            return replaceLoadedModel(questionBank);
+        }
+    }
+
+    /**
+     * getFile
+     *
+     * Loads a file containing a questionBank in either the .json or legacy .txt format
+     *
+     * @param currentStage The stage from which to launch the file chooser dialog
+     */
+    private File getFile(Stage currentStage) {
+        // Opens file chooser
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecciona tu archivo (txt o json)");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter(".txt", "*.txt"),
+                new FileChooser.ExtensionFilter(".json", "*.json")
+        );
+        return fileChooser.showOpenDialog(currentStage);
+    }
+
+    /**
+     * appendToModel
+     *
+     * Appends the imported subject data into the working model
+     *
+     */
+    private QuestionBank appendToModel(QuestionBank questionBank) {
+        if (questionBank == null) {
+            questionBank = new QuestionBank();
+        }
+        questionBank.addSubject(mSubject);
+        mSubject = null; // Garbage Collector come to me
+        return questionBank;
+    }
+
+    private QuestionBank replaceLoadedModel(QuestionBank questionBank) {
+        return questionBank;
     }
 
     /**
      * importFromText
      *
      * method that lets us import miniExam from a txt file
+     * Each .txt file contains only information from one subject.
      *
-     * @param file that contains miniexam
+     * @param file Contains questions from one miniexam subject
      */
-    private void importFromText(File file, String fileName){
+    private void importFromText(File file, String fileName) {
         // line and number of stars in a line
         String line;
         String questionName = "";
         int iSequence = 1;
         String answer;
         int iWeight;
+        ArrayList<Block> blocks = new ArrayList<>();
+        ArrayList<Question> questions = new ArrayList<>();
+        ArrayList<Answer> answers = new ArrayList<>();
         // Tries to open the file
         try {
             Scanner in = new Scanner(new FileReader(file.getPath()));
-            while(in.hasNextLine()){
+            while (in.hasNextLine()) {
                 line = in.nextLine();
 
                 // found new block
-                if(line.equals("**")){
+                if (line.equals("**")) {
                     // ignores O
                     in.nextLine();
-                    if(!mQuestions.isEmpty()){ // if there are questions, adds the block
-                        this.mBlocks.add(new Block(mQuestions, iSequence++));
+                    if (!questions.isEmpty()) { // if there are questions, adds the block
+                        blocks.add(new Block(questions, iSequence++));
                     }
-                    mQuestions.clear();
-                    mAnswers.clear();
+                    questions.clear();
+                    answers.clear();
                 }
 
                 // found new question
-                else if(line.equals("*")){
-                    if(!mAnswers.isEmpty()){ // if there are answers, add the block
-                        this.mQuestions.add(new Question(mAnswers, questionName));
+                else if (line.equals("*")) {
+                    if (!answers.isEmpty()) { // if there are answers, add the block
+                        questions.add(new Question(answers, questionName));
                     }
-                    mAnswers.clear();
+                    answers.clear();
                     questionName = in.nextLine();
                 }
 
                 else{
                     iWeight = Integer.parseInt(line);
                     answer = in.nextLine();
-                    mAnswers.add(new Answer(answer, iWeight));
+                    answers.add(new Answer(answer, iWeight));
                 }
             }
             // Checks if there is info needed to add
-            if(!mAnswers.isEmpty())
-                this.mQuestions.add(new Question(mAnswers, questionName));
-            if(!mQuestions.isEmpty())
-                this.mBlocks.add(new Block(mQuestions, iSequence));
+            if (!answers.isEmpty()) {
+                questions.add(new Question(answers, questionName));
+            }
+            if (!questions.isEmpty()) {
+                blocks.add(new Block(questions, iSequence));
+            }
 
             // Creates the Subject
-            this.mSubject = new Subject(mBlocks, fileName);
+            this.mSubject = new Subject(blocks, fileName);
 
             // prints (for debugging) comment when done
-            System.out.println("Subject " + mSubject.getmSubject());
-            for(Block b : mSubject.getmBlocks()){
+            /*System.out.println("Subject " + mSubject.getmSubject());
+            for (Block b : mSubject.getmBlocks()) {
                 System.out.println(b.getSequenceNumber());
-                for(Question q : b.getmQuestions()){
+                for (Question q : b.getmQuestions()) {
                     System.out.println(q.getQuestion());
-                    for(Answer a : q.getAnswers()){
+                    for (Answer a : q.getAnswers()) {
                         System.out.println(a.getWeight() + " " + a.getAnswer());
                     }
                 }
-            }
+            }*/
 
         } catch (FileNotFoundException e) {
             System.out.println("El archivo no pudo ser abierto");
         }
     }
 
+    /**
+     * importFromJson
+     *
+     * method that lets us import miniExam from a txt file
+     * Each .json file may contain information from multiple subjects.
+     *
+     * @param file that contains miniexam
+     */
     private void importFromJson(File file, String fileName){
 
     }

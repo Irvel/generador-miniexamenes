@@ -4,26 +4,26 @@ import java.util.ArrayList;
 
 public class Subject {
     private ArrayList<Block> mBlocks;
-    private String mSubject;
+    private String mSubjectName;
 
-    public Subject(ArrayList<Block> mBlocks, String mSubject) {
+    public Subject(ArrayList<Block> mBlocks, String subject) {
         this.mBlocks = mBlocks;
-        this.mSubject = mSubject;
+        this.mSubjectName = subject;
     }
 
-    public ArrayList<Block> getmBlocks() {
+    public ArrayList<Block> getBlocks() {
         return mBlocks;
     }
 
-    public void setmBlocks(ArrayList<Block> mBlocks) {
+    public void setBlocks(ArrayList<Block> mBlocks) {
         this.mBlocks = mBlocks;
     }
 
-    public String getmSubject() {
-        return mSubject;
+    public String getSubjectName() {
+        return mSubjectName;
     }
 
-    public void setmSubject(String mSubject) {
-        this.mSubject = mSubject;
+    public void setSubjectName(String subject) {
+        this.mSubjectName = subject;
     }
 }

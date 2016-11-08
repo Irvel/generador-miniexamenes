@@ -1,6 +1,7 @@
 package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.stage.FileChooser;
@@ -9,6 +10,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -54,8 +56,18 @@ public class Import {
             return appendToModel(questionBank);
         }
         else {
-            importFromJson(file, name);
-            return replaceLoadedModel(questionBank);
+            QuestionBank imported = importFromJson(file);
+            if (imported == null) {
+                // A question bank couldn't be imported from a .json flie. Do not discard the
+                // loaded model.
+                alertUnsuccessfulImport("No fue posible importar el banco de preguntas del archivo " +
+                                               "seleccionado. El programa mantendrá las preguntas " +
+                                               "existentes.");
+                return questionBank;
+            }
+            alertSuccessfulImport("El banco de preguntas actual ha sido reemplazado con el archivo" +
+                                         " importado.");
+            return imported;
         }
     }
 
@@ -65,6 +77,7 @@ public class Import {
      * Loads a file containing a questionBank in either the .json or legacy .txt format
      *
      * @param currentStage The stage from which to launch the file chooser dialog
+     * @return fileChooser The user-selected file to import from
      */
     private File getFile(Stage currentStage) {
         // Opens file chooser
@@ -72,8 +85,8 @@ public class Import {
         fileChooser.setTitle("Selecciona tu archivo (txt o json)");
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter(".txt", "*.txt"),
-                new FileChooser.ExtensionFilter(".json", "*.json")
+                new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt"),
+                new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json")
         );
         return fileChooser.showOpenDialog(currentStage);
     }
@@ -178,13 +191,19 @@ public class Import {
     /**
      * importFromJson
      *
-     * method that lets us import miniExam from a txt file
-     * Each .json file may contain information from multiple subjects.
+     * Import a set of subjects with questions from a .json file
      *
-     * @param file that contains miniexam
+     * @param file The json file to import
      */
-    private void importFromJson(File file, String fileName){
-
+    private QuestionBank importFromJson(File file){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(file, QuestionBank.class);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

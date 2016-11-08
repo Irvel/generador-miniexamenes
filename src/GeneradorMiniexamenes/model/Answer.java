@@ -1,10 +1,13 @@
 package GeneradorMiniexamenes.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Answer {
     private String mAnswer;
     private int mWeight;
 
-    public Answer(String answer, int weight) {
+    public Answer(@JsonProperty("answer") String answer,
+                  @JsonProperty("weight") int weight){
         this.mAnswer = answer;
         this.mWeight = weight;
     }

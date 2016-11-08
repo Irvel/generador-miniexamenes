@@ -1,21 +1,24 @@
 package GeneradorMiniexamenes.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 
 public class Block {
     private ArrayList<Question> mQuestions;
     private int sequenceNumber;
 
-    public Block(ArrayList<Question> mQuestions, int sequenceNumber) {
-        this.mQuestions = mQuestions;
+    public Block(@JsonProperty("Questions") ArrayList<Question> questions,
+                 @JsonProperty("sequenceNumber") int sequenceNumber) {
+        this.mQuestions = questions;
         this.sequenceNumber = sequenceNumber;
     }
 
-    public ArrayList<Question> getmQuestions() {
+    public ArrayList<Question> getQuestions() {
         return mQuestions;
     }
 
-    public void setmQuestions(ArrayList<Question> mQuestions) {
+    public void setQuestions(ArrayList<Question> mQuestions) {
         this.mQuestions = mQuestions;
     }
 

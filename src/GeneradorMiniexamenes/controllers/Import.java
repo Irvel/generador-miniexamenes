@@ -39,7 +39,7 @@ public class Import {
                 new FileChooser.ExtensionFilter("JSON", "*.json")
         );
         File file = fileChooser.showOpenDialog(theStage);
-
+        
     }
 
 }

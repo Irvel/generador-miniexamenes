@@ -12,6 +12,10 @@
      -fx-border-width: 0;
 }
 
+.vbox:focused {
+    -fx-border-width: 0;
+}
+
 .H1 {
     -fx-font-size: 3em;
     -fx-text-fill: #696969;

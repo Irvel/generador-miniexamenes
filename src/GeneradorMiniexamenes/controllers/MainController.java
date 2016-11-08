@@ -21,4 +21,8 @@ public class MainController {
     public void importAction(ActionEvent actionEvent) {
         mImport.onClick(actionEvent);
     }
+
+    public void exportAction(ActionEvent actionEvent) {
+        mExport.onClick(actionEvent, mQuestionBank);
+    }
 }

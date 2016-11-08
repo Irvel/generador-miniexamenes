@@ -7,7 +7,6 @@
 <?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -16,192 +15,196 @@
 
 <VBox prefHeight="600.0" prefWidth="900.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.MainController">
   <children>
-    <SplitPane focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-      <items>
-            <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
-              <tabs>
-                <Tab text="Generar Examenes">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                      <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Generar Examenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+      <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+          <Tab text="Generar Examenes">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Generar Examenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                               </Label>
-                              <VBox alignment="CENTER" layoutX="218.0" layoutY="183.0" prefHeight="598.0" prefWidth="865.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+                        <VBox alignment="CENTER" layoutX="218.0" layoutY="183.0" prefHeight="598.0" prefWidth="865.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+                           <children>
+                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
+                                    <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
                                        <children>
-                                          <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
-                                             <children>
-                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" VBox.vgrow="ALWAYS" />
-                                                <JFXComboBox prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" />
-                                             </children>
-                                             <HBox.margin>
-                                                <Insets />
-                                             </HBox.margin>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </VBox>
-                                          <VBox prefHeight="200.0" prefWidth="160.0" spacing="10.0">
-                                             <children>
-                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" VBox.vgrow="ALWAYS" />
-                                                <JFXTextField VBox.vgrow="ALWAYS" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                             <HBox.margin>
-                                                <Insets />
-                                             </HBox.margin>
-                                          </VBox>
-                                          <VBox prefHeight="200.0" prefWidth="160.0" spacing="10.0">
-                                             <children>
-                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Cantidad:" VBox.vgrow="ALWAYS" />
-                                                <JFXComboBox prefHeight="27.0" prefWidth="173.0" VBox.vgrow="ALWAYS" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                             <HBox.margin>
-                                                <Insets />
-                                             </HBox.margin>
-                                          </VBox>
-                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                                             <children>
-                                                <JFXButton fx:id="btnGenerate" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Generar" />
-                                             </children>
-                                          </AnchorPane>
+                                          <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" VBox.vgrow="ALWAYS" />
+                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" />
                                        </children>
-                                       <VBox.margin>
-                                          <Insets left="10.0" right="10.0" />
-                                       </VBox.margin>
-                                       <padding>
-                                          <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                                       </padding>
-                                    </HBox>
-                                    <JFXTreeTableView prefWidth="865.0">
-                                       <VBox.margin>
+                                       <HBox.margin>
                                           <Insets />
-                                       </VBox.margin></JFXTreeTableView>
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox prefHeight="200.0" prefWidth="160.0" spacing="10.0">
+                                       <children>
+                                          <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" VBox.vgrow="ALWAYS" />
+                                          <JFXTextField VBox.vgrow="ALWAYS" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </VBox>
+                                    <VBox prefHeight="200.0" prefWidth="160.0" spacing="10.0">
+                                       <children>
+                                          <Label prefWidth="106.0" styleClass="inputLabel" text="Cantidad:" VBox.vgrow="ALWAYS" />
+                                          <JFXComboBox prefHeight="27.0" prefWidth="173.0" VBox.vgrow="ALWAYS" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </VBox>
+                                    <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <JFXButton fx:id="btnGenerate" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Generar" />
+                                       </children>
+                                    </AnchorPane>
                                  </children>
-                                 <opaqueInsets>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                                 <padding>
+                                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <JFXTreeTableView prefWidth="865.0">
+                                 <VBox.margin>
                                     <Insets />
-                                 </opaqueInsets>
-                              </VBox>
-                           </children></AnchorPane>
-                  </content>
-                </Tab>
-                <Tab text="Calificar Examenes">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                               <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Calificar Examenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
-                               </Label>
-                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
-                                 <children>
-                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="240.0" VBox.vgrow="ALWAYS">
-                                       <children>
-                                          <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
-                                             <children>
-                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" />
-                                                <JFXComboBox prefHeight="27.0" prefWidth="152.0" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </VBox>
-                                          <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
-                                             <children>
-                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" />
-                                                <JFXComboBox prefHeight="27.0" prefWidth="152.0" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="120.0" VBox.vgrow="ALWAYS">
-                                       <children>
-                                          <JFXListView />
-                                          <VBox alignment="CENTER" prefHeight="100.0" prefWidth="223.0">
-                                             <children>
-                                                <HBox alignment="TOP_CENTER" prefHeight="47.0" prefWidth="223.0" spacing="10.0" VBox.vgrow="ALWAYS">
-                                                   <children>
-                                                      <Label prefWidth="106.0" styleClass="inputLabel" text="Pregunta" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-                                                      <Label prefWidth="106.0" styleClass="inputLabel" text="Ponderación" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox alignment="TOP_CENTER" prefHeight="231.0" prefWidth="223.0" spacing="10.0">
-                                                   <children>
-                                                      <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
-                                                         <children>
-                                                            <Label prefWidth="106.0" styleClass="inputLabel" text="Pregunta #1:" VBox.vgrow="ALWAYS" />
-                                                            <Label prefWidth="106.0" styleClass="inputLabel" text="Opción elegida:" />
-                                                            <JFXComboBox prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" />
-                                                         </children>
-                                                      </VBox>
-                                                      <Label contentDisplay="CENTER" prefWidth="106.0" styleClass="inputLabel" text=".6" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                </HBox>
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                                       <children>
-                                          <Label text="Calificación:" />
-                                       </children>
-                                    </HBox>
-                                 </children>
-                              </VBox>
-                           </children></AnchorPane>
-                  </content>
-                </Tab>
-                  <Tab text="Editar Preguntas">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                               <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Editar Bancos de Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
-                               </Label>
+                                 </VBox.margin>
+                              </JFXTreeTableView>
                            </children>
-                        </AnchorPane>
-                    </content>
-                  </Tab>
-                  <Tab text="Importar / Exportar">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                               <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Importar / Exportar Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Calificar Examenes">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                         <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Calificar Examenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                                </Label>
-                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="240.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="60.0" VBox.vgrow="NEVER">
+                                    <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
                                        <children>
-                                          <AnchorPane prefHeight="76.0" prefWidth="190.0" >
-                                             <children>
-                                                <JFXButton fx:id="btnImport" buttonType="RAISED" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Importar" onAction="#importAction"  />
-                                             </children>
-                                          </AnchorPane>
-                                          <AnchorPane prefHeight="76.0" prefWidth="190.0">
-                                             <children>
-                                                <JFXButton fx:id="btnExport" buttonType="RAISED" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Exportar" />
-                                             </children>
-                                          </AnchorPane>
+                                          <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" />
+                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" />
                                        </children>
-                                       <VBox.margin>
-                                          <Insets top="10.0" />
-                                       </VBox.margin>
-                                    </HBox>
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
+                                       <children>
+                                          <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" />
+                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
                                  </children>
-                              </VBox>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="120.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <JFXListView />
+                                    <VBox alignment="CENTER" prefHeight="100.0" prefWidth="223.0">
+                                       <children>
+                                          <HBox alignment="TOP_CENTER" prefHeight="47.0" prefWidth="223.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Pregunta" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Ponderación" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                             </children>
+                                          </HBox>
+                                          <HBox alignment="TOP_CENTER" prefHeight="231.0" prefWidth="223.0" spacing="10.0">
+                                             <children>
+                                                <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
+                                                   <children>
+                                                      <Label prefWidth="106.0" styleClass="inputLabel" text="Pregunta #1:" VBox.vgrow="ALWAYS" />
+                                                      <Label prefWidth="106.0" styleClass="inputLabel" text="Opción elegida:" />
+                                                      <JFXComboBox prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" />
+                                                   </children>
+                                                </VBox>
+                                                <Label contentDisplay="CENTER" prefWidth="106.0" styleClass="inputLabel" text=".6" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Calificación:" />
+                                 </children>
+                              </HBox>
                            </children>
-                        </AnchorPane>
-                    </content>
-                  </Tab>
-              </tabs>
-            </TabPane>
-      </items>
-    </SplitPane>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Editar Preguntas">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                         <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Editar Bancos de Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                               </Label>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Importar / Exportar">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                         <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Importar / Exportar Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                               </Label>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="60.0" VBox.vgrow="NEVER">
+                                 <children>
+                                    <AnchorPane prefHeight="76.0" prefWidth="190.0">
+                                       <children>
+                                          <JFXButton fx:id="btnImport" buttonType="RAISED" layoutX="11.0" layoutY="27.0" onAction="#importAction" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Importar" />
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane prefHeight="76.0" prefWidth="190.0">
+                                       <children>
+                                          <JFXButton fx:id="btnExport"
+                                                     buttonType="RAISED"
+                                                     layoutX="11.0"
+                                                     layoutY="27.0"
+                                                     onAction="#exportAction"
+                                                     prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Exportar" />
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
   </children>
 </VBox>

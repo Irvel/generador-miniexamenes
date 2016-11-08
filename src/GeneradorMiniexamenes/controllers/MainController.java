@@ -1,5 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
+import GeneradorMiniexamenes.model.QuestionBank;
 import javafx.event.ActionEvent;
 
 /**
@@ -9,6 +10,7 @@ public class MainController {
     private Import mImport;
     private Export mExport;
     private Generate mGenerate;
+    private QuestionBank mQuestionBank;
 
     public MainController() {
         this.mImport = new Import();

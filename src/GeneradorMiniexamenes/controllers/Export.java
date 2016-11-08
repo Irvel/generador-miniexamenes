@@ -4,7 +4,11 @@ import GeneradorMiniexamenes.model.QuestionBank;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -23,9 +27,31 @@ public class Export {
         objectMapper.writeValue(outFile, questionBank);
     }
 
+    public void saveExternalJson(QuestionBank questionBank, Stage currentStage) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // Indent output JSON
+        objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
+        FileChooser fileChooser = new FileChooser();
+        //Set extension filter
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"));
+        fileChooser.setInitialFileName("Banco de preguntas.json");
+
+        //Show save file dialog
+        File file = fileChooser.showSaveDialog(currentStage);
+
+        if(file != null){
+            objectMapper.writeValue(file, questionBank);
+        }
+    }
+
     public void onClick(ActionEvent actionEvent, QuestionBank questionBank) {
+        Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
         try {
-            saveModelAsJson(questionBank);
+            saveExternalJson(questionBank, currentStage);
         }
         catch (IOException e) {
             e.printStackTrace();

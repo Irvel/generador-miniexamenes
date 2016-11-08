@@ -4,6 +4,7 @@ import GeneradorMiniexamenes.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -53,7 +54,7 @@ public class Import {
 
         if (extension.equals("txt")) {
             importFromText(file, name);
-            return appendToModel(questionBank);
+            return appendToModel(questionBank, name);
         }
         else {
             QuestionBank imported = importFromJson(file);
@@ -97,17 +98,51 @@ public class Import {
      * Appends the imported subject data into the working model
      *
      */
-    private QuestionBank appendToModel(QuestionBank questionBank) {
+    private QuestionBank appendToModel(QuestionBank questionBank, String filename) {
         if (questionBank == null) {
             questionBank = new QuestionBank();
         }
-        questionBank.addSubject(mSubject);
-        mSubject = null; // Garbage Collector come to me
+        if (mSubject == null) {
+            alertUnsuccessfulImport("No fue posible importar el tema del archivo seleccionado. El " +
+                                           "banco de preguntas actual permanecerá sin cambios");
+        }
+        else {
+            alertSuccessfulImport("Se ha agregado el tema " + filename + " al banco de " +
+                                          "preguntas.");
+            questionBank.addSubject(mSubject);
+            mSubject = null; // Garbage Collector come to me
+        }
         return questionBank;
     }
 
-    private QuestionBank replaceLoadedModel(QuestionBank questionBank) {
-        return questionBank;
+    /**
+     * alertSuccessfulImport
+     *
+     * Inform the user of a successful import operation
+     *
+     * @param s Information on what was successfully imported and its effect
+     */
+    private void alertSuccessfulImport(String s) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Aviso");
+        alert.setHeaderText(null);
+        alert.setContentText(s);
+        alert.showAndWait();
+    }
+
+    /**
+     * alertUnsuccessfulImport
+     *
+     * Inform the user of a failed import operation
+     *
+     * @param s Information on what made the error occurr and what will be done
+     */
+    private void alertUnsuccessfulImport(String s) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error al importar");
+        alert.setHeaderText(null);
+        alert.setContentText(s);
+        alert.showAndWait();
     }
 
     /**

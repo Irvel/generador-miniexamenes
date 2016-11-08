@@ -68,13 +68,7 @@
                                           </VBox>
                                           <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                              <children>
-                                                <JFXButton layoutX="11.0"
-                                                           layoutY="27.0"
-                                                           prefHeight="27.0"
-                                                           prefWidth="179.0"
-                                                           styleClass="inputBtn"
-                                                           text="Generar"
-                                                           fx:id="btnGenerate" />
+                                                <JFXButton fx:id="btnGenerate" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Generar" />
                                              </children>
                                           </AnchorPane>
                                        </children>
@@ -180,6 +174,27 @@
                            <children>
                                <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Importar / Exportar Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                                </Label>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+                                 <children>
+                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="60.0" VBox.vgrow="NEVER">
+                                       <children>
+                                          <AnchorPane prefHeight="76.0" prefWidth="190.0">
+                                             <children>
+                                                <JFXButton fx:id="btnGenerate1" buttonType="RAISED" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Importar" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="76.0" prefWidth="190.0">
+                                             <children>
+                                                <JFXButton fx:id="btnGenerate11" buttonType="RAISED" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Exportar" />
+                                             </children>
+                                          </AnchorPane>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </HBox>
+                                 </children>
+                              </VBox>
                            </children>
                         </AnchorPane>
                     </content>

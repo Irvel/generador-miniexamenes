@@ -122,7 +122,7 @@ public class Import {
             this.mSubject = new Subject(mBlocks, fileName);
 
             // prints (for debugging) comment when done
-            System.out.println("sequence " + mSubject.getmSubject());
+            System.out.println("Subject " + mSubject.getmSubject());
             for(Block b : mSubject.getmBlocks()){
                 System.out.println(b.getSequenceNumber());
                 for(Question q : b.getmQuestions()){

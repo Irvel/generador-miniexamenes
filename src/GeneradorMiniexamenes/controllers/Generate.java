@@ -8,9 +8,9 @@ import javafx.scene.control.Button;
  * model.
  */
 public class Generate {
-
     @FXML
     private Button btnGenerate;
+
 
     public Generate(){
         // Revisar que haya un banco de preguntas existente
@@ -19,7 +19,7 @@ public class Generate {
 
     private void initializeOptions() {
         /*BancoDePreguntas.cargarBanco();
-        if (BancoDePreguntas.getCantidadTemas() == 0) {
+        if (QuestionBank.getCantidadTemas() == 0) {
             // Desabilitar el boton de generar
             generarBtn.setDisable();
         }*/

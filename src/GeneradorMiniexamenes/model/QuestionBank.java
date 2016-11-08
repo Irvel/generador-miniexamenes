@@ -8,4 +8,8 @@ import java.util.ArrayList;
  */
 public class QuestionBank {
     ArrayList<Subject> mSubjects;
+
+    public int getSubjectQuantity(){ return mSubjects.size(); }
+
+    public void addSubject(Subject mSubject){ this.mSubjects.add(mSubject); }
 }

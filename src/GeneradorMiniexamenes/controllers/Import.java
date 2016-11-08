@@ -1,12 +1,14 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.Main;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Scanner;
 
 /**
  * Imports the subjects from either a .json file or from the .txt legacy
@@ -40,10 +42,42 @@ public class Import {
         );
         File file = fileChooser.showOpenDialog(theStage);
 
-        System.out.println(file.getName());
+        // Checks the extension of the file selected (txt or json)
+        String extension = "";
+        String name = "";
+        int i = file.getName().lastIndexOf('.');
+        if(i > 0)
+            extension = file.getName().substring(i + 1);
+        name = file.getName().substring(0, i);
+
+        if(extension.equals("txt"))
+            importFromText(file, name);
+        else
+            importFromJson(file, name);
     }
 
-    private void importFromText(File file){
+    /**
+     * importFromText
+     *
+     * method that lets us import miniExam from a txt file
+     *
+     * @param file that contains miniexam
+     */
+    private void importFromText(File file, String fileName){
+        // Tries to open the file
+        System.out.println(file.getPath());
+        try {
+            Scanner in = new Scanner(new FileReader(file.getPath()));
+            String line = "";
+            while(in.hasNextLine()){
+                line = in.nextLine();
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("El archivo no pudo ser abierto");
+        }
+    }
+
+    private void importFromJson(File file, String fileName){
 
     }
 

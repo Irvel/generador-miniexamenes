@@ -39,7 +39,12 @@ public class Import {
                 new FileChooser.ExtensionFilter("JSON", "*.json")
         );
         File file = fileChooser.showOpenDialog(theStage);
-        
+
+        System.out.println(file.getName());
+    }
+
+    private void importFromText(File file){
+
     }
 
 }

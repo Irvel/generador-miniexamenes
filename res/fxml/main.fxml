@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.Generate">
+<VBox prefHeight="600.0" prefWidth="900.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.MainController">
   <children>
     <SplitPane focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <items>
@@ -178,14 +178,14 @@
                                  <children>
                                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="60.0" VBox.vgrow="NEVER">
                                        <children>
-                                          <AnchorPane prefHeight="76.0" prefWidth="190.0">
+                                          <AnchorPane prefHeight="76.0" prefWidth="190.0" >
                                              <children>
-                                                <JFXButton fx:id="btnGenerate1" buttonType="RAISED" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Importar" />
+                                                <JFXButton fx:id="btnImport" buttonType="RAISED" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Importar" onAction="#importAction"  />
                                              </children>
                                           </AnchorPane>
                                           <AnchorPane prefHeight="76.0" prefWidth="190.0">
                                              <children>
-                                                <JFXButton fx:id="btnGenerate11" buttonType="RAISED" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Exportar" />
+                                                <JFXButton fx:id="btnExport" buttonType="RAISED" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Exportar" />
                                              </children>
                                           </AnchorPane>
                                        </children>

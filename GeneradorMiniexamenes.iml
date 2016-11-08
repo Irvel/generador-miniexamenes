@@ -9,5 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jfoenix" level="project" />
+    <orderEntry type="library" name="jackson-databind-2.8.1" level="project" />
   </component>
 </module>

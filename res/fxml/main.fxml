@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.Generador">
+<VBox prefHeight="600.0" prefWidth="900.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.Generate">
   <children>
     <SplitPane focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <items>
@@ -68,7 +68,13 @@
                                           </VBox>
                                           <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                              <children>
-                                                <JFXButton layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Generar" />
+                                                <JFXButton layoutX="11.0"
+                                                           layoutY="27.0"
+                                                           prefHeight="27.0"
+                                                           prefWidth="179.0"
+                                                           styleClass="inputBtn"
+                                                           text="Generar"
+                                                           fx:id="btnGenerate" />
                                              </children>
                                           </AnchorPane>
                                        </children>

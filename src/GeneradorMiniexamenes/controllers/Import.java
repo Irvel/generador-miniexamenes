@@ -174,18 +174,21 @@ public class Import {
                     // ignores O
                     in.nextLine();
                     if (!questions.isEmpty()) { // if there are questions, adds the block
-                        blocks.add(new Block(questions, iSequence++));
+                        if (!answers.isEmpty()) { // if there are answers, add the block
+                            questions.add(new Question(new ArrayList<>(answers), questionName));
+                        }
+                        blocks.add(new Block(new ArrayList<>(questions), iSequence++));
+                        questions.clear();
+                        answers.clear();
                     }
-                    questions.clear();
-                    answers.clear();
                 }
 
                 // found new question
                 else if (line.equals("*")) {
                     if (!answers.isEmpty()) { // if there are answers, add the block
-                        questions.add(new Question(answers, questionName));
+                        questions.add(new Question(new ArrayList<>(answers), questionName));
+                        answers.clear();
                     }
-                    answers.clear();
                     questionName = in.nextLine();
                 }
 
@@ -197,20 +200,20 @@ public class Import {
             }
             // Checks if there is info needed to add
             if (!answers.isEmpty()) {
-                questions.add(new Question(answers, questionName));
+                questions.add(new Question(new ArrayList<>(answers), questionName));
             }
             if (!questions.isEmpty()) {
-                blocks.add(new Block(questions, iSequence));
+                blocks.add(new Block(new ArrayList<>(questions), iSequence));
             }
 
             // Creates the Subject
             this.mSubject = new Subject(blocks, fileName);
 
             // prints (for debugging) comment when done
-            /*System.out.println("Subject " + mSubject.getmSubject());
-            for (Block b : mSubject.getmBlocks()) {
+            /*System.out.println("Subject " + mSubject.getSubjectName());
+            for (Block b : mSubject.getBlocks()) {
                 System.out.println(b.getSequenceNumber());
-                for (Question q : b.getmQuestions()) {
+                for (Question q : b.getQuestions()) {
                     System.out.println(q.getQuestion());
                     for (Answer a : q.getAnswers()) {
                         System.out.println(a.getWeight() + " " + a.getAnswer());

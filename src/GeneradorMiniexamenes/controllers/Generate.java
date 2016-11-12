@@ -12,7 +12,7 @@ public class Generate {
     private Button btnGenerate;
 
 
-    public Generate(){
+    public Generate() {
         // Revisar que haya un banco de preguntas existente
         initializeOptions();
     }

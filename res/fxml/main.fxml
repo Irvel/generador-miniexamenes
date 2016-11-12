@@ -65,7 +65,14 @@
                                     </VBox>
                                     <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                        <children>
-                                          <JFXButton fx:id="btnGenerate" layoutX="11.0" layoutY="27.0" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Generar" />
+                                          <JFXButton fx:id="btnGenerate"
+                                                     layoutX="11.0"
+                                                     layoutY="27.0"
+                                                     prefHeight="27.0"
+                                                     prefWidth="179.0"
+                                                     styleClass="inputBtn"
+                                                     text="Generar"
+                                                     onAction="#generateAction" />
                                        </children>
                                     </AnchorPane>
                                  </children>

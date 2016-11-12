@@ -3,3 +3,4 @@ out
 .idea/artifacts/
 .idea/libraries/
 data/questionBank.json
+.DS_Store

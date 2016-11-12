@@ -41,16 +41,19 @@ public class Import {
         Node source = (Node) ae.getSource();
         Stage theStage = (Stage) source.getScene().getWindow();
         File file = getFile(theStage);
-
+        // The user selected the "cancel" option
+        if (file == null) {
+            return questionBank;
+        }
         // Checks the extension of the file selected (txt or json)
         String extension = "";
         String name = "";
-        int i = file.getName().lastIndexOf('.');
-        if (i > 0) {
-            extension = file.getName().substring(i + 1);
+        int dotIdx = file.getName().lastIndexOf('.');
+        if (dotIdx > 0) {
+            extension = file.getName().substring(dotIdx + 1);
         }
         // Get the filename without the extension
-        name = file.getName().substring(0, i);
+        name = file.getName().substring(0, dotIdx);
 
         if (extension.equals("txt")) {
             importFromText(file, name);

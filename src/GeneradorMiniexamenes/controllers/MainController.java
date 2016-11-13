@@ -1,5 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
+import GeneradorMiniexamenes.model.ExamBank;
 import GeneradorMiniexamenes.model.QuestionBank;
 import javafx.event.ActionEvent;
 
@@ -12,13 +13,15 @@ public class MainController {
     private Export mExport;
     private Generate mGenerate;
     private QuestionBank mQuestionBank;
+    private ExamBank mExamBank;
 
     /**
      * Initializer of MainController
      */
     public MainController() {
         this.mImport = new Import();
-        this.mQuestionBank = mImport.loadQuestionBank();
+        this.mQuestionBank = AppState.loadQuestionBank();
+        this.mExamBank = AppState.loadExamBank();
         this.mExport = new Export();
         this.mGenerate = new Generate();
     }
@@ -29,6 +32,7 @@ public class MainController {
      */
     public void importAction(ActionEvent actionEvent) {
         mQuestionBank = mImport.onClick(actionEvent, mQuestionBank);
+        AppState.saveQuestionBank(mQuestionBank);
     }
 
     /**
@@ -44,6 +48,8 @@ public class MainController {
      * @param actionEvent
      */
     public void generateAction(ActionEvent actionEvent) {
-        mExport.onClick(actionEvent, mQuestionBank);
+        //mExport.onClick(actionEvent, mQuestionBank);
+        // Save the generated exams to storage
+        AppState.saveExamBank(mExamBank);
     }
 }

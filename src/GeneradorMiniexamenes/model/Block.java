@@ -8,7 +8,7 @@ public class Block {
     private ArrayList<Question> mQuestions;
     private int sequenceNumber;
 
-    public Block(@JsonProperty("Questions") ArrayList<Question> questions,
+    public Block(@JsonProperty("questions") ArrayList<Question> questions,
                  @JsonProperty("sequenceNumber") int sequenceNumber) {
         this.mQuestions = questions;
         this.sequenceNumber = sequenceNumber;

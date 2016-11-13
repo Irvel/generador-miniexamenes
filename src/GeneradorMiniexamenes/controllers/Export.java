@@ -9,23 +9,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
  * Saves the current model to a .json file
  */
 public class Export {
-    public void saveModelAsJson(QuestionBank questionBank) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // Indent output JSON
-        objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
-        // Save object as JSON string
-        FileOutputStream outFile = new FileOutputStream("data/questionBank.json");
-        objectMapper.writeValue(outFile, questionBank);
-    }
 
     public void saveExternalJson(QuestionBank questionBank, Stage currentStage) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();

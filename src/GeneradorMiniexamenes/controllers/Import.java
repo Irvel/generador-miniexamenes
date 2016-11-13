@@ -246,17 +246,4 @@ public class Import {
         }
         return null;
     }
-
-    /**
-     * loadQuestionBank
-     *
-     * Import the main questionbank for the application.
-     * TODO(irvel): Implement this.
-     *
-     * @return The question bank stored inside the Application
-     */
-    public QuestionBank loadQuestionBank() {
-        return null;
-    }
-
 }

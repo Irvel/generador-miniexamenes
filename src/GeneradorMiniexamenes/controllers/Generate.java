@@ -1,5 +1,8 @@
 package GeneradorMiniexamenes.controllers;
 
+import GeneradorMiniexamenes.model.ExamBank;
+import GeneradorMiniexamenes.model.Subject;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -23,6 +26,10 @@ public class Generate {
             // Desabilitar el boton de generar
             generarBtn.setDisable();
         }*/
+    }
+
+    public ExamBank onClick(ActionEvent actionEvent, Subject subject){
+        return null;
     }
 
 }

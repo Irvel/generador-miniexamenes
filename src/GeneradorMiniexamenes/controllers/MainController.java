@@ -5,9 +5,11 @@ import GeneradorMiniexamenes.model.QuestionBank;
 import GeneradorMiniexamenes.model.Subject;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.control.Spinner;
 
 /**
  * Created by Elias Mera on 11/7/2016.
@@ -20,6 +22,12 @@ public class MainController {
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
     private boolean bInicio = true;
+    private String sSelectedSubject = "";
+    private String sSelectedGroup = "";
+    @FXML JFXComboBox cbTema;
+    @FXML Spinner spCantidad;
+    @FXML JFXButton btnGenerate;
+    @FXML JFXTextField tfGrupo;
 
     /**
      * Initializer of MainController
@@ -56,12 +64,9 @@ public class MainController {
     public void generateAction(ActionEvent actionEvent) {
         //mExport.onClick(actionEvent, mQuestionBank);
         // Save the generated exams to storage
+        mExamBank = mGenerate.onClick(actionEvent, null);
         AppState.saveExamBank(mExamBank);
     }
-
-    @FXML JFXComboBox cbTema;
-    @FXML JFXComboBox cbCantidad;
-    @FXML JFXButton btnGenerate;
 
     /**
      * tabGenera
@@ -83,13 +88,15 @@ public class MainController {
                 if (!cbTema.getItems().contains(s.getSubjectName()))
                     cbTema.getItems().add(s.getSubjectName());
             }
-
-            // loads quantities only on start
-            if(bInicio) {
-                for (int i = 1; i <= 35; i++)
-                    cbCantidad.getItems().add(i);
-                bInicio = !bInicio;
-            }
         }
+    }
+
+    /**
+     * Method that updates Subject
+     * @param actionEvent
+     */
+    public void cambioTema(ActionEvent actionEvent) {
+        sSelectedSubject = cbTema.getValue().toString();
+        System.out.println(sSelectedSubject);
     }
 }

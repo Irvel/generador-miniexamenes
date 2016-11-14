@@ -76,11 +76,18 @@ public class AppState {
      * loadExamBank
      *
      * Import the previously generated Exams from the application
-     * TODO(irvel): Implement this.
      *
      * @return The previously generated exams
      */
     public static ExamBank loadExamBank() {
-        return null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            File file = new File(EXAMS_PATH);
+            return mapper.readValue(file, ExamBank.class);
+        }
+        catch (IOException e) {
+            System.out.println("Creating an empty ExamBank");
+        }
+        return new ExamBank();
     }
 }

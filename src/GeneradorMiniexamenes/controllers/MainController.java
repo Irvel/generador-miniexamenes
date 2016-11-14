@@ -11,7 +11,6 @@ import javafx.scene.control.Spinner;
 
 /**
  * Created by Elias Mera on 11/7/2016.
- * TODO(irvel): Initialize the application model at load
  */
 public class MainController {
     private Import mImport;
@@ -94,8 +93,9 @@ public class MainController {
         }*/
 
         // Saves the generated exam.
-        if(mExamBank != null)
+        if(mExamBank != null) {
             AppState.saveExamBank(mExamBank);
+        }
     }
 
     /**
@@ -115,9 +115,11 @@ public class MainController {
             btnGenerate.setDisable(false);
             // Loads subjects
             for(Subject s : mQuestionBank.getSubjects()) {
-                if (!cbTema.getItems().contains(s.getSubjectName()))
+                if (!cbTema.getItems().contains(s.getSubjectName())) {
                     cbTema.getItems().add(s.getSubjectName());
+                }
             }
+            cbTema.getSelectionModel().selectFirst();
         }
     }
 

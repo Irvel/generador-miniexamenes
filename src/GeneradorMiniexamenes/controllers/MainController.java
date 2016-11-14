@@ -1,6 +1,8 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.*;
+import GeneradorMiniexamenes.model.ExamBank;
+import GeneradorMiniexamenes.model.QuestionBank;
+import GeneradorMiniexamenes.model.Subject;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
@@ -59,9 +61,11 @@ public class MainController {
      * @return selected Subject
      */
     private Subject findSubject(){
-        for(Subject s : mQuestionBank.getSubjects())
-            if(s.getSubjectName().equals(sSelectedSubject))
+        for(Subject s : mQuestionBank.getSubjects()) {
+            if (s.getSubjectName().equals(sSelectedSubject)) {
                 return s;
+            }
+        }
         return null;
     }
 
@@ -72,6 +76,10 @@ public class MainController {
     public void generateAction(ActionEvent actionEvent) {
         // finds the subject
         Subject subject = findSubject();
+        if (tfGrupo.getText() == null || tfGrupo.getText().equals("")) {
+            Alerts.displayError("Error", "Favor de ingresar un grupo");
+            return;
+        }
 
         int iQuantity = Integer.parseInt(spCantidad.getValue().toString());
         mExamBank = mGenerate.onClick(actionEvent, subject, iQuantity, tfGrupo.getText());
@@ -120,6 +128,7 @@ public class MainController {
                 }
             }
             cbTema.getSelectionModel().selectFirst();
+            sSelectedSubject = cbTema.getValue().toString();
         }
     }
 

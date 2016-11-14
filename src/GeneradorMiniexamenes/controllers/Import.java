@@ -4,7 +4,6 @@ import GeneradorMiniexamenes.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -14,6 +13,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import static GeneradorMiniexamenes.controllers.Alerts.displayError;
+import static GeneradorMiniexamenes.controllers.Alerts.displayInfo;
 
 /**
  * Imports the subjects from either a .json file or from the .txt legacy
@@ -32,8 +34,6 @@ public class Import {
      * Imports a set of questions from a single subject when importing from the
      * legacy .txt format or imports questions form a set of subjects when importing
      * from the new .json format.
-     * TODO(Irvel): Clarify if each .json file should contain a single or multiple subjects
-     * TODO(Irvel): Implement program startup import functionality
      *
      * @param ae actionEvent to get the Window
      */
@@ -64,12 +64,13 @@ public class Import {
             if (imported == null) {
                 // A question bank couldn't be imported from a .json flie. Do not discard the
                 // loaded model.
-                alertUnsuccessfulImport("No fue posible importar el banco de preguntas del archivo " +
-                                               "seleccionado. El programa mantendrá las preguntas " +
-                                               "existentes.");
+                displayError("Error al importar",
+                             "No fue posible importar el banco de preguntas del archivo " +
+                                     "seleccionado. El programa mantendrá las preguntas " +
+                                     "existentes.");
                 return questionBank;
             }
-            alertSuccessfulImport("El banco de preguntas actual ha sido reemplazado con el archivo" +
+            displayInfo("El banco de preguntas actual ha sido reemplazado con el archivo" +
                                          " importado.");
             return imported;
         }
@@ -106,46 +107,17 @@ public class Import {
             questionBank = new QuestionBank();
         }
         if (mSubject == null) {
-            alertUnsuccessfulImport("No fue posible importar el tema del archivo seleccionado. El " +
+            displayError("Error al importar",
+                         "No fue posible importar el tema del archivo seleccionado. El " +
                                            "banco de preguntas actual permanecerá sin cambios");
         }
         else {
-            alertSuccessfulImport("Se ha agregado el tema " + filename + " al banco de " +
+            displayInfo("Se ha agregado el tema " + filename + " al banco de " +
                                           "preguntas.");
             questionBank.addSubject(mSubject);
             mSubject = null; // Garbage Collector come to me
         }
         return questionBank;
-    }
-
-    /**
-     * alertSuccessfulImport
-     *
-     * Inform the user of a successful import operation
-     *
-     * @param s Information on what was successfully imported and its effect
-     */
-    private void alertSuccessfulImport(String s) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Aviso");
-        alert.setHeaderText(null);
-        alert.setContentText(s);
-        alert.showAndWait();
-    }
-
-    /**
-     * alertUnsuccessfulImport
-     *
-     * Inform the user of a failed import operation
-     *
-     * @param s Information on what made the error occurr and what will be done
-     */
-    private void alertUnsuccessfulImport(String s) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error al importar");
-        alert.setHeaderText(null);
-        alert.setContentText(s);
-        alert.showAndWait();
     }
 
     /**

@@ -2,10 +2,12 @@ package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.*;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static GeneradorMiniexamenes.controllers.Alerts.displayError;
+import static GeneradorMiniexamenes.controllers.Alerts.displayInfo;
 
 /**
  * Randomly generates exams from the subjects and questions available in the
@@ -46,41 +48,11 @@ public class Generate {
         }
 
         if (mExBank == null)
-            alertUnsuccessfulGenerate("Examenes no generados");
+            displayError("Error al generar", "Examenes no generados");
         else
-            alertSuccessfulGenerate("Examenes generados");
+            displayInfo("Examenes generados");
 
         return mExBank;
-    }
-
-    /**
-     * alertSuccessfulGenerate
-     *
-     * Inform the user of a successful import operation
-     *
-     * @param s Information on what was successfully imported and its effect
-     */
-    private void alertSuccessfulGenerate(String s) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Aviso");
-        alert.setHeaderText(null);
-        alert.setContentText(s);
-        alert.showAndWait();
-    }
-
-    /**
-     * alertUnsuccessfulGenerate
-     *
-     * Inform the user of a failed import operation
-     *
-     * @param s Information on what made the error occurr and what will be done
-     */
-    private void alertUnsuccessfulGenerate(String s) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error al generar");
-        alert.setHeaderText(null);
-        alert.setContentText(s);
-        alert.showAndWait();
     }
 
 }

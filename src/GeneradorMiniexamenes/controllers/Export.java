@@ -13,6 +13,7 @@ import java.io.IOException;
 
 /**
  * Saves the current model to a .json file
+ * TODO(Irvel): Clarify if each exported .json file should contain a single or multiple subjects
  */
 public class Export {
 

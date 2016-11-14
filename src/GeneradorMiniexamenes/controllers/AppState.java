@@ -64,7 +64,7 @@ public class AppState {
     public static void saveExamBank(ExamBank examBank) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            FileOutputStream outFile = new FileOutputStream(EXAMS_PATH, false);
+            FileOutputStream outFile = new FileOutputStream(EXAMS_PATH, true);
             objectMapper.writeValue(outFile, examBank);
         }
         catch (Exception e) {

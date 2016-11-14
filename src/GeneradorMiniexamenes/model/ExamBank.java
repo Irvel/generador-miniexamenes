@@ -16,6 +16,15 @@ public class ExamBank {
         mExams = exams;
     }
 
+
+    public HashMap<String, ArrayList<Exam>> getmExams() {
+        return mExams;
+    }
+
+    public void setmExams(HashMap<String, ArrayList<Exam>> mExams) {
+        this.mExams = mExams;
+    }
+
     public ExamBank() {
         mExams = new HashMap<>();
     }

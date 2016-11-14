@@ -1,8 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.ExamBank;
-import GeneradorMiniexamenes.model.QuestionBank;
-import GeneradorMiniexamenes.model.Subject;
+import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
@@ -58,14 +56,46 @@ public class MainController {
     }
 
     /**
+     * method that returns the subject selected by the user
+     * @return selected Subject
+     */
+    private Subject findSubject(){
+        for(Subject s : mQuestionBank.getSubjects())
+            if(s.getSubjectName().equals(sSelectedSubject))
+                return s;
+        return null;
+    }
+
+    /**
      * The user clicked the generate button
      * @param actionEvent
      */
     public void generateAction(ActionEvent actionEvent) {
-        //mExport.onClick(actionEvent, mQuestionBank);
-        // Save the generated exams to storage
-        mExamBank = mGenerate.onClick(actionEvent, null);
-        AppState.saveExamBank(mExamBank);
+        // finds the subject
+        Subject subject = findSubject();
+
+        int iQuantity = Integer.parseInt(spCantidad.getValue().toString());
+        mExamBank = mGenerate.onClick(actionEvent, subject, iQuantity, tfGrupo.getText());
+        tfGrupo.setText("");
+        spCantidad.decrement(100);
+
+        // checks exams
+        /*
+        int iC = 1;
+        for(Exam e : mExamBank.getExams(subject.getSubjectName())){
+            System.out.println("Examen numero " + iC++);
+            System.out.println(e.getSubject());
+            System.out.println(e.getGroup());
+            for(Question q : e.getQuestions()){
+                System.out.println("Pregunta " + q.getQuestion());
+            }
+            System.out.println();
+            System.out.println();
+        }*/
+
+        // Saves the generated exam.
+        if(mExamBank != null)
+            AppState.saveExamBank(mExamBank);
     }
 
     /**
@@ -97,6 +127,5 @@ public class MainController {
      */
     public void cambioTema(ActionEvent actionEvent) {
         sSelectedSubject = cbTema.getValue().toString();
-        System.out.println(sSelectedSubject);
     }
 }

@@ -20,7 +20,7 @@ public class ExamBank {
         mExams = new HashMap<>();
     }
 
-    public ArrayList getExams(String subject) {
+    public ArrayList<Exam> getExams(String subject) {
         if (mExams.containsKey(subject)) {
             return mExams.get(subject);
         }

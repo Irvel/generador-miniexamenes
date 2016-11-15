@@ -41,32 +41,39 @@ public class Generate {
     @FXML
     JFXTextField tfGrupo;
 
-    private HBox generateContainer;
-    private HBox downloadContainer;
-    private boolean firstLoad;
+    private HBox mGenerateContainer;
+    private HBox mDownloadContainer;
+    private boolean mFirstLoad;
 
 
     public Generate(MainController parentController) {
         // Keep a reference to the main controller to get important shared variables
-        firstLoad = true;
         mParentController = parentController;
+        mFirstLoad = true;
     }
 
+    /**
+     * inflateViews
+     *
+     * Construct objects from the fxml view definitions and store them as member variables.
+     */
     private void inflateViews() {
         try {
-            generateContainer = null;
-            downloadContainer = null;
+            // Delete any existing inflated views
+            mGenerateContainer = null;
+            mDownloadContainer = null;
+
             // Load the form for generating exams but do not show it yet
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/fxml/GenExamsAction.fxml"));
             loader.setController(this);
-            generateContainer = loader.load();
+            mGenerateContainer = loader.load();
 
             // Load the interface for downloading the Generated exams but do not show it yet
             loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/fxml/GenExamsDownload.fxml"));
             loader.setController(this);
-            downloadContainer = loader.load();
+            mDownloadContainer = loader.load();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -74,6 +81,8 @@ public class Generate {
     }
 
     /**
+     * generateAction
+     *
      * The user clicked the generate button
      * @param actionEvent
      */
@@ -96,18 +105,20 @@ public class Generate {
     }
 
     /**
+     * backGenAction
+     *
      * The user clicked the back button after having generated exams
      * @param actionEvent
      */
     public void backGenAction(ActionEvent actionEvent) {
         // Get a reference to the parent container to be able to add the Generate form to it
-        VBox parentContainer = (VBox) downloadContainer.getParent();
+        VBox parentContainer = (VBox) mDownloadContainer.getParent();
 
         // Clean the container to re-initialize the Generate exams form view
         parentContainer.getChildren().clear();
 
         // Set this to true so that loadGenerateForm reloads the views from the fxml's
-        firstLoad = true;
+        mFirstLoad = true;
         loadGenerateForm(parentContainer);
     }
 
@@ -121,13 +132,13 @@ public class Generate {
      *
      */
     private void displayGeneratedExams(ExamBank generatedExamBank) {
-        VBox mainGenContainer = (VBox) generateContainer.getParent();
+        VBox mainGenContainer = (VBox) mGenerateContainer.getParent();
         displayInfo("Examenes generados");
         // Remove container with the form for generating exams from the view
-        mainGenContainer.getChildren().remove(generateContainer);
+        mainGenContainer.getChildren().remove(mGenerateContainer);
         // TODO: Add table with the generated exams
         // Add buttons for downloading the newly generated exams
-        mainGenContainer.getChildren().add(downloadContainer);
+        mainGenContainer.getChildren().add(mDownloadContainer);
     }
 
     /**
@@ -140,7 +151,7 @@ public class Generate {
     private void resetFormFields() {
         tfGrupo.setText("");
         spCantidad.decrement(100);
-        if (generateContainer != null) {
+        if (mGenerateContainer != null) {
             // Checks if there is at least one subject in the QuestionBank
             if (mParentController.getQuestionBank().getSubjects().isEmpty()) {
                 btnGenerate.setDisable(true);
@@ -190,15 +201,19 @@ public class Generate {
      *
      * Loads the subjects from the QuestionBank instance in memory if there is at least one subject.
      * In case there are no subjects, prevent the exam generation by disabling the btnGenerate.
+     * @param mainGenContainer A reference to the main container to which the GenerateForm will
+     *                         be added in
      *
      */
     public void loadGenerateForm(VBox mainGenContainer) {
-        if (firstLoad) {
-            firstLoad = false;
+        // If this is the first time loading the view
+        if (mFirstLoad) {
+            mFirstLoad = false;
             inflateViews();
-            // Display the generate exams form to the user
-            mainGenContainer.getChildren().add(generateContainer);
+            // Display the generate exams form view to the user
+            mainGenContainer.getChildren().add(mGenerateContainer);
         }
+        // Update the form options from the loaded QuestionBank
         resetFormFields();
     }
 

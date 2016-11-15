@@ -4,8 +4,18 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox fx:id="downloadContainer" alignment="CENTER_RIGHT" spacing="30.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:id="downloadContainer"
+      alignment="CENTER_RIGHT"
+      spacing="30.0"
+      xmlns="http://javafx.com/javafx/8.0.65"
+      xmlns:fx="http://javafx.com/fxml/1">
+
     <children>
+      <JFXButton fx:id="btnDownloadLatex1" styleClass="inputBtn" text="Regresar">
+         <HBox.margin>
+            <Insets right="30.0" />
+         </HBox.margin>
+      </JFXButton>
         <JFXButton fx:id="btnDownloadLatex" styleClass="inputBtn" text="Descargar examenes en formato LaTeX" />
         <JFXButton fx:id="btnDownloadPdf" styleClass="inputBtn" text="Descargar examenes en formato PDF" />
     </children>

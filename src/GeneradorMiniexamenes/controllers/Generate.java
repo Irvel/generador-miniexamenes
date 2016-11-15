@@ -54,8 +54,8 @@ public class Generate {
 
     private void inflateViews() {
         try {
-            // Load the form for generating exams but do not show it yet
             generateContainer = null;
+            // Load the form for generating exams but do not show it yet
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/fxml/GenExamsAction.fxml"));
             loader.setController(this);

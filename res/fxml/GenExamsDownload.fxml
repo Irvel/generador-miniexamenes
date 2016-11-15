@@ -11,9 +11,9 @@
       xmlns:fx="http://javafx.com/fxml/1">
 
     <children>
-      <JFXButton fx:id="btnDownloadLatex1" styleClass="inputBtn" text="Regresar">
+      <JFXButton fx:id="btnBack" onAction="#backGenAction" styleClass="inputBtn" text="Regresar">
          <HBox.margin>
-            <Insets right="30.0" />
+            <Insets right="36.0" />
          </HBox.margin>
       </JFXButton>
         <JFXButton fx:id="btnDownloadLatex" styleClass="inputBtn" text="Descargar examenes en formato LaTeX" />

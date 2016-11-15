@@ -55,6 +55,7 @@ public class Generate {
     private void inflateViews() {
         try {
             generateContainer = null;
+            downloadContainer = null;
             // Load the form for generating exams but do not show it yet
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/fxml/GenExamsAction.fxml"));
@@ -62,9 +63,10 @@ public class Generate {
             generateContainer = loader.load();
 
             // Load the interface for downloading the Generated exams but do not show it yet
-            downloadContainer = null;
-            downloadContainer = FXMLLoader.load(
-                    getClass().getResource("/fxml/GenExamsDownload.fxml"));
+            loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fxml/GenExamsDownload.fxml"));
+            loader.setController(this);
+            downloadContainer = loader.load();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -94,6 +96,22 @@ public class Generate {
     }
 
     /**
+     * The user clicked the back button after having generated exams
+     * @param actionEvent
+     */
+    public void backGenAction(ActionEvent actionEvent) {
+        // Get a reference to the parent container to be able to add the Generate form to it
+        VBox parentContainer = (VBox) downloadContainer.getParent();
+
+        // Clean the container to re-initialize the Generate exams form view
+        parentContainer.getChildren().clear();
+
+        // Set this to true so that loadGenerateForm reloads the views from the fxml's
+        firstLoad = true;
+        loadGenerateForm(parentContainer);
+    }
+
+    /**
      * displayGeneratedExams
      *
      * Display the generated exams in another view and show the options for downloading the
@@ -110,9 +128,38 @@ public class Generate {
         // TODO: Add table with the generated exams
         // Add buttons for downloading the newly generated exams
         mainGenContainer.getChildren().add(downloadContainer);
-        // Reset the generate form fields
+    }
+
+    /**
+     * resetFormFields
+     *
+     * Reset the generate exams form fields with questions from the QuestionBank. In case there
+     * are no questions in the QuestionBank, disable the generate button.
+     *
+     */
+    private void resetFormFields() {
         tfGrupo.setText("");
         spCantidad.decrement(100);
+        if (generateContainer != null) {
+            // Checks if there is at least one subject in the QuestionBank
+            if (mParentController.getQuestionBank().getSubjects().isEmpty()) {
+                btnGenerate.setDisable(true);
+            }
+            else {
+                btnGenerate.setDisable(false);
+                // Load each subject name from the QuestionBank into the combo box
+                mParentController.getQuestionBank()
+                                 .getSubjects()
+                                 .stream()
+                                 .filter(s -> !cbTema.getItems().contains(s.getSubjectName()))
+                                 .forEach(s -> {
+                                     cbTema.getItems().add(s.getSubjectName());
+                                 });
+
+                // Set the preselected subject in the combo box as the first one
+                cbTema.getSelectionModel().selectFirst();
+            }
+        }
     }
 
     /**
@@ -152,27 +199,7 @@ public class Generate {
             // Display the generate exams form to the user
             mainGenContainer.getChildren().add(generateContainer);
         }
-        //mainGenContainer.getChildren().clear();
-        if (generateContainer != null) {
-            // Checks if there is at least one subject in the QuestionBank
-            if (mParentController.getQuestionBank().getSubjects().isEmpty()) {
-                btnGenerate.setDisable(true);
-            }
-            else {
-                btnGenerate.setDisable(false);
-                // Load each subject name from the QuestionBank into the combo box
-                mParentController.getQuestionBank()
-                                 .getSubjects()
-                                 .stream()
-                                 .filter(s -> !cbTema.getItems().contains(s.getSubjectName()))
-                                 .forEach(s -> {
-                                     cbTema.getItems().add(s.getSubjectName());
-                                 });
-
-                // Set the preselected subject in the combo box as the first one
-                cbTema.getSelectionModel().selectFirst();
-            }
-        }
+        resetFormFields();
     }
 
 

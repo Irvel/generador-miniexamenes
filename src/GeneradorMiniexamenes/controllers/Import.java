@@ -29,7 +29,7 @@ public class Import {
     private Subject mSubject;
 
     /**
-     * onClick
+     * generateExams
      *
      * Imports a set of questions from a single subject when importing from the
      * legacy .txt format or imports questions form a set of subjects when importing

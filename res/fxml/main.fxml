@@ -1,92 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
 <VBox prefHeight="600.0" prefWidth="900.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.MainController">
   <children>
       <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <tabs>
-          <Tab text="Generar Examenes" onSelectionChanged="#tabGenera">
+          <Tab onSelectionChanged="#generateTabSelected" text="Generar Examenes">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                 <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Generar Examenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                               </Label>
-                        <VBox alignment="CENTER" layoutX="218.0" layoutY="183.0" prefHeight="598.0" prefWidth="865.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
-                           <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
-                                 <children>
-                                    <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
-                                       <children>
-                                          <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" VBox.vgrow="ALWAYS" />
-                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" fx:id="cbTema" onAction="#cambioTema"/>
-                                       </children>
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                       <padding>
-                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                       </padding>
-                                    </VBox>
-                                    <VBox prefHeight="200.0" prefWidth="160.0" spacing="10.0">
-                                       <children>
-                                          <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" VBox.vgrow="ALWAYS" />
-                                          <JFXTextField VBox.vgrow="ALWAYS"  fx:id="tfGrupo"/>
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                       </padding>
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                    </VBox>
-                                    <VBox prefHeight="200.0" prefWidth="160.0" spacing="10.0">
-                                       <children>
-                                          <Label prefWidth="106.0" styleClass="inputLabel" text="Cantidad:" VBox.vgrow="ALWAYS" />
-                                           <Spinner fx:id="spCantidad" BorderPane.alignment="CENTER" editable="true">
-                                               <valueFactory>
-                                                   <SpinnerValueFactory.IntegerSpinnerValueFactory min="1" max="40"/>
-                                               </valueFactory>
-                                           </Spinner>
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                       </padding>
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                    </VBox>
-                                    <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                                       <children>
-                                          <JFXButton fx:id="btnGenerate"
-                                                     layoutX="11.0"
-                                                     layoutY="27.0"
-                                                     prefHeight="27.0"
-                                                     prefWidth="179.0"
-                                                     styleClass="inputBtn"
-                                                     text="Generar"
-                                                     onAction="#generateAction" />
-                                       </children>
-                                    </AnchorPane>
-                                 </children>
-                                 <VBox.margin>
-                                    <Insets left="10.0" right="10.0" />
-                                 </VBox.margin>
-                                 <padding>
-                                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                                 </padding>
-                              </HBox>
-                              <JFXTreeTableView prefWidth="865.0">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                              </JFXTreeTableView>
-                           </children>
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
+                        <VBox fx:id="mainGenContainer" alignment="CENTER" layoutX="218.0" layoutY="183.0" prefHeight="128.0" prefWidth="867.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
                         </VBox>
                      </children>
                   </AnchorPane>
@@ -187,12 +124,7 @@
                                     </AnchorPane>
                                     <AnchorPane prefHeight="76.0" prefWidth="190.0">
                                        <children>
-                                          <JFXButton fx:id="btnExport"
-                                                     buttonType="RAISED"
-                                                     layoutX="11.0"
-                                                     layoutY="27.0"
-                                                     onAction="#exportAction"
-                                                     prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Exportar" />
+                                          <JFXButton fx:id="btnExport" buttonType="RAISED" layoutX="11.0" layoutY="27.0" onAction="#exportAction" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Exportar" />
                                        </children>
                                     </AnchorPane>
                                  </children>

@@ -2,14 +2,10 @@ package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.ExamBank;
 import GeneradorMiniexamenes.model.QuestionBank;
-import GeneradorMiniexamenes.model.Subject;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Spinner;
+import javafx.scene.layout.VBox;
 
 /**
  * Created by Elias Mera on 11/7/2016.
@@ -20,13 +16,9 @@ public class MainController {
     private Generate mGenerate;
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
-    private boolean bInicio = true;
-    private String sSelectedSubject = "";
-    private String sSelectedGroup = "";
-    @FXML JFXComboBox cbTema;
-    @FXML Spinner spCantidad;
-    @FXML JFXButton btnGenerate;
-    @FXML JFXTextField tfGrupo;
+
+    @FXML
+    VBox mainGenContainer;
 
     /**
      * Initializer of MainController
@@ -36,7 +28,7 @@ public class MainController {
         this.mQuestionBank = AppState.loadQuestionBank();
         this.mExamBank = AppState.loadExamBank();
         this.mExport = new Export();
-        this.mGenerate = new Generate();
+        this.mGenerate = new Generate(this);
     }
 
     /**
@@ -57,86 +49,21 @@ public class MainController {
     }
 
     /**
-     * method that returns the subject selected by the user
-     * @return selected Subject
-     */
-    private Subject findSubject(){
-        for(Subject s : mQuestionBank.getSubjects()) {
-            if (s.getSubjectName().equals(sSelectedSubject)) {
-                return s;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * The user clicked the generate button
-     * @param actionEvent
-     */
-    public void generateAction(ActionEvent actionEvent) {
-        // finds the subject
-        Subject subject = findSubject();
-        if (tfGrupo.getText() == null || tfGrupo.getText().equals("")) {
-            Alerts.displayError("Error", "Favor de ingresar un grupo");
-            return;
-        }
-
-        int iQuantity = Integer.parseInt(spCantidad.getValue().toString());
-        mExamBank = mGenerate.onClick(actionEvent, subject, iQuantity, tfGrupo.getText());
-        tfGrupo.setText("");
-        spCantidad.decrement(100);
-
-        // checks exams
-        /*
-        int iC = 1;
-        for(Exam e : mExamBank.getExams(subject.getSubjectName())){
-            System.out.println("Examen numero " + iC++);
-            System.out.println(e.getSubject());
-            System.out.println(e.getGroup());
-            for(Question q : e.getQuestions()){
-                System.out.println("Pregunta " + q.getQuestion());
-            }
-            System.out.println();
-            System.out.println();
-        }*/
-
-        // Saves the generated exam.
-        if(mExamBank != null) {
-            AppState.saveExamBank(mExamBank);
-        }
-    }
-
-    /**
-     * tabGenera
+     * generateTabSelected
      *
-     * Method that loads subjects every time the user clicks on tabGeneraExamen
-     * Disables Genera button if there are no subjects
+     * Callback for when the GenerateTab is selected by the user
      *
      * @param event
      */
-    public void tabGenera(Event event) {
-        // Checks if there is at least one topic
-        if(mQuestionBank.getSubjects().isEmpty()){
-            btnGenerate.setDisable(true);
-        }
-        else{
-            btnGenerate.setDisable(false);
-            // Loads subjects
-            for(Subject s : mQuestionBank.getSubjects()) {
-                if (!cbTema.getItems().contains(s.getSubjectName())) {
-                    cbTema.getItems().add(s.getSubjectName());
-                }
-            }
-            cbTema.getSelectionModel().selectFirst();
-            sSelectedSubject = cbTema.getValue().toString();
-        }
+    public void generateTabSelected(Event event) {
+        mGenerate.loadGenerateForm(mainGenContainer);
     }
 
-    /**
-     * Method that updates Subject
-     * @param actionEvent
-     */
-    public void cambioTema(ActionEvent actionEvent) {
-        sSelectedSubject = cbTema.getValue().toString();
+    public QuestionBank getQuestionBank() {
+        return mQuestionBank;
+    }
+
+    public ExamBank getExamBank() {
+        return mExamBank;
     }
 }

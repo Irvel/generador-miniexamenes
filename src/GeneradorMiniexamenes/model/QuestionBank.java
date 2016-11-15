@@ -27,4 +27,22 @@ public class QuestionBank {
         }
         mSubjects.add(mSubject);
     }
+
+    /**
+     * getSubjectByName
+     *
+     * Given the name of a Subject, returns the object instance that matches it.
+     * In case the name wasn't found, the method returns null.
+     *
+     * @param name The name of the which instance will be returned if found
+     * @return subject The subject instance with a matching name
+     */
+    public Subject getSubjectByName(String name) {
+        for (Subject subject : mSubjects) {
+            if (name.equals(subject.getSubjectName())) {
+                return subject;
+            }
+        }
+        return null;
+    }
 }

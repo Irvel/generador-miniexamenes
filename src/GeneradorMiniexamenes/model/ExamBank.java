@@ -1,9 +1,11 @@
 package GeneradorMiniexamenes.model;
 
+import GeneradorMiniexamenes.controllers.AppState;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Created by Irvel on 11/12/16.
@@ -16,17 +18,23 @@ public class ExamBank {
         mExams = exams;
     }
 
+    public ExamBank() {
+        mExams = new HashMap<>();
+    }
 
-    public HashMap<String, ArrayList<Exam>> getmExams() {
+    public HashMap<String, ArrayList<Exam>> getExams() {
         return mExams;
     }
 
-    public void setmExams(HashMap<String, ArrayList<Exam>> mExams) {
+    public void setExams(HashMap<String, ArrayList<Exam>> mExams) {
         this.mExams = mExams;
     }
 
-    public ExamBank() {
-        mExams = new HashMap<>();
+
+    public void appendExamBank(ExamBank examBank) {
+        this.mExams.putAll(examBank.getExams());
+        // Save the modified ExamBank to storage
+        AppState.saveExamBank(this);
     }
 
     public ArrayList<Exam> getExams(String subject) {
@@ -50,5 +58,9 @@ public class ExamBank {
         if (mExams.containsKey(subject)) {
             mExams.remove(subject);
         }
+    }
+
+    public Set<String> getSubjects() {
+        return mExams.keySet();
     }
 }

@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static GeneradorMiniexamenes.controllers.Alerts.displayInfo;
-
 /**
  * Randomly generates exams from the subjects and questions available in the
  * model.
@@ -118,7 +116,6 @@ public class Generate {
      */
     private void displayGeneratedExams(ExamBank generatedExamBank) {
         VBox mainGenContainer = (VBox) mGenerateContainer.getParent();
-        displayInfo("Examenes generados");
         // Remove container with the form for generating exams from the view
         mainGenContainer.getChildren().remove(mGenerateContainer);
         // TODO: Add table with the generated exams
@@ -236,7 +233,6 @@ public class Generate {
         }
         // Generate the LaTeX document of the exams and store in the member variable
         mLatexExams = ExamTemplate.makeLatexExams(examBank.getExams(subject.getSubjectName()));
-
         // Store the last generated subject for the filename when downloading the generated exams
         mLastGeneratedSubject = subject.getSubjectName();
         return examBank;
@@ -278,18 +274,20 @@ public class Generate {
 
         //Show save exams dialog
         File latexFile = fileChooser.showSaveDialog(currentStage);
-
-        if(latexFile != null){
-            try {
-                OutputStreamWriter outStream =
-                        new OutputStreamWriter(new FileOutputStream(latexFile), "UTF-8");
-
-                PrintWriter outWriter = new PrintWriter(outStream);
-                outWriter.print(mLatexExams);
-            }
-            catch (FileNotFoundException | UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        Writer latexOut = null;
+        try {
+            latexOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(latexFile),
+                                                            "UTF-8"));
+        }
+        catch (UnsupportedEncodingException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            latexOut.write(mLatexExams);
+            latexOut.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

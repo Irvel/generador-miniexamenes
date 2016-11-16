@@ -21,7 +21,7 @@ public class ExamTemplate {
     private static String getTitle(String course, String subject, String group) {
         return "   \\begin{center}\n" +
                 "      \\scshape \\large Miniexamen " + course + " \\\\ (" +
-                subject + ", Grupo " + group + ")\\vspace{-.3em}}\n" +
+                subject + ", Grupo " + group + ")\\vspace{-.3em}\n" +
                 "   \\end{center}\n" +
                 "   \\thispagestyle{empty}\n" +
                 "   \\noindent\n";
@@ -63,8 +63,15 @@ public class ExamTemplate {
 
     public static String makeLatexExams(ArrayList<Exam> exams) {
         String latexExams = mdocumentHeader;
+        int examNumber = 1;
         for (Exam exam : exams) {
-            latexExams += makeLatexExam(exam, "1") + "   \\newpage\n";
+            if (examNumber < exams.size()) {
+                latexExams += makeLatexExam(exam, Integer.toString(examNumber)) + "   \\newpage\n";
+            }
+            else {
+                latexExams += makeLatexExam(exam, Integer.toString(examNumber));
+            }
+            examNumber++;
         }
         return latexExams + "\\end{document}";
     }

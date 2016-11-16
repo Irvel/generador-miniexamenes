@@ -6,64 +6,65 @@ import java.util.ArrayList;
  * Created by Irvel on 11/13/16.
  */
 public class ExamTemplate {
-    private static final String mHeader =
+    private static final String mdocumentHeader =
             "\\documentclass[fleqn]{exam}\n" +
-            "\\usepackage[left=.5in, right=.5in, top=.2in, bottom=.5in]{geometry}\n" +
+            "\\usepackage[letter, left=.5in, right=.5in, top=.25in, " +
+            "bottom=.5in]{geometry}\n" +
             "\\usepackage{mathexam}\n" +
             "\\usepackage[utf8]{inputenc}\n" +
             "\\usepackage{amsmath}\n" +
             "\\usepackage{fancyhdr}\n" +
-            "\\fancyhf{}\n";
+            "\\fancyhf{}\n" +
+            "\\begin{document}\n" +
+            "   \\vspace*{-1.2cm}\n";
 
     private static String getTitle(String course, String subject, String group) {
-        return "\\ExamClass{Miniexamen " +
-                course +
-                " \\\\ (" +
-                subject +
-                ", Grupo " +
-                group +
-                ")}\n\\let\\ds\\displaystyle\n";
+        return "   \\begin{center}\n" +
+                "      \\scshape \\large Miniexamen " + course + " \\\\ (" +
+                subject + ", Grupo " + group + ")\\vspace{-.3em}}\n" +
+                "   \\end{center}\n" +
+                "   \\thispagestyle{empty}\n" +
+                "   \\noindent\n";
     }
 
     private static String getFirstSection(String examNumber) {
-        return  "\\begin{document}\n" +
-                "\\text Número de Examen: " + examNumber +
-                "\\hspace{75 mm}\n" +
-                "\\text Matrícula:\n" +
-                "\\makebox[1in]{\\hrulefill}\n" +
-                "\\text (No escribir nombre)\\\\\n" +
-                "\\textbf{\\underline{NOTA:}}\n" +
-                "\\text En las preguntas de opción múltiple, escribe en el cuadro la letra que " +
-                "corresponda a la opción seleccionada.\n";
+        return  "   \\text Número de Exámen: " + examNumber +
+                " \\hspace{75 mm}\n" +
+                "   \\text Matrícula:\n" +
+                "   \\makebox[1in]{\\hrulefill}\n" +
+                "   \\text (No escribir nombre)\\\\\n" +
+                "   \\textbf{\\underline{NOTA:}}\n" +
+                "   \\text En las preguntas de opción múltiple, escribe en el cuadro la letra que" +
+                " corresponda a la opción seleccionada.\n";
     }
 
     private static String getQuestions(ArrayList<Question> questions) {
-        String sQuestions = "\\begin{questions}\n";
+        String sQuestions = "   \\begin{questions}\n";
         for (Question q : questions) {
-            sQuestions += "\\question " + q.getQuestion() + ":";
-            sQuestions += "\\framebox(14,14){}\n";
-            sQuestions += "\\begin{parts}";
+            sQuestions += "      \\question " + q.getQuestion() + ":\n";
+            sQuestions += "      \\framebox(14,14){}\n";
+            sQuestions += "      \\begin{parts}\n";
             for (Answer a : q.getAnswers()) {
-                sQuestions += "\\part " + a.getAnswer() + "\n";
+                sQuestions += "         \\part " + a.getAnswer() + "\n";
             }
-            sQuestions += "\\end{parts}";
+            sQuestions += "      \\end{parts}\n";
         }
-        sQuestions += "\\end{questions}\n";
+        sQuestions += "   \\end{questions}\n";
         return sQuestions;
     }
 
-    public static String makeLatexExam(Exam exam) {
+    public static String makeLatexExam(Exam exam, String examNumber) {
         String title = getTitle("Teoría de la Computación", exam.getSubject(), exam.getGroup());
         // TODO: Add an exam number somewhere and remove this hardcoded thing
         String questions = getQuestions(exam.getQuestions());
-        return title + questions + "\n";
+        String firstSection = getFirstSection(examNumber);
+        return title + firstSection + questions;
     }
 
     public static String makeLatexExams(ArrayList<Exam> exams) {
-        String latexExams = mHeader;
-        String firstSection = getFirstSection("1");
+        String latexExams = mdocumentHeader;
         for (Exam exam : exams) {
-            latexExams += makeLatexExam(exam);
+            latexExams += makeLatexExam(exam, "1") + "   \\newpage\n";
         }
         return latexExams + "\\end{document}";
     }

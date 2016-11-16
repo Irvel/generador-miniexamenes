@@ -20,7 +20,10 @@
                    onAction="#downloadLatexAction"
                    styleClass="inputBtn"
                    text="Descargar examenes en formato LaTeX" />
-        <JFXButton fx:id="btnDownloadPdf" styleClass="inputBtn" text="Descargar examenes en formato PDF" />
+        <JFXButton fx:id="btnDownloadPdf"
+                   onAction="#downloadPdfAction"
+                   styleClass="inputBtn"
+                   text="Descargar examenes en formato PDF" />
     </children>
    <padding>
       <Insets left="30.0" right="30.0" />

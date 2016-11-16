@@ -15,9 +15,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * Randomly generates exams from the subjects and questions available in the
@@ -259,21 +262,24 @@ public class Generate {
     /**
      * downloadLatexAction
      *
-     * The user clicked the "download all exams in LaTeX" button
+     * The user clicked the "download all exams in LaTeX" button. Prompt a file save dialog and
+     * save the last generated exams in the LaTeX format.
      * @param actionEvent
      */
     public void downloadLatexAction(ActionEvent actionEvent) {
         Node source = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
         FileChooser fileChooser = new FileChooser();
-        //Set extension filter
+        // Set extension filter
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("TEX files (*.tex)", "*.tex"));
 
         fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + ".tex");
 
-        //Show save exams dialog
+        //TODO: Show an error when the program fails to write in that particular location
+        // Show the "save exams in LaTeX dialog"
         File latexFile = fileChooser.showSaveDialog(currentStage);
+        System.out.println(latexFile.getParent());
         Writer latexOut = null;
         try {
             latexOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(latexFile),
@@ -287,6 +293,77 @@ public class Generate {
             latexOut.close();
         }
         catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * downloadPdfAction
+     *
+     * The user clicked the "download all exams in PDF" button. Prompt a file save dialog and
+     * save the last generated exams in the PDF format by first saving the LaTeX file and then
+     * converting it to PDF with the external pdflatex tool.
+     * @param actionEvent
+     */
+    public void downloadPdfAction(ActionEvent actionEvent) {
+        Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        // Set extension filter
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
+
+        fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + ".pdf");
+
+        //TODO: Detect if the user is running Windows and do something different there (cry?)
+        //TODO: Show an error when the program fails to write in that particular location
+        //TODO: Show an error when pdflatex was not found
+        // Show the "save exams in Pdf dialog"
+        File latexFile = fileChooser.showSaveDialog(currentStage);
+        String targetDirectoryPath = latexFile.getParent();
+        String tempDirectoryPath = targetDirectoryPath +  File.separator + "generadorMiniTemp";
+        //TODO: Refactor this to use the other method that does almost the same thing as this
+        boolean couldCreateDirectory = (new File(tempDirectoryPath)).mkdir();
+        if (couldCreateDirectory) {
+            Writer latexOut = null;
+            try {
+                File latexTemp = new File(tempDirectoryPath + File.separator + "latexTemp.tex");
+                latexOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(latexTemp),
+                                                                     "UTF-8"));
+            }
+            catch (UnsupportedEncodingException | FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                latexOut.write(mLatexExams);
+                latexOut.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            convertToPdf(tempDirectoryPath, tempDirectoryPath + File.separator + "latexTemp.tex");
+        }
+    }
+
+    private void convertToPdf(String tempDir, String latexFilePath) {
+        Process p;
+        try {
+            ProcessBuilder pb = new ProcessBuilder("pdflatex",
+                                                   "-synctex=1",
+                                                   "-interaction=nonstopmode",
+                                                   latexFilePath);
+            pb.directory(new File(tempDir));
+
+            p = pb.start();
+            p.waitFor();
+            Files.move(new File(tempDir + File.separator + "latexTemp.pdf").toPath(),
+                       new File(tempDir + File.separator + ".."+ File.separator +"latexTemp.pdf")
+                               .toPath(),
+                                REPLACE_EXISTING);
+            // Must delete the inside files before
+            //Files.delete(new File(tempDir + File.separator + "latexTemp.pdf").toPath());
+            System.out.println("Hola mundo");
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }

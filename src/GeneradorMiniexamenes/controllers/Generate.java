@@ -1,20 +1,20 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.Exam;
-import GeneradorMiniexamenes.model.ExamBank;
-import GeneradorMiniexamenes.model.Question;
-import GeneradorMiniexamenes.model.Subject;
+import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -44,12 +44,15 @@ public class Generate {
     private HBox mGenerateContainer;
     private HBox mDownloadContainer;
     private boolean mFirstLoad;
+    private String mLatexExams;
+    private String mLastGeneratedSubject;
 
 
     public Generate(MainController parentController) {
         // Keep a reference to the main controller to get important shared variables
         mParentController = parentController;
         mFirstLoad = true;
+        mLatexExams = "";
     }
 
     /**
@@ -102,24 +105,6 @@ public class Generate {
         // Add the newly generated exams to the list of generated exams for this subject
         mParentController.getExamBank().appendExamBank(generatedExamBank);
         displayGeneratedExams(generatedExamBank);
-    }
-
-    /**
-     * backGenAction
-     *
-     * The user clicked the back button after having generated exams
-     * @param actionEvent
-     */
-    public void backGenAction(ActionEvent actionEvent) {
-        // Get a reference to the parent container to be able to add the Generate form to it
-        VBox parentContainer = (VBox) mDownloadContainer.getParent();
-
-        // Clean the container to re-initialize the Generate exams form view
-        parentContainer.getChildren().clear();
-
-        // Set this to true so that loadGenerateForm reloads the views from the fxml's
-        mFirstLoad = true;
-        loadGenerateForm(parentContainer);
     }
 
     /**
@@ -249,7 +234,63 @@ public class Generate {
             // Reuse the questions variable for another exam
             questions.clear();
         }
+        // Generate the LaTeX document of the exams and store in the member variable
+        mLatexExams = ExamTemplate.makeLatexExams(examBank.getExams(subject.getSubjectName()));
+
+        // Store the last generated subject for the filename when downloading the generated exams
+        mLastGeneratedSubject = subject.getSubjectName();
         return examBank;
+    }
+
+    /**
+     * backGenAction
+     *
+     * The user clicked the back button after having generated exams
+     * @param actionEvent
+     */
+    public void backGenAction(ActionEvent actionEvent) {
+        // Get a reference to the parent container to be able to add the Generate form to it
+        VBox parentContainer = (VBox) mDownloadContainer.getParent();
+
+        // Clean the container to re-initialize the Generate exams form view
+        parentContainer.getChildren().clear();
+
+        // Set this to true so that loadGenerateForm reloads the views from the fxml's
+        mFirstLoad = true;
+        loadGenerateForm(parentContainer);
+    }
+
+    /**
+     * downloadLatexAction
+     *
+     * The user clicked the "download all exams in LaTeX" button
+     * @param actionEvent
+     */
+    public void downloadLatexAction(ActionEvent actionEvent) {
+        Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        //Set extension filter
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("TEX files (*.tex)", "*.tex"));
+
+        fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + ".tex");
+
+        //Show save exams dialog
+        File latexFile = fileChooser.showSaveDialog(currentStage);
+
+        if(latexFile != null){
+            try {
+                OutputStreamWriter outStream =
+                        new OutputStreamWriter(new FileOutputStream(latexFile), "UTF-8");
+
+                PrintWriter outWriter = new PrintWriter(outStream);
+                outWriter.print(mLatexExams);
+            }
+            catch (FileNotFoundException | UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

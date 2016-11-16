@@ -16,7 +16,10 @@
             <Insets right="36.0" />
          </HBox.margin>
       </JFXButton>
-        <JFXButton fx:id="btnDownloadLatex" styleClass="inputBtn" text="Descargar examenes en formato LaTeX" />
+        <JFXButton fx:id="btnDownloadLatex"
+                   onAction="#downloadLatexAction"
+                   styleClass="inputBtn"
+                   text="Descargar examenes en formato LaTeX" />
         <JFXButton fx:id="btnDownloadPdf" styleClass="inputBtn" text="Descargar examenes en formato PDF" />
     </children>
    <padding>

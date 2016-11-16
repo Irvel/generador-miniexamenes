@@ -55,8 +55,17 @@ public class ExamTemplate {
     public static String makeLatexExam(Exam exam) {
         String title = getTitle("Teoría de la Computación", exam.getSubject(), exam.getGroup());
         // TODO: Add an exam number somewhere and remove this hardcoded thing
-        String firstSection = getFirstSection("1");
         String questions = getQuestions(exam.getQuestions());
-        return title + firstSection + questions;
+        return title + questions + "\n";
     }
+
+    public static String makeLatexExams(ArrayList<Exam> exams) {
+        String latexExams = mHeader;
+        String firstSection = getFirstSection("1");
+        for (Exam exam : exams) {
+            latexExams += makeLatexExam(exam);
+        }
+        return latexExams + "\\end{document}";
+    }
+
 }

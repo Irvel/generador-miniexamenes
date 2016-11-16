@@ -277,6 +277,7 @@ public class Generate {
         fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + ".tex");
 
         //TODO: Show an error when the program fails to write in that particular location
+        //TODO: Check if the user cancelled the file dialog and didn't select any file
         // Show the "save exams in LaTeX dialog"
         File latexFile = fileChooser.showSaveDialog(currentStage);
         System.out.println(latexFile.getParent());

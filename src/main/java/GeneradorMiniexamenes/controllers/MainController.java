@@ -1,10 +1,7 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.Exam;
-import GeneradorMiniexamenes.model.ExamBank;
-import GeneradorMiniexamenes.model.QuestionBank;
+import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXListView;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -85,7 +82,11 @@ public class MainController {
     @FXML
     JFXComboBox cbGrupoG;
     @FXML
-    JFXListView lvExamenes;
+    JFXComboBox cbExamenesG;
+    @FXML
+    JFXComboBox cbQuestionG;
+    @FXML
+    JFXComboBox cbAnswerG;
     public void gradeTabSelected(Event event) throws IOException {
 
         if(mExamBank.getExams().isEmpty()){
@@ -111,8 +112,10 @@ public class MainController {
      * @param actionEvent
      */
     public void selToGrade(ActionEvent actionEvent) {
-        cbGrupoG.getItems().removeAll();
-        lvExamenes.getItems().removeAll();
+        cbGrupoG.getItems().clear();
+        cbExamenesG.getItems().clear();
+        cbQuestionG.getItems().clear();
+        cbAnswerG.getItems().clear();
         cbGrupoG.getSelectionModel().selectFirst();
         String subject = cbTemaG.getValue().toString();
         ArrayList<Exam> exams = mExamBank.getExams(subject);
@@ -127,13 +130,53 @@ public class MainController {
      * @param actionEvent
      */
     public void selGroup(ActionEvent actionEvent) {
-        lvExamenes.getItems().removeAll();
+        cbExamenesG.getItems().clear();
+        cbQuestionG.getItems().clear();
+        cbAnswerG.getItems().clear();
         String subject = cbTemaG.getValue().toString();
         ArrayList<Exam> exams = mExamBank.getExams(subject);
-        for(Exam e : exams){
-            if(e.getGroup().equals(cbGrupoG.getValue().toString())){
-                // TODO use an identifier to add exams to the list
+        int iId = 1;
+        for (Exam e : exams) {
+            if (e.getGroup().equals(cbGrupoG.getValue().toString())) {
+                if (!cbExamenesG.getItems().contains(iId))
+                    cbExamenesG.getItems().add(iId++ + "");
             }
         }
+    }
+
+    public void selExam(ActionEvent actionEvent) {
+        cbQuestionG.getItems().clear();
+        cbAnswerG.getItems().clear();
+        String subject = cbTemaG.getValue().toString();
+        ArrayList<Exam> exams = mExamBank.getExams(subject);
+        Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
+        for(Question q : exam.getQuestions()) {
+            if (!cbQuestionG.getItems().contains(q.getQuestion()))
+                cbQuestionG.getItems().add(q.getQuestion());
+        }
+    }
+
+    public void selQuestion(ActionEvent actionEvent){
+        System.out.println("hola entro");
+        cbAnswerG.getItems().clear();
+        String subject = cbTemaG.getValue().toString();
+        System.out.println(subject);
+        String question = cbQuestionG.getValue().toString();
+        System.out.println(question);
+        ArrayList<Exam> exams = mExamBank.getExams(subject);
+        Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
+        System.out.println(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
+        for(Question q : exam.getQuestions()){
+            if(q.getQuestion().equals(cbQuestionG.getValue().toString())){
+                for(Answer a : q.getAnswers()){
+                    if(!cbAnswerG.getItems().contains(a.getAnswer())){
+                        cbAnswerG.getItems().add(a.getAnswer());
+                    }
+                }
+            }
+        }
+    }
+
+    public void selAnswer(ActionEvent actionEvent) {
     }
 }

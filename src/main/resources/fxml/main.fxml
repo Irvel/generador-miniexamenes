@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXComboBox?>
-<?import com.jfoenix.controls.JFXListView?>
-<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <VBox prefHeight="600.0" prefWidth="900.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.MainController">
   <children>
       <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
@@ -61,7 +52,7 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="120.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <JFXListView fx:id="lvExamenes" />
+                                    <JFXComboBox prefWidth="106.0" fx:id="cbExamenesG" onAction="#selExam" styleClass="inputLabel" VBox.vgrow="ALWAYS"/>
                                     <VBox alignment="CENTER" prefHeight="100.0" prefWidth="223.0">
                                        <children>
                                           <HBox alignment="TOP_CENTER" prefHeight="47.0" prefWidth="223.0" spacing="10.0" VBox.vgrow="ALWAYS">
@@ -74,9 +65,9 @@
                                              <children>
                                                 <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
                                                    <children>
-                                                      <Label prefWidth="106.0" styleClass="inputLabel" text="Pregunta #1:" VBox.vgrow="ALWAYS" />
+                                                      <JFXComboBox prefWidth="106.0" styleClass="inputLabel" fx:id="cbQuestionG" VBox.vgrow="ALWAYS" onAction="#selQuestion" />
                                                       <Label prefWidth="106.0" styleClass="inputLabel" text="Opción elegida:" />
-                                                      <JFXComboBox prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" />
+                                                      <JFXComboBox fx:id="cbAnswerG" prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" onAction="#selAnswer" />
                                                    </children>
                                                 </VBox>
                                                 <Label contentDisplay="CENTER" prefWidth="106.0" styleClass="inputLabel" text=".6" textAlignment="CENTER" HBox.hgrow="ALWAYS" />

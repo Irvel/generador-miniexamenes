@@ -1,12 +1,16 @@
 package GeneradorMiniexamenes.controllers;
 
+import GeneradorMiniexamenes.model.Exam;
 import GeneradorMiniexamenes.model.ExamBank;
 import GeneradorMiniexamenes.model.QuestionBank;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Handles data persistence on the application. Is responsible of restoring a previous state and
@@ -65,7 +69,8 @@ public class AppState {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             FileOutputStream outFile = new FileOutputStream(EXAMS_PATH, false);
-            objectMapper.writeValue(outFile, examBank);
+
+            objectMapper.writeValue(outFile, examBank.getExams());
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -83,9 +88,11 @@ public class AppState {
         ObjectMapper mapper = new ObjectMapper();
         try {
             File file = new File(EXAMS_PATH);
-            return mapper.readValue(file, ExamBank.class);
+            return new ExamBank(mapper.readValue(file, new TypeReference<HashMap<String,
+                    ArrayList<Exam>>>(){}));
         }
         catch (IOException e) {
+            e.printStackTrace();
             System.out.println("Creating an empty ExamBank");
         }
         return new ExamBank();

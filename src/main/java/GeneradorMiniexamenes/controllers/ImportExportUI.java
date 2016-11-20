@@ -28,9 +28,12 @@ public class ImportExportUI {
      * @param actionEvent
      */
     public void importAction(ActionEvent actionEvent) {
-        mParentController.setQuestionBank(
-                mImport.onClick(actionEvent,
-                                mParentController.getQuestionBank()));
+        QuestionBank imported = mImport.onClick(actionEvent, mParentController.getQuestionBank());
+        if (imported != null) {
+            mParentController.setQuestionBank(imported);
+            // Display the now an available subject to export
+            resetExportOptions();
+        }
     }
 
     /**

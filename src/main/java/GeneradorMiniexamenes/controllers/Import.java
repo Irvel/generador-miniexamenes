@@ -43,7 +43,7 @@ public class Import {
         File file = getFile(theStage);
         // The user selected the "cancel" option
         if (file == null) {
-            return questionBank;
+            return null;
         }
         // Checks the extension of the file selected (txt or json)
         String extension = "";
@@ -183,18 +183,6 @@ public class Import {
 
             // Creates the Subject
             this.mSubject = new Subject(blocks, fileName);
-
-            // prints (for debugging) comment when done
-            /*System.out.println("Subject " + mSubject.getSubjectName());
-            for (Block b : mSubject.getBlocks()) {
-                System.out.println(b.getSequenceNumber());
-                for (Question q : b.getQuestions()) {
-                    System.out.println(q.getQuestion());
-                    for (Answer a : q.getAnswers()) {
-                        System.out.println(a.getWeight() + " " + a.getAnswer());
-                    }
-                }
-            }*/
 
         } catch (FileNotFoundException e) {
             System.out.println("El archivo no pudo ser abierto");

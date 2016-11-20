@@ -2,9 +2,11 @@ package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.control.Spinner;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -87,15 +89,28 @@ public class MainController {
     JFXComboBox cbQuestionG;
     @FXML
     JFXComboBox cbAnswerG;
+    @FXML
+    JFXTextField tfCalif;
+    @FXML
+    Spinner spPond;
+    @FXML
+    JFXTextField tfPond;
+    private int[] arrPond;
     public void gradeTabSelected(Event event) throws IOException {
 
         if(mExamBank.getExams().isEmpty()){
             cbTemaG.setDisable(true);
             cbGrupoG.setDisable(true);
+            cbExamenesG.setDisable(true);
+            cbQuestionG.setDisable(true);
+            cbAnswerG.setDisable(true);
         }
         else{
             cbTemaG.setDisable(false);
             cbGrupoG.setDisable(false);
+            cbExamenesG.setDisable(false);
+            cbQuestionG.setDisable(false);
+            cbAnswerG.setDisable(false);
             cbTemaG.getSelectionModel().selectFirst();
             HashMap<String, ArrayList<Exam>> mExams = mExamBank.getExams();
             Iterator it = mExams.entrySet().iterator();
@@ -116,7 +131,7 @@ public class MainController {
         cbExamenesG.getItems().clear();
         cbQuestionG.getItems().clear();
         cbAnswerG.getItems().clear();
-        cbGrupoG.getSelectionModel().selectFirst();
+        tfCalif.setText("");
         String subject = cbTemaG.getValue().toString();
         ArrayList<Exam> exams = mExamBank.getExams(subject);
         for(Exam e : exams){
@@ -133,6 +148,7 @@ public class MainController {
         cbExamenesG.getItems().clear();
         cbQuestionG.getItems().clear();
         cbAnswerG.getItems().clear();
+        tfCalif.setText("");
         String subject = cbTemaG.getValue().toString();
         ArrayList<Exam> exams = mExamBank.getExams(subject);
         int iId = 1;
@@ -147,6 +163,7 @@ public class MainController {
     public void selExam(ActionEvent actionEvent) {
         cbQuestionG.getItems().clear();
         cbAnswerG.getItems().clear();
+        tfCalif.setText("");
         String subject = cbTemaG.getValue().toString();
         ArrayList<Exam> exams = mExamBank.getExams(subject);
         Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
@@ -154,18 +171,18 @@ public class MainController {
             if (!cbQuestionG.getItems().contains(q.getQuestion()))
                 cbQuestionG.getItems().add(q.getQuestion());
         }
+        System.out.println(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
+        arrPond = new int[exam.getQuestions().size()];
+        for(int i = 0; i < arrPond.length; i++)
+            arrPond[i] = 0;
     }
 
     public void selQuestion(ActionEvent actionEvent){
-        System.out.println("hola entro");
         cbAnswerG.getItems().clear();
         String subject = cbTemaG.getValue().toString();
-        System.out.println(subject);
         String question = cbQuestionG.getValue().toString();
-        System.out.println(question);
         ArrayList<Exam> exams = mExamBank.getExams(subject);
         Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
-        System.out.println(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
         for(Question q : exam.getQuestions()){
             if(q.getQuestion().equals(cbQuestionG.getValue().toString())){
                 for(Answer a : q.getAnswers()){
@@ -178,5 +195,26 @@ public class MainController {
     }
 
     public void selAnswer(ActionEvent actionEvent) {
+        String subject = cbTemaG.getValue().toString();
+        String question = cbQuestionG.getValue().toString();
+        ArrayList<Exam> exams = mExamBank.getExams(subject);
+        Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
+        int iC = 0;
+        for(Question q : exam.getQuestions()){
+            if(q.getQuestion().equals(cbQuestionG.getValue().toString())){
+                for(Answer a : q.getAnswers()){
+                    if(cbAnswerG.getValue() != null && a.getAnswer().equals(cbAnswerG.getValue().toString())) {
+                        arrPond[iC] = a.getWeight();
+                        tfPond.setText(a.getWeight()+"");
+                    }
+                }
+            }
+            iC++;
+        }
+
+        int iSum = 0;
+        for(int i = 0; i < exam.getQuestions().size(); i++)
+            iSum += arrPond[i];
+        tfCalif.setText((iSum*1.0/exam.getQuestions().size()) + "");
     }
 }

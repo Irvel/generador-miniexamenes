@@ -52,6 +52,7 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="120.0" VBox.vgrow="ALWAYS">
                                  <children>
+                                     <Label prefWidth="106.0" styleClass="inputLabel" text="Numero de examen" />
                                     <JFXComboBox prefWidth="106.0" fx:id="cbExamenesG" onAction="#selExam" styleClass="inputLabel" VBox.vgrow="ALWAYS"/>
                                     <VBox alignment="CENTER" prefHeight="100.0" prefWidth="223.0">
                                        <children>
@@ -59,6 +60,7 @@
                                              <children>
                                                 <Label prefWidth="106.0" styleClass="inputLabel" text="Pregunta" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
                                                 <Label prefWidth="106.0" styleClass="inputLabel" text="Ponderación" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                                 <JFXTextField fx:id="tfPond" editable="false"/>
                                              </children>
                                           </HBox>
                                           <HBox alignment="TOP_CENTER" prefHeight="231.0" prefWidth="223.0" spacing="10.0">
@@ -70,7 +72,6 @@
                                                       <JFXComboBox fx:id="cbAnswerG" prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" onAction="#selAnswer" />
                                                    </children>
                                                 </VBox>
-                                                <Label contentDisplay="CENTER" prefWidth="106.0" styleClass="inputLabel" text=".6" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
                                              </children>
                                           </HBox>
                                        </children>
@@ -79,7 +80,8 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <Label text="Calificación:" />
+                                    <Label text="Calificación: " fx:id="lbCalif"/>
+                                     <JFXTextField fx:id="tfCalif" editable="false"/>
                                  </children>
                               </HBox>
                            </children>

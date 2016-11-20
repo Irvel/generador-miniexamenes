@@ -21,11 +21,29 @@ public class QuestionBank {
         return mSubjects;
     }
 
-    public void addSubject(Subject mSubject){
+    /**
+     * addSubject
+     *
+     * Adds a new subject to the QuestionBank. If the subject exists, replace it.
+     * @param subject The subject to add
+     *
+     */
+    public void addSubject(Subject subject) {
         if (mSubjects == null) {
             mSubjects = new ArrayList<>();
         }
-        mSubjects.add(mSubject);
+        else {
+            // Remove a previous version of that subject
+            for (int i = 0; i < mSubjects.size(); i++) {
+                if (mSubjects.get(i)
+                             .getSubjectName()
+                             .equalsIgnoreCase(subject.getSubjectName())) {
+                    mSubjects.remove(i);
+                    break;
+                }
+            }
+        }
+        mSubjects.add(subject);
     }
 
     /**

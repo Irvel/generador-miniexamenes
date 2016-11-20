@@ -51,7 +51,7 @@ public class Import {
             extension = file.getName().substring(dotIdx + 1);
         }
         // Get the filename without the extension
-        name = file.getName().substring(0, dotIdx);
+        name = file.getName().substring(0, dotIdx).trim();
 
         if (extension.equals("txt")) {
             Subject imported = importFromText(file, name);
@@ -86,7 +86,8 @@ public class Import {
     /**
      * appendToModel
      *
-     * Appends the imported subject data into the working model
+     * Appends the imported subject data into the working model. If there already exists a
+     * subject with the given name, replace the existing subject with the imported one.
      *
      */
     private QuestionBank appendToModel(Subject imported,

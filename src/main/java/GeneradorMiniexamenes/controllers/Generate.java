@@ -410,6 +410,9 @@ public class Generate {
 
     private ArrayList<String> getConverterPaths(String systemName) {
         ArrayList<String> converterPaths = new ArrayList<String>();
+        // Add the naive command. This should work all the time but for some reason it
+        // occasionally doesn't.
+        converterPaths.add("pdflatex");
         if (systemName.toLowerCase().startsWith("mac")) {
             converterPaths.add(findConverter());
             converterPaths.addAll(Arrays.asList(MAC_CONVERTER_PATHS));

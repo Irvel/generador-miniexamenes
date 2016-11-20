@@ -29,20 +29,20 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Calificar Examenes">
+          <Tab onSelectionChanged="#gradeTabSelected" text="Calificar Examenes">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                          <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Calificar Examenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                                </Label>
-                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
+                        <VBox fx:id="mainGradeContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
                            <children>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="240.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
                                        <children>
                                           <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" />
-                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" />
+                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" fx:id="cbTemaG" onAction="#selToGrade"/>
                                        </children>
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -51,7 +51,7 @@
                                     <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
                                        <children>
                                           <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" />
-                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" />
+                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" fx:id="cbGrupoG" onAction="#selGroup"/>
                                        </children>
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -61,7 +61,7 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="120.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <JFXListView />
+                                    <JFXListView fx:id="lvExamenes" />
                                     <VBox alignment="CENTER" prefHeight="100.0" prefWidth="223.0">
                                        <children>
                                           <HBox alignment="TOP_CENTER" prefHeight="47.0" prefWidth="223.0" spacing="10.0" VBox.vgrow="ALWAYS">
@@ -97,7 +97,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-            <Tab text="Editar Preguntas">
+          <Tab text="Editar Preguntas">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -107,7 +107,7 @@
                   </AnchorPane>
               </content>
             </Tab>
-            <Tab text="Importar / Exportar" onSelectionChanged="#importTabSelected">
+          <Tab text="Importar / Exportar" onSelectionChanged="#importTabSelected">
               <content>
                   <AnchorPane
                           minHeight="0.0"

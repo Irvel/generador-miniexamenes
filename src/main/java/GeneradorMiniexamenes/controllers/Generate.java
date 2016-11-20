@@ -186,17 +186,17 @@ public class Generate {
      *
      * Loads the subjects from the QuestionBank instance in memory if there is at least one subject.
      * In case there are no subjects, prevent the exam generation by disabling the btnGenerate.
-     * @param mainGenContainer A reference to the main container to which the GenerateForm will
+     * @param mainContainer A reference to the main container to which the GenerateForm will
      *                         be added in
      *
      */
-    public void loadGenerateForm(VBox mainGenContainer) {
+    public void loadGenerateForm(VBox mainContainer) {
         // If this is the first time loading the view
         if (mFirstLoad) {
             mFirstLoad = false;
             inflateViews();
             // Display the generate exams form view to the user
-            mainGenContainer.getChildren().add(mGenerateContainer);
+            mainContainer.getChildren().add(mGenerateContainer);
         }
         // Update the form options from the loaded QuestionBank
         resetFormFields();

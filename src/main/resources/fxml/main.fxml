@@ -107,34 +107,26 @@
                   </AnchorPane>
               </content>
             </Tab>
-            <Tab text="Importar / Exportar">
+            <Tab text="Importar / Exportar" onSelectionChanged="#importTabSelected">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                         <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Importar / Exportar Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
-                               </Label>
-                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
-                           <children>
-                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="60.0" VBox.vgrow="NEVER">
-                                 <children>
-                                    <AnchorPane prefHeight="76.0" prefWidth="190.0">
-                                       <children>
-                                          <JFXButton fx:id="btnImport" buttonType="RAISED" layoutX="11.0" layoutY="27.0" onAction="#importAction" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Importar" />
-                                       </children>
-                                    </AnchorPane>
-                                    <AnchorPane prefHeight="76.0" prefWidth="190.0">
-                                       <children>
-                                          <JFXButton fx:id="btnExport" buttonType="RAISED" layoutX="11.0" layoutY="27.0" onAction="#exportAction" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Exportar" />
-                                       </children>
-                                    </AnchorPane>
-                                 </children>
-                                 <VBox.margin>
-                                    <Insets top="10.0" />
-                                 </VBox.margin>
-                              </HBox>
-                           </children>
-                        </VBox>
-                     </children>
+                  <AnchorPane
+                          minHeight="0.0"
+                          minWidth="0.0"
+                          prefHeight="180.0"
+                          prefWidth="200.0">
+                      <children>
+                          <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Importar / Exportar Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                          </Label>
+                          <VBox alignment="CENTER"
+                                prefHeight="200.0"
+                                prefWidth="100.0"
+                                AnchorPane.bottomAnchor="0.0"
+                                AnchorPane.leftAnchor="0.0"
+                                AnchorPane.rightAnchor="0.0"
+                                AnchorPane.topAnchor="90.0"
+                                fx:id="mainImExContainer">
+                          </VBox>
+                      </children>
                   </AnchorPane>
               </content>
             </Tab>

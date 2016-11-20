@@ -9,23 +9,20 @@
       spacing="30.0"
       xmlns="http://javafx.com/javafx/8.0.65"
       xmlns:fx="http://javafx.com/fxml/1">
-
-    <children>
-      <JFXButton fx:id="btnBack" onAction="#backGenAction" styleClass="inputBtn" text="Regresar">
-         <HBox.margin>
-            <Insets right="36.0" />
-         </HBox.margin>
-      </JFXButton>
-        <JFXButton fx:id="btnDownloadLatex"
-                   onAction="#downloadLatexAction"
-                   styleClass="inputBtn"
-                   text="Descargar examenes en formato LaTeX" />
-        <JFXButton fx:id="btnDownloadPdf"
-                   onAction="#downloadPdfAction"
-                   styleClass="inputBtn"
-                   text="Descargar examenes en formato PDF" />
-    </children>
-   <padding>
-      <Insets left="30.0" right="30.0" />
-   </padding>
+    <padding>
+        <Insets left="30.0" right="30.0"/>
+    </padding>
+    <JFXButton fx:id="btnBack" onAction="#backGenAction" styleClass="inputBtn" text="Regresar">
+        <HBox.margin>
+          <Insets right="36.0"/>
+        </HBox.margin>
+    </JFXButton>
+    <JFXButton fx:id="btnDownloadLatex"
+               onAction="#downloadLatexAction"
+               styleClass="inputBtn"
+               text="Descargar examenes en formato LaTeX"/>
+    <JFXButton fx:id="btnDownloadPdf"
+               onAction="#downloadPdfAction"
+               styleClass="inputBtn"
+               text="Descargar examenes en formato PDF"/>
 </HBox>

@@ -1,1 +1,17 @@
-language: java
+# Build setup for Travis CI
+
+language:
+  - java
+
+jdk:
+  - oraclejdk8
+
+os:
+  - linux
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer

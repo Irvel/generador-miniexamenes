@@ -52,17 +52,12 @@ public class Generate {
                                                   "/usr/texbin/pdftex", "/Library/TeX/texbin/pdftex",
                                                   "/Library/TeX/Root/bin/x86_64-darwin/pdflatex"};
 
-    private final String[] WIN_CONVERTER_PATHS = {"C:\\Program Files\\MikTeX 2.6\\pdflatex.exe",
-                                                  "C:\\Program Files\\MikTeX 2.6\\pdftex.exe",
-                                                  "C:\\Program Files\\MikTeX 2.7\\pdflatex.exe",
-                                                  "C:\\Program Files\\MikTeX 2.7\\pdftex.exe",
-                                                  "C:\\Program Files\\MikTeX 2.8\\pdflatex.exe",
-                                                  "C:\\Program Files\\MikTeX 2.8\\pdftex.exe",
-                                                  "C:\\Program Files\\MikTeX 2.9\\pdflatex.exe",
-                                                  "C:\\Program Files\\MikTeX 2.9\\pdftex.exe",
-                                                "/usr/texbin/pdflatex",
-                                                  "/usr/texbin/pdftex", "/Library/TeX/texbin/pdftex",
-                                                  "/Library/TeX/Root/bin/x86_64-darwin/pdflatex"};
+    private final String[] WIN_CONVERTER_PATHS = {"C:\\Program Files\\MiKTeX " +
+                                                          "2.8\\miktex\\bin\\x64\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "2.9\\miktex\\bin\\x64\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "3.0\\miktex\\bin\\x64\\pdflatex.exe"};
 
 
     public Generate(MainController parentController) {

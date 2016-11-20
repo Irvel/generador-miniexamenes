@@ -11,6 +11,7 @@ public class ExamTemplate {
      *
      * Imports the used LaTeX packages and sets the page layout, encoding, headers and removes
      * the extra vertical margin in the first page (vspace*{-1.2cm}).
+     * TODO: Properly escape user-entered LaTeX formulas
      */
     private static final String mdocumentHeader =
             "\\documentclass[fleqn]{exam}\n" +
@@ -77,9 +78,12 @@ public class ExamTemplate {
         // Open a new Questions section
         String sQuestions = "   \\begin{questions}\n";
         for (Question q : questions) {
-            sQuestions += "      \\question " + q.getQuestion() + ":\n";
+            // Add the question header
+            sQuestions += "      \\question ";
             // Add a box so that the student can fill in the answer
-            sQuestions += "      \\framebox(14,14){}\n";
+            sQuestions += "      \\framebox(14,14){} ";
+            // Add the actual question text
+            sQuestions +=  q.getQuestion() + ":\n";
             // Open the multiple options section
             sQuestions += "      \\begin{parts}\n";
             for (Answer a : q.getAnswers()) {

@@ -26,8 +26,6 @@ import static GeneradorMiniexamenes.controllers.Alerts.displayInfo;
  * format from the menu
  */
 public class Import {
-    private Subject mSubject;
-
     /**
      * generateExams
      *
@@ -56,23 +54,12 @@ public class Import {
         name = file.getName().substring(0, dotIdx);
 
         if (extension.equals("txt")) {
-            importFromText(file, name);
-            return appendToModel(questionBank, name);
+            Subject imported = importFromText(file, name);
+            return appendToModel(imported, questionBank, name);
         }
         else {
-            QuestionBank imported = importFromJson(file);
-            if (imported == null) {
-                // A question bank couldn't be imported from a .json flie. Do not discard the
-                // loaded model.
-                displayError("Error al importar",
-                             "No fue posible importar el banco de preguntas del archivo " +
-                                     "seleccionado. El programa mantendrá las preguntas " +
-                                     "existentes.");
-                return questionBank;
-            }
-            displayInfo("El banco de preguntas actual ha sido reemplazado con el archivo" +
-                                         " importado.");
-            return imported;
+            Subject imported = importFromJson(file);
+            return appendToModel(imported, questionBank, name);
         }
     }
 
@@ -102,11 +89,13 @@ public class Import {
      * Appends the imported subject data into the working model
      *
      */
-    private QuestionBank appendToModel(QuestionBank questionBank, String filename) {
-        if (questionBank == null) {
-            questionBank = new QuestionBank();
-        }
-        if (mSubject == null) {
+    private QuestionBank appendToModel(Subject imported,
+                                       QuestionBank questionBank,
+                                       String filename) {
+        if (imported == null) {
+            if (questionBank == null) {
+                questionBank = new QuestionBank();
+            }
             displayError("Error al importar",
                          "No fue posible importar el tema del archivo seleccionado. El " +
                                            "banco de preguntas actual permanecerá sin cambios");
@@ -114,8 +103,7 @@ public class Import {
         else {
             displayInfo("Se ha agregado el tema " + filename + " al banco de " +
                                           "preguntas.");
-            questionBank.addSubject(mSubject);
-            mSubject = null; // Garbage Collector come to me
+            questionBank.addSubject(imported);
         }
         return questionBank;
     }
@@ -128,7 +116,7 @@ public class Import {
      *
      * @param file Contains questions from one miniexam subject
      */
-    private void importFromText(File file, String fileName) {
+    private Subject importFromText(File file, String fileName) {
         // line and number of stars in a line
         String line;
         String questionName = "";
@@ -167,13 +155,13 @@ public class Import {
                     questionName = in.nextLine();
                 }
 
-                else{
+                else {
                     iWeight = Integer.parseInt(line);
                     answer = in.nextLine();
                     answers.add(new Answer(answer, iWeight));
                 }
             }
-            // Checks if there is info needed to add
+            // Checks if there is info needed to be added
             if (!answers.isEmpty()) {
                 questions.add(new Question(new ArrayList<>(answers), questionName));
             }
@@ -182,11 +170,12 @@ public class Import {
             }
 
             // Creates the Subject
-            this.mSubject = new Subject(blocks, fileName);
+            return new Subject(blocks, fileName);
 
         } catch (FileNotFoundException e) {
             System.out.println("El archivo no pudo ser abierto");
         }
+        return null;
     }
 
     /**
@@ -196,10 +185,10 @@ public class Import {
      *
      * @param file The json file to import
      */
-    private QuestionBank importFromJson(File file){
+    private Subject importFromJson(File file){
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(file, QuestionBank.class);
+            return mapper.readValue(file, Subject.class);
         }
         catch (IOException e) {
             e.printStackTrace();

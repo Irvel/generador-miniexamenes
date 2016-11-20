@@ -118,12 +118,10 @@
                           <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Importar / Exportar Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                           </Label>
                           <VBox alignment="CENTER"
-                                prefHeight="200.0"
-                                prefWidth="100.0"
                                 AnchorPane.bottomAnchor="0.0"
                                 AnchorPane.leftAnchor="0.0"
                                 AnchorPane.rightAnchor="0.0"
-                                AnchorPane.topAnchor="90.0"
+                                AnchorPane.topAnchor="40.0"
                                 fx:id="mainImExContainer">
                           </VBox>
                       </children>

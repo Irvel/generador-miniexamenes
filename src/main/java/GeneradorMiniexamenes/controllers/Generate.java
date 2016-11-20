@@ -25,7 +25,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 /**
  * Randomly generates exams from the subjects and questions available in the
  * model.
- * TODO: ADD A BACK BUTTON THAT RESETS THE WHOLE THING
  */
 public class Generate {
     private MainController mParentController;
@@ -140,9 +139,11 @@ public class Generate {
             // Checks if there is at least one subject in the QuestionBank
             if (mParentController.getQuestionBank().getSubjects().isEmpty()) {
                 btnGenerate.setDisable(true);
+                cbTema.setDisable(true);
             }
             else {
                 btnGenerate.setDisable(false);
+                cbTema.setDisable(false);
                 // Load each subject name from the QuestionBank into the combo box
                 mParentController.getQuestionBank()
                                  .getSubjects()

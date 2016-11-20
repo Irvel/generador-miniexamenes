@@ -1,6 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.QuestionBank;
+import GeneradorMiniexamenes.model.Subject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.event.ActionEvent;
@@ -12,12 +12,11 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Saves the current model to a .json file
- * TODO(Irvel): Clarify if each exported .json file should contain a single or multiple subjects
+ * Saves a given Subject to a .json file
  */
 public class Export {
 
-    public void saveExternalJson(QuestionBank questionBank, Stage currentStage) throws IOException {
+    public void saveExternalJson(Subject subject, Stage currentStage) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         // Indent output JSON
@@ -27,21 +26,21 @@ public class Export {
         //Set extension filter
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"));
-        fileChooser.setInitialFileName("Banco de preguntas.json");
+        fileChooser.setInitialFileName(subject.getSubjectName() + ".json");
 
         //Show save file dialog
         File file = fileChooser.showSaveDialog(currentStage);
 
         if(file != null){
-            objectMapper.writeValue(file, questionBank);
+            objectMapper.writeValue(file, subject);
         }
     }
 
-    public void onClick(ActionEvent actionEvent, QuestionBank questionBank) {
+    public void onClick(ActionEvent actionEvent, Subject subject) {
         Node source = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
         try {
-            saveExternalJson(questionBank, currentStage);
+            saveExternalJson(subject, currentStage);
         }
         catch (IOException e) {
             e.printStackTrace();

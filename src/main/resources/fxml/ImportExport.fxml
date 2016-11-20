@@ -1,30 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<?import com.jfoenix.controls.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="importExportContainer"
-      alignment="CENTER"
-      prefHeight="100.0"
-      prefWidth="200.0"
-      spacing="60.0"
-      VBox.vgrow="NEVER"
-      xmlns="http://javafx.com/javafx/8.0.65"
-      xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:id="importExportContainer" alignment="CENTER" prefHeight="111.0" spacing="10.0" VBox.vgrow="NEVER" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
     <VBox.margin>
-        <Insets top="10.0"/>
+        <Insets top="10.0" />
     </VBox.margin>
-    <AnchorPane prefHeight="76.0" prefWidth="190.0">
-        <JFXButton fx:id="btnImport" buttonType="RAISED" layoutX="11.0" layoutY="27.0"
-                   onAction="#importAction" prefHeight="27.0" prefWidth="179.0"
-                   styleClass="inputBtn" text="Importar"/>
-    </AnchorPane>
-    <AnchorPane prefHeight="76.0" prefWidth="190.0">
-        <JFXButton fx:id="btnExport" buttonType="RAISED" layoutX="11.0" layoutY="27.0"
-                   onAction="#exportAction" prefHeight="27.0" prefWidth="179.0"
-                   styleClass="inputBtn" text="Exportar"/>
-    </AnchorPane>
+   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+      <children>
+           <JFXButton fx:id="btnImport" buttonType="RAISED" onAction="#importAction" prefHeight="27.0" prefWidth="180.0" styleClass="inputBtn" text="Importar" />
+      </children>
+   </VBox>
+   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" HBox.hgrow="ALWAYS">
+      <children>
+         <Label prefWidth="180.0" styleClass="inputLabel" text="Tema:">
+            <VBox.margin>
+               <Insets top="20.0" />
+            </VBox.margin>
+         </Label>
+         <JFXComboBox fx:id="cbTema" prefHeight="27.0" prefWidth="180.0" />
+           <JFXButton fx:id="btnExport" buttonType="RAISED" onAction="#exportAction" prefHeight="27.0" prefWidth="180.0" styleClass="inputBtn" text="Exportar">
+            <VBox.margin>
+               <Insets bottom="20.0" />
+            </VBox.margin>
+         </JFXButton>
+      </children>
+   </VBox>
 </HBox>

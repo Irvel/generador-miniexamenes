@@ -29,6 +29,7 @@ public class AppState {
      * @return The question bank stored inside the Application
      */
     public static QuestionBank loadQuestionBank() {
+        checkDataExists();
         ObjectMapper mapper = new ObjectMapper();
         try {
             File file = new File(QUESTIONS_PATH);
@@ -48,10 +49,12 @@ public class AppState {
      * @param questionBank The question bank to be saved
      */
     public static void saveQuestionBank(QuestionBank questionBank) {
+        checkDataExists();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             FileOutputStream outFile = new FileOutputStream(QUESTIONS_PATH, false);
             objectMapper.writeValue(outFile, questionBank);
+            outFile.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -66,10 +69,12 @@ public class AppState {
      * @param examBank The exam bank to be saved
      */
     public static void saveExamBank(ExamBank examBank) {
+        checkDataExists();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             FileOutputStream outFile = new FileOutputStream(EXAMS_PATH, false);
             objectMapper.writeValue(outFile, examBank.getExams());
+            outFile.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -84,6 +89,7 @@ public class AppState {
      * @return The previously generated exams
      */
     public static ExamBank loadExamBank() {
+        checkDataExists();
         ObjectMapper mapper = new ObjectMapper();
         try {
             File file = new File(EXAMS_PATH);
@@ -91,9 +97,22 @@ public class AppState {
                     ArrayList<Exam>>>(){}));
         }
         catch (IOException e) {
-            e.printStackTrace();
             System.out.println("Creating an empty ExamBank");
         }
         return new ExamBank();
+    }
+
+    /**
+     * checkDataExists
+     *
+     * Check if the data directory exists. If it doesn't, create it.
+     *
+     */
+    private static void checkDataExists() {
+        File dataPath = new File("data");
+        if (dataPath.exists()) {
+            return;
+        }
+        dataPath.mkdir();
     }
 }

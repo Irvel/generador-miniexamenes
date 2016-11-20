@@ -20,6 +20,12 @@ jar {
     }
 }
 
+shadowJar {
+    baseName = 'Generador de Miniexamenes'
+    classifier = null
+    version = version
+}
+
 repositories {
     mavenCentral()
 }

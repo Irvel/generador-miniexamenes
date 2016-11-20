@@ -15,13 +15,11 @@ public class ExamTemplate {
      */
     private static final String mdocumentHeader =
             "\\documentclass[fleqn]{exam}\n" +
-            "\\usepackage[letter, left=.5in, right=.5in, top=.25in, " +
+            "\\usepackage[letterpaper, left=.5in, right=.5in, top=.25in, " +
             "bottom=.5in]{geometry}\n" +
             "\\usepackage{mathexam}\n" +
             "\\usepackage[utf8]{inputenc}\n" +
             "\\usepackage{amsmath}\n" +
-            "\\usepackage{fancyhdr}\n" +
-            "\\fancyhf{}\n" +
             "\\begin{document}\n" +
             "   \\vspace*{-1.2cm}\n";
 

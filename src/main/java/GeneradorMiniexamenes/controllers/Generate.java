@@ -47,9 +47,9 @@ public class Generate {
     private boolean mFirstLoad;
     private String mLatexExams;
     private String mLastGeneratedSubject;
+    private String mLastGeneratedGroup;
 
     private final String[] MAC_CONVERTER_PATHS = {"/Library/TeX/texbin/pdflatex", "/usr/texbin/pdflatex",
-                                                  "/usr/texbin/pdftex", "/Library/TeX/texbin/pdftex",
                                                   "/Library/TeX/Root/bin/x86_64-darwin/pdflatex"};
 
     private final String[] WIN_CONVERTER_PATHS = {"C:\\Program Files\\MiKTeX " +
@@ -112,7 +112,7 @@ public class Generate {
         int examQuantity = Integer.parseInt(spCantidad.getValue().toString());
         ExamBank generatedExamBank = generateExams(subject,
                                                    examQuantity,
-                                                   tfGrupo.getText());
+                                                   tfGrupo.getText().trim());
 
         // Add the newly generated exams to the list of generated exams for this subject
         mParentController.getExamBank().appendExamBank(generatedExamBank);
@@ -226,7 +226,7 @@ public class Generate {
      */
     public ExamBank generateExams(Subject subject,
                                   int amount,
-                                  String group){
+                                  String group) {
         ArrayList<Question> questions = new ArrayList<>();
         Exam exam;
         ExamBank examBank = new ExamBank();
@@ -249,8 +249,10 @@ public class Generate {
         }
         // Generate the LaTeX document of the exams and store in the member variable
         mLatexExams = ExamTemplate.makeLatexExams(examBank.getExams(subject.getSubjectName()));
-        // Store the last generated subject for the filename when downloading the generated exams
+        // Store the last generated subject and group to be used in the filename when downloading
+        // the generated exams
         mLastGeneratedSubject = subject.getSubjectName();
+        mLastGeneratedGroup = group;
         return examBank;
     }
 
@@ -287,7 +289,8 @@ public class Generate {
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("TEX files (*.tex)", "*.tex"));
 
-        fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + ".tex");
+        fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + " - " +
+                                               mLastGeneratedGroup + ".tex");
 
         // Show the "save exams in LaTeX dialog"
         File latexFile = fileChooser.showSaveDialog(currentStage);
@@ -327,7 +330,8 @@ public class Generate {
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
 
-        fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + ".pdf");
+        fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + " - " +
+                                               mLastGeneratedGroup + ".pdf");
 
         // Show the "save exams in Pdf dialog"
         File selectedFile = fileChooser.showSaveDialog(currentStage);
@@ -382,8 +386,7 @@ public class Generate {
             }
             File tempDir = new File(tempDirPath);
             ProcessBuilder pb = new ProcessBuilder(converterPath,
-                                                   "-synctex=1",
-                                                   "-interaction=nonstopmode",
+                                                   "-interaction=batchmode",
                                                    latexFilePath);
             pb.directory(tempDir);
             converter = pb.start();
@@ -410,7 +413,7 @@ public class Generate {
 
     private ArrayList<String> getConverterPaths(String systemName) {
         ArrayList<String> converterPaths = new ArrayList<String>();
-        // Add the naive command. This should work all the time but for some reason it
+        // Add the naive pdflatex command. This should work all the time but for some reason it
         // occasionally doesn't.
         converterPaths.add("pdflatex");
         if (systemName.toLowerCase().startsWith("mac")) {
@@ -474,7 +477,7 @@ public class Generate {
             }
         }
         Alerts.displayError("Error: pdflatex no encontrado", "El programa pdflatex no fue " +
-                "encontrado. Favor de instalar pdflatex o pdftex para habilitar la exportación " +
+                "encontrado. Favor de instalar pdflatex para habilitar la exportación " +
                 "directa a PDF.");
         return null;
     }
@@ -486,22 +489,14 @@ public class Generate {
         for (int i = 1; i < 18; i++) {
             paths.add("\"C:\\\\Program Files\\\\MikTeX 2." + Integer.toString(i) +
                               "\"\\\\pdflatex.exe\",");
-            paths.add("\"C:\\\\Program Files\\\\MikTeX 2." + Integer.toString(i) +
-                              "\"\\\\pdftex.exe\",");
             paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 2." + Integer.toString(i) +
                               "\"\\\\pdflatex.exe\",");
-            paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 2." + Integer.toString(i) +
-                              "\"\\\\pdftex.exe\",");
         }
         for (int i = 0; i < 10; i++) {
             paths.add("\"C:\\\\Program Files\\\\MikTeX 3." + Integer.toString(i) +
                               "\"\\\\pdflatex.exe\",");
-            paths.add("\"C:\\\\Program Files\\\\MikTeX 3." + Integer.toString(i) +
-                              "\"\\\\pdftex.exe\",");
             paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 3." + Integer.toString(i) +
                               "\"\\\\pdflatex.exe\",");
-            paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 3." + Integer.toString(i) +
-                              "\"\\\\pdftex.exe\",");
         }
         return paths;
     }

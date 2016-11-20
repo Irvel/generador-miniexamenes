@@ -102,6 +102,8 @@ public class Import {
                                            "banco de preguntas actual permanecerá sin cambios");
         }
         else {
+            // Ensure that the name of the imported subject is the same as it's containing filename
+            imported.setSubjectName(filename);
             displayInfo("Se ha agregado el tema " + filename + " al banco de " +
                                           "preguntas.");
             questionBank.addSubject(imported);
@@ -186,7 +188,7 @@ public class Import {
      *
      * @param file The json file to import
      */
-    private Subject importFromJson(File file){
+    private Subject importFromJson(File file) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(file, Subject.class);

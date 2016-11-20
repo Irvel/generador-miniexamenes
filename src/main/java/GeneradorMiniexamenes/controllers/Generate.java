@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,22 @@ public class Generate {
     private boolean mFirstLoad;
     private String mLatexExams;
     private String mLastGeneratedSubject;
+
+    private final String[] MAC_CONVERTER_PATHS = {"/Library/TeX/texbin/pdflatex", "/usr/texbin/pdflatex",
+                                                  "/usr/texbin/pdftex", "/Library/TeX/texbin/pdftex",
+                                                  "/Library/TeX/Root/bin/x86_64-darwin/pdflatex"};
+
+    private final String[] WIN_CONVERTER_PATHS = {"C:\\Program Files\\MikTeX 2.6\\pdflatex.exe",
+                                                  "C:\\Program Files\\MikTeX 2.6\\pdftex.exe",
+                                                  "C:\\Program Files\\MikTeX 2.7\\pdflatex.exe",
+                                                  "C:\\Program Files\\MikTeX 2.7\\pdftex.exe",
+                                                  "C:\\Program Files\\MikTeX 2.8\\pdflatex.exe",
+                                                  "C:\\Program Files\\MikTeX 2.8\\pdftex.exe",
+                                                  "C:\\Program Files\\MikTeX 2.9\\pdflatex.exe",
+                                                  "C:\\Program Files\\MikTeX 2.9\\pdftex.exe",
+                                                "/usr/texbin/pdflatex",
+                                                  "/usr/texbin/pdftex", "/Library/TeX/texbin/pdftex",
+                                                  "/Library/TeX/Root/bin/x86_64-darwin/pdflatex"};
 
 
     public Generate(MainController parentController) {
@@ -277,26 +294,26 @@ public class Generate {
 
         fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + ".tex");
 
-        //TODO: Show an error when the program fails to write in that particular location
-        //TODO: Check if the user cancelled the file dialog and didn't select any file
         // Show the "save exams in LaTeX dialog"
         File latexFile = fileChooser.showSaveDialog(currentStage);
-        System.out.println(latexFile.getParent());
-        Writer latexOut = null;
+
+        // The user canceled the save dialog, don't do anything
+        if (latexFile == null) {
+            return;
+        }
+
         try {
-            latexOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(latexFile),
+            Writer latexOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream
+                                                                                (latexFile),
                                                             "UTF-8"));
-        }
-        catch (UnsupportedEncodingException | FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
             latexOut.write(mLatexExams);
             latexOut.close();
         }
         catch (IOException e) {
             e.printStackTrace();
+            Alerts.displayError("Error", "No fue posible escribir en la ruta especificada.");
         }
+
     }
 
     /**
@@ -317,13 +334,20 @@ public class Generate {
 
         fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + ".pdf");
 
-        //TODO: Detect if the user is running Windows and do something different there (cry?)
-        //TODO: Show an error when the program fails to write in that particular location
-        //TODO: Show an error when pdflatex was not found
         // Show the "save exams in Pdf dialog"
-        File latexFile = fileChooser.showSaveDialog(currentStage);
-        String targetDirectoryPath = latexFile.getParent();
+        File selectedFile = fileChooser.showSaveDialog(currentStage);
+
+        // The user canceled the save dialog, don't do anything
+        if (selectedFile == null) {
+            return;
+        }
+        String targetDirectoryPath = selectedFile.getParent();
         String tempDirectoryPath = targetDirectoryPath +  File.separator + "generadorMiniTemp";
+        // Delete previous temp dir if it still exists
+        File tempDir  = new File(tempDirectoryPath);
+        if (tempDir.exists()) {
+            removeDirectory(tempDir);
+        }
         //TODO: Refactor this to use the other method that does almost the same thing as this
         boolean couldCreateDirectory = (new File(tempDirectoryPath)).mkdir();
         if (couldCreateDirectory) {
@@ -332,42 +356,155 @@ public class Generate {
                 File latexTemp = new File(tempDirectoryPath + File.separator + "latexTemp.tex");
                 latexOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(latexTemp),
                                                                      "UTF-8"));
+                try {
+                    latexOut.write(mLatexExams);
+                    latexOut.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                    Alerts.displayError("Error", "No fue posible escribir en la ruta especificada.");
+                }
+                convertToPdf(tempDirectoryPath,
+                             tempDirectoryPath + File.separator + "latexTemp.tex",
+                             selectedFile.getName());
             }
             catch (UnsupportedEncodingException | FileNotFoundException e) {
                 e.printStackTrace();
+                Alerts.displayError("Error", "No fue posible escribir en la ruta especificada.");
             }
-            try {
-                latexOut.write(mLatexExams);
-                latexOut.close();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            convertToPdf(tempDirectoryPath, tempDirectoryPath + File.separator + "latexTemp.tex");
         }
     }
 
-    private void convertToPdf(String tempDir, String latexFilePath) {
-        Process p;
+    private void convertToPdf(String tempDirPath, String latexFilePath, String pdfName) {
+        // Try to get a list of possible paths for the pdflatex converter based on the host OS name
+        ArrayList<String> converterPaths = getConverterPaths(System.getProperty("os.name"));
+        Process converter;
         try {
-            ProcessBuilder pb = new ProcessBuilder("pdflatex",
+            // Check which of the converter paths are actually the pdflatex executable
+            final String converterPath = getPdflatexPath(converterPaths);
+            if (converterPath == null) {
+                return;
+            }
+            File tempDir = new File(tempDirPath);
+            ProcessBuilder pb = new ProcessBuilder(converterPath,
                                                    "-synctex=1",
                                                    "-interaction=nonstopmode",
                                                    latexFilePath);
-            pb.directory(new File(tempDir));
+            pb.directory(tempDir);
+            converter = pb.start();
+            converter.waitFor();
+            Files.move(new File(tempDirPath + File.separator + "latexTemp.pdf").toPath(),
+                       new File(tempDirPath + File.separator + ".."+ File.separator + pdfName)
+                               .toPath(), REPLACE_EXISTING);
+            // Cleanup temporal files
+            removeDirectory(tempDir);
 
-            p = pb.start();
-            p.waitFor();
-            Files.move(new File(tempDir + File.separator + "latexTemp.pdf").toPath(),
-                       new File(tempDir + File.separator + ".."+ File.separator +"latexTemp.pdf")
-                               .toPath(),
-                                REPLACE_EXISTING);
-            // Must delete the inside files before
-            //Files.delete(new File(tempDir + File.separator + "latexTemp.pdf").toPath());
-            System.out.println("Hola mundo");
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            Alerts.displayError("Error", "No fue posible exportar los examenes en formato PDF. " +
+                    "Verifique que tenga una instalación funcional de LaTeX");
         }
     }
 
+    private void removeDirectory(File tempDir) {
+        for (File c : tempDir.listFiles()) {
+            c.delete();
+        }
+        tempDir.delete();
+    }
+
+    private ArrayList<String> getConverterPaths(String systemName) {
+        ArrayList<String> converterPaths = new ArrayList<String>();
+        if (systemName.toLowerCase().startsWith("mac")) {
+            converterPaths.add(findConverter());
+            converterPaths.addAll(Arrays.asList(MAC_CONVERTER_PATHS));
+        }
+        else if (systemName.toLowerCase().startsWith("win")) {
+            converterPaths.addAll(Arrays.asList(WIN_CONVERTER_PATHS));
+            converterPaths.addAll(getMikTexPaths());
+        }
+        else {
+            // The OS is linux or something else
+            converterPaths.add(findConverter());
+        }
+        return converterPaths;
+    }
+
+    /**
+     * findConverter
+     *
+     * Attempt to find the location of pdflatex with the "which" command in UNIX based operating
+     * systems. This will fail if the path is not configured properly in the target system.
+     * @return The absolute path to the pdflatex executable
+     *
+     */
+    private String findConverter() {
+        // Calling just "which" doesn't work for some reason. Using the whole path kind of
+        // defeats the whole purpose of trying to use which to find pdflatex.
+        ProcessBuilder builder = new ProcessBuilder("/usr/bin/which pdflatex");
+        builder.redirectErrorStream(true);
+        try {
+            Process process = builder.start();
+            InputStream is = process.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            String path = reader.readLine();
+            if (path != null) {
+                return path;
+            }
+        }
+        catch (IOException e) {
+            System.out.println("Trying to run \"which\" failed. Falling back to hardcoded " +
+                                       "paths...");
+        }
+        return "";
+    }
+
+    /**
+     * getPdflatexPath
+     *
+     * Test if any of the provided paths is the actual converter executable. If none is a valid
+     * path, then return null.
+     * @return The absolute path to an existing pdflatex executable
+     *
+     */
+    private String getPdflatexPath(ArrayList<String> paths) {
+        for (String currentPath : paths) {
+            File converterPath = new File(currentPath);
+            if (converterPath.exists()) {
+                return currentPath;
+            }
+        }
+        Alerts.displayError("Error: pdflatex no encontrado", "El programa pdflatex no fue " +
+                "encontrado. Favor de instalar pdflatex o pdftex para habilitar la exportación " +
+                "directa a PDF.");
+        return null;
+    }
+
+    // TODO: Remove this ugly hack
+    private ArrayList<String> getMikTexPaths() {
+        ArrayList<String> paths = new ArrayList<>();
+        // Poor attempt at future-proofing
+        for (int i = 1; i < 18; i++) {
+            paths.add("\"C:\\\\Program Files\\\\MikTeX 2." + Integer.toString(i) +
+                              "\"\\\\pdflatex.exe\",");
+            paths.add("\"C:\\\\Program Files\\\\MikTeX 2." + Integer.toString(i) +
+                              "\"\\\\pdftex.exe\",");
+            paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 2." + Integer.toString(i) +
+                              "\"\\\\pdflatex.exe\",");
+            paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 2." + Integer.toString(i) +
+                              "\"\\\\pdftex.exe\",");
+        }
+        for (int i = 0; i < 10; i++) {
+            paths.add("\"C:\\\\Program Files\\\\MikTeX 3." + Integer.toString(i) +
+                              "\"\\\\pdflatex.exe\",");
+            paths.add("\"C:\\\\Program Files\\\\MikTeX 3." + Integer.toString(i) +
+                              "\"\\\\pdftex.exe\",");
+            paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 3." + Integer.toString(i) +
+                              "\"\\\\pdflatex.exe\",");
+            paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 3." + Integer.toString(i) +
+                              "\"\\\\pdftex.exe\",");
+        }
+        return paths;
+    }
 }

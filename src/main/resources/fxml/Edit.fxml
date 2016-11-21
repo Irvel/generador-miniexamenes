@@ -9,8 +9,8 @@
    <children>
       <TableView  fx:id="tvExamBank" prefHeight="263.0" prefWidth="230.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="Grupo" />
-          <TableColumn prefWidth="154.0" text="Examen" />
+          <TableColumn fx:id="tcGrupo" prefWidth="75.0" text="Grupo" />
+          <TableColumn fx:id="tcExamen" prefWidth="154.0" text="Examen" />
         </columns>
       </TableView>
    </children>

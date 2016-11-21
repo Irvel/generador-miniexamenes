@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,6 +22,9 @@ public class Edit {
     private boolean mFirstLoad;
     @FXML
     TableView tvExamBank;
+    @FXML
+    TableColumn tcGrupo;
+    @FXML TableColumn tcExamen;
     private final ObservableList<CellTable> data =
             FXCollections.observableArrayList(
                     new CellTable("Jacob", "Smith"),

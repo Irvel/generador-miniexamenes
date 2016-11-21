@@ -11,7 +11,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -27,6 +27,8 @@ public class MainController {
     private Grade mGrade;
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
+    private boolean mSubjectListenerActive;
+    private boolean mGroupListenerActive;
 
     @FXML
     VBox mainImExContainer;
@@ -39,11 +41,13 @@ public class MainController {
      * Initializer of MainController
      */
     public MainController() {
-        this.mImportExportUI = new ImportExportUI(this);
-        this.mQuestionBank = AppState.loadQuestionBank();
-        this.mExamBank = AppState.loadExamBank();
-        this.mGenerate = new Generate(this);
-        this.mGrade = new Grade();
+        mImportExportUI = new ImportExportUI(this);
+        mQuestionBank = AppState.loadQuestionBank();
+        mExamBank = AppState.loadExamBank();
+        mGenerate = new Generate(this);
+        mGrade = new Grade();
+        mSubjectListenerActive = false;
+        mGroupListenerActive = false;
     }
 
     /**
@@ -54,10 +58,6 @@ public class MainController {
      * @param event
      */
     public void generateTabSelected(Event event) {
-        if (cbTemaG != null) {
-            cbTemaG.getSelectionModel().selectedItemProperty().removeListener(mSubjectListener);
-            cbGrupoG.getSelectionModel().selectedItemProperty().removeListener(mGroupListener);
-        }
         mGenerate.loadGenerateForm(mainGenContainer);
     }
 
@@ -69,10 +69,6 @@ public class MainController {
      * @param event
      */
     public void importTabSelected(Event event) {
-        if (cbTemaG != null) {
-            cbTemaG.getSelectionModel().selectedItemProperty().removeListener(mSubjectListener);
-            cbGrupoG.getSelectionModel().selectedItemProperty().removeListener(mGroupListener);
-        }
         mImportExportUI.loadImportExport(mainImExContainer);
     }
 
@@ -107,7 +103,7 @@ public class MainController {
     @FXML
     JFXTextField tfPond;
     @FXML
-    HBox viewExamsContainer;
+    AnchorPane viewExamsContainer;
     private int[] arrPond;
     private JFXListView mListView;
     /**
@@ -119,8 +115,8 @@ public class MainController {
      */
     private void resetGradeFields(Boolean subjectWasSelected, Boolean groupWasSelected) {
         if (!subjectWasSelected) {
-            // Remove the listener on the combobox to avoid a callback loop
-            cbTemaG.getSelectionModel().selectedItemProperty().removeListener(mSubjectListener);
+            // Disable the listener on the combobox to avoid a callback loop
+            mSubjectListenerActive = false;
             // selecting the first subject
             // Fill the subject combobox and select the first one
             cbTemaG.getItems().clear();
@@ -135,7 +131,7 @@ public class MainController {
         }
 
         if (!groupWasSelected) {
-            cbGrupoG.getSelectionModel().selectedItemProperty().removeListener(mGroupListener);
+            mGroupListenerActive = false;
             // Fill the group combobox with the selected subject groups and select the first one
             cbGrupoG.getItems().clear();
             for (Group group : mExamBank.getGroups(cbTemaG.getValue().toString())) {
@@ -146,35 +142,55 @@ public class MainController {
         if (mListView != null) {
             viewExamsContainer.getChildren().remove(mListView);
         }
-        mListView = new JFXListView<Label>();
+        mListView = new JFXListView<String>();
+        mListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
         ArrayList<Exam> exams = mExamBank.getExams(cbTemaG.getValue().toString(),
                                                    cbGrupoG.getValue().toString());
         for (Exam exam : exams) {
-            mListView.getItems().add(new Label("Examen número " + exam.getExamNumber()));
+            mListView.getItems().add("Examen número " + exam.getExamNumber());
         }
         mListView.getStyleClass().add("mylistview");
         viewExamsContainer.getChildren().add(mListView);
-        cbTemaG.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
-        cbGrupoG.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
+        AnchorPane.setLeftAnchor(mListView, 0.0);
+        AnchorPane.setRightAnchor(mListView, 0.0);
+        AnchorPane.setTopAnchor(mListView, 0.0);
+        AnchorPane.setBottomAnchor(mListView, 0.0);
+        mSubjectListenerActive = true;
+        mGroupListenerActive = true;
     }
 
     // TODO: Move this to somewhere clean
     private ChangeListener mSubjectListener = new ChangeListener() {
         @Override
         public void changed(ObservableValue ov, Object t, Object t1) {
-            System.out.println("A subject has been selected" + ov.getValue().toString());
-            resetGradeFields(true, false);
+            if (mSubjectListenerActive) {
+                System.out.println("A subject has been selected " + ov.getValue().toString());
+                resetGradeFields(true, false);
+            }
         }
     };
     // TODO: Move this as well
     private ChangeListener mGroupListener = new ChangeListener() {
         @Override
         public void changed(ObservableValue ov, Object t, Object t1) {
-            System.out.println("A group as been selected " + ov.getValue().toString());
-            resetGradeFields(true, true);
+            if (mGroupListenerActive) {
+                System.out.println("A group as been selected " + ov.getValue().toString());
+                resetGradeFields(true, true);
+            }
+        }
+    };
+    // TODO: Aaaand this as well
+    private ChangeListener mExamListListener = new ChangeListener() {
+        @Override
+        public void changed(ObservableValue ov, Object t, Object t1) {
+            if (mGroupListenerActive) {
+                System.out.println("An exam has been selected " + ov.getValue().toString());
+                System.out.println(mListView.getSelectionModel().getSelectedItem().toString());
+            }
         }
     };
 
+    boolean fistTime = true;
     public void gradeTabSelected(Event event) throws IOException {
         if(mExamBank.getGroups().isEmpty()){
             cbTemaG.setDisable(true);
@@ -183,12 +199,18 @@ public class MainController {
             cbQuestionG.setDisable(true);
             cbAnswerG.setDisable(true);
         }
-        else{
+        else if(fistTime){
+            fistTime = false;
             cbTemaG.setDisable(false);
             cbGrupoG.setDisable(false);
             cbExamenesG.setDisable(false);
             cbQuestionG.setDisable(false);
             cbAnswerG.setDisable(false);
+            resetGradeFields(false, false);
+            cbTemaG.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
+            cbGrupoG.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
+        }
+        else {
             resetGradeFields(false, false);
         }
     }

@@ -8,7 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -34,7 +34,7 @@ public class Generate {
     JFXComboBox<String> cbTema;
 
     @FXML
-    Spinner spCantidad;
+    SpinnerAutoCommit spCantidad;
 
     @FXML
     JFXButton btnGenerate;
@@ -111,8 +111,8 @@ public class Generate {
                                            .getSubjectByName(cbTema.getValue());
         int examQuantity = Integer.parseInt(spCantidad.getValue().toString());
         Group generatedExams = generateExams(subject,
-                                                   examQuantity,
-                                                   tfGrupo.getText().trim());
+                                             examQuantity,
+                                             tfGrupo.getText().trim());
 
         // Add the newly generated exams to the list of generated exams for this subject
         mParentController.getExamBank().addGroup(subject.getSubjectName(), generatedExams);
@@ -145,8 +145,8 @@ public class Generate {
      *
      */
     private void resetFormFields() {
+        spCantidad.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 40));
         tfGrupo.setText("");
-        spCantidad.decrement(100);
         if (mGenerateContainer != null) {
             // Checks if there is at least one subject in the QuestionBank
             if (mParentController.getQuestionBank().getSubjects().isEmpty()) {
@@ -232,6 +232,11 @@ public class Generate {
         int startingExamNumber = mParentController.getExamBank()
                                                   .getHighestExamNumber(subject.getSubjectName(),
                                                                         groupName);
+        // When there are no existing exams, the starting number should be one, however when
+        // there are exams, the starting number should be one more than the current highest
+        if (startingExamNumber != 1) {
+            startingExamNumber += 1;
+        }
         // Generates the user selected amount of exams
         for (int i = 0; i < amount; i++) {
             // For each block in the subject, add a random question

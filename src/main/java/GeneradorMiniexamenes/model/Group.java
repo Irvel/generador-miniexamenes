@@ -64,6 +64,13 @@ public class Group {
                 mHighestExamNumber = exam.getExamNumber();
             }
         }
-         mHighestExamNumber = highestNumber;
+        if (highestNumber > mHighestExamNumber) {
+            mHighestExamNumber = highestNumber;
+        }
+    }
+
+    public void addExams(ArrayList<Exam> exams) {
+        mExams.addAll(exams);
+        setHighestExamNumber();
     }
 }

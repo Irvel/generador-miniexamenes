@@ -97,7 +97,6 @@ public class AppState {
                     ArrayList<Group>>>(){}));
         }
         catch (IOException e) {
-            e.printStackTrace();
             System.out.println("Creating an empty ExamBank");
         }
         return new ExamBank();

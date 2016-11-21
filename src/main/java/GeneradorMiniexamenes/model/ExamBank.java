@@ -92,15 +92,25 @@ public class ExamBank {
      * received group as the first group in the groups list from that subject.
      * Given a subject name, and a
      * @param subject The name of the subject from the group to be added
-     * @param group The group to be added
+     * @param newGroup The group to be added
      */
-    public void addGroup(String subject, Group group) {
+    public void addGroup(String subject, Group newGroup) {
+        boolean groupFound = false;
         if (mGroups.containsKey(subject)) {
-            mGroups.get(subject).add(group);
+            // Check if the group already exists, so that only the exams are added
+            for (Group group : mGroups.get(subject)) {
+                if (group.getGroupName().equalsIgnoreCase(newGroup.getGroupName())) {
+                    group.addExams(newGroup.getExams());
+                    groupFound = true;
+                }
+            }
+            if (!groupFound) {
+                mGroups.get(subject).add(newGroup);
+            }
         }
         else {
             mGroups.put(subject, new ArrayList<>());
-            mGroups.get(subject).add(group);
+            mGroups.get(subject).add(newGroup);
         }
         saveExamBank(this);
     }

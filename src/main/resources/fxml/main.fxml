@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
@@ -56,12 +57,9 @@
                                     </VBox>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0"
-                                    spacing="120.0" VBox.vgrow="ALWAYS">
-                                 <children>
-                                    <AnchorPane fx:id="viewExamsContainer"
-                                                prefHeight="200.0"
-                                                prefWidth="200.0" />
+                               <HBox fx:id="viewExamsContainer" alignment="CENTER"
+                                     prefHeight="245.0" prefWidth="865.0" spacing="120.0" VBox.vgrow="ALWAYS">
+                               <children>
                                      <Label prefWidth="106.0" styleClass="inputLabel" text="Numero de examen" />
                                     <JFXComboBox fx:id="cbExamenesG" onAction="#selExam" prefWidth="106.0" styleClass="inputLabel" VBox.vgrow="ALWAYS" />
                                     <VBox alignment="CENTER" prefHeight="100.0" prefWidth="223.0">

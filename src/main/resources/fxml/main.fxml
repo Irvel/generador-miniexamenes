@@ -78,8 +78,7 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <Label fx:id="lbCalif" text="Calificación: "
-                                           styleClass="calificar">
+                                    <Label fx:id="lbCalif" styleClass="calificar" text="Calificación: ">
                                        <HBox.margin>
                                           <Insets bottom="40.0" />
                                        </HBox.margin></Label>
@@ -91,16 +90,6 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Editar Preguntas">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                         <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Editar Bancos de Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
-                               </Label>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
           <Tab onSelectionChanged="#importTabSelected" text="Importar / Exportar">
               <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">

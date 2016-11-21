@@ -25,6 +25,7 @@ public class MainController {
     private ImportExportUI mImportExportUI;
     private Generate mGenerate;
     private Grade mGrade;
+    private Edit mEdit;
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
 
@@ -33,6 +34,8 @@ public class MainController {
 
     @FXML
     VBox mainGenContainer;
+
+    @FXML VBox mainEditContainer;
 
 
     /**
@@ -44,6 +47,7 @@ public class MainController {
         this.mExamBank = AppState.loadExamBank();
         this.mGenerate = new Generate(this);
         this.mGrade = new Grade();
+        this.mEdit = new Edit(this);
     }
 
     /**
@@ -74,6 +78,10 @@ public class MainController {
             cbGrupoG.getSelectionModel().selectedItemProperty().removeListener(mGroupListener);
         }
         mImportExportUI.loadImportExport(mainImExContainer);
+    }
+
+    public void editTabSelected(Event event){
+        mEdit.loadGenerateForm(mainEditContainer);
     }
 
     public QuestionBank getQuestionBank() {

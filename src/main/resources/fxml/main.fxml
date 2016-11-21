@@ -102,12 +102,14 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Editar Preguntas">
+          <Tab onSelectionChanged="#editTabSelected" text="Editar Preguntas">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                          <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Editar Bancos de Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                                </Label>
+                         <VBox fx:id="mainEditContainer" alignment="CENTER" layoutX="218.0" layoutY="183.0" prefHeight="128.0" prefWidth="867.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+                         </VBox>
                      </children>
                   </AnchorPane>
               </content>

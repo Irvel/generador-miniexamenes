@@ -1,7 +1,7 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.Exam;
 import GeneradorMiniexamenes.model.ExamBank;
+import GeneradorMiniexamenes.model.Group;
 import GeneradorMiniexamenes.model.QuestionBank;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +73,7 @@ public class AppState {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             FileOutputStream outFile = new FileOutputStream(EXAMS_PATH, false);
-            objectMapper.writeValue(outFile, examBank.getExams());
+            objectMapper.writeValue(outFile, examBank.getGroups());
             outFile.close();
         }
         catch (Exception e) {
@@ -94,9 +94,10 @@ public class AppState {
         try {
             File file = new File(EXAMS_PATH);
             return new ExamBank(mapper.readValue(file, new TypeReference<HashMap<String,
-                    ArrayList<Exam>>>(){}));
+                    ArrayList<Group>>>(){}));
         }
         catch (IOException e) {
+            e.printStackTrace();
             System.out.println("Creating an empty ExamBank");
         }
         return new ExamBank();

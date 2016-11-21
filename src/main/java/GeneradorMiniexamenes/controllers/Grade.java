@@ -1,6 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.Exam;
+import GeneradorMiniexamenes.model.Group;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.fxml.FXML;
 
@@ -33,15 +33,15 @@ public class Grade {
      */
     private void resetFormFields(){
         // checks if the Exam bank is not empy
-        if(mParentController.getExamBank().getExams().isEmpty()){
+        if(mParentController.getExamBank().getGroups().isEmpty()){
             cbTemaG.setDisable(true);
             cbGrupoG.setDisable(true);
         }
         else{
             cbTemaG.setDisable(false);
             cbGrupoG.setDisable(false);
-            HashMap<String, ArrayList<Exam>> mExams = mParentController.getExamBank().getExams();
-            Iterator it = mExams.entrySet().iterator();
+            HashMap<String, ArrayList<Group>> exams = mParentController.getExamBank().getGroups();
+            Iterator it = exams.entrySet().iterator();
             while(it.hasNext()){
                 Map.Entry e = (Map.Entry)it.next();
                 System.out.println(e.getKey().toString());

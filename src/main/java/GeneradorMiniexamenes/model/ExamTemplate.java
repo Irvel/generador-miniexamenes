@@ -123,17 +123,16 @@ public class ExamTemplate {
         // Get the document header
         String latexExams = mdocumentHeader;
 
-        // Used to graphically numerate the exams from 1 to N
-        int examNumber = 1;
+        int examCount = 0;
         for (Exam exam : exams) {
-            if (examNumber < exams.size()) {
+            if (examCount < exams.size()) {
                 // Insert a new page after each exam that is not the last one
-                latexExams += makeLatexExam(exam, Integer.toString(examNumber)) + "   \\newpage\n";
+                latexExams += makeLatexExam(exam, Integer.toString(exam.getExamNumber())) + "   \\newpage\n";
             }
             else {
-                latexExams += makeLatexExam(exam, Integer.toString(examNumber));
+                latexExams += makeLatexExam(exam, Integer.toString(exam.getExamNumber()));
             }
-            examNumber++;
+            examCount++;
         }
         // Finish the LaTeX document
         return latexExams + "\\end{document}";

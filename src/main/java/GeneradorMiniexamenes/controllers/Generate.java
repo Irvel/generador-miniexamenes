@@ -110,13 +110,13 @@ public class Generate {
         Subject subject = mParentController.getQuestionBank()
                                            .getSubjectByName(cbTema.getValue());
         int examQuantity = Integer.parseInt(spCantidad.getValue().toString());
-        ExamBank generatedExamBank = generateExams(subject,
+        Group generatedExams = generateExams(subject,
                                                    examQuantity,
                                                    tfGrupo.getText().trim());
 
         // Add the newly generated exams to the list of generated exams for this subject
-        mParentController.getExamBank().appendExamBank(generatedExamBank);
-        displayGeneratedExams(generatedExamBank);
+        mParentController.getExamBank().addGroup(subject.getSubjectName(), generatedExams);
+        displayGeneratedExams(generatedExams);
     }
 
     /**
@@ -125,10 +125,10 @@ public class Generate {
      * Display the generated exams in another view and show the options for downloading the
      * generated exams.
      *
-     * @param generatedExamBank The set of generated that is to be shown to the user
+     * @param generatedExams The set of generated exams that is to be shown to the user
      *
      */
-    private void displayGeneratedExams(ExamBank generatedExamBank) {
+    private void displayGeneratedExams(Group generatedExams) {
         VBox mainGenContainer = (VBox) mGenerateContainer.getParent();
         // Remove container with the form for generating exams from the view
         mainGenContainer.getChildren().remove(mGenerateContainer);
@@ -221,18 +221,19 @@ public class Generate {
      *
      * @param subject The subject of the exams to be generated
      * @param amount The amount of exams to be generated
-     * @param group The group of the exams to be generated
+     * @param groupName The group of the exams to be generated
      * @return examBank The set of generated exams
      */
-    public ExamBank generateExams(Subject subject,
+    public Group generateExams(Subject subject,
                                   int amount,
-                                  String group) {
+                                  String groupName) {
         ArrayList<Question> questions = new ArrayList<>();
-        Exam exam;
-        ExamBank examBank = new ExamBank();
-
-        // Generates amount exams
-        for(int i = 0; i < amount; i++){
+        ArrayList<Exam> generatedExams = new ArrayList<>();
+        int startingExamNumber = mParentController.getExamBank()
+                                                  .getHighestExamNumber(subject.getSubjectName(),
+                                                                        groupName);
+        // Generates the user selected amount of exams
+        for (int i = 0; i < amount; i++) {
             // For each block in the subject, add a random question
             questions.addAll(subject.getBlocks()
                                      .stream()
@@ -242,18 +243,23 @@ public class Generate {
                                                                                b.getQuestions()
                                                                                 .size())))
                                      .collect(Collectors.toList()));
-            exam = new Exam(subject.getSubjectName(), group, new ArrayList<>(questions));
-            examBank.addExam(subject.getSubjectName(), exam);
+            // The exam number is the highest exam number in the group plus the sequence
+            // number in the generated exams list
+            Exam exam = new Exam(subject.getSubjectName(),
+                            groupName,
+                            new ArrayList<>(questions), startingExamNumber + i);
+            generatedExams.add(exam);
             // Reuse the questions variable for another exam
             questions.clear();
         }
         // Generate the LaTeX document of the exams and store in the member variable
-        mLatexExams = ExamTemplate.makeLatexExams(examBank.getExams(subject.getSubjectName()));
+        mLatexExams = ExamTemplate.makeLatexExams(generatedExams);
         // Store the last generated subject and group to be used in the filename when downloading
         // the generated exams
         mLastGeneratedSubject = subject.getSubjectName();
-        mLastGeneratedGroup = group;
-        return examBank;
+        mLastGeneratedGroup = groupName;
+
+        return new Group(groupName, generatedExams);
     }
 
     /**

@@ -6,18 +6,22 @@ import java.util.ArrayList;
 
 /**
  * Created by Irvel on 11/12/16.
+ * TODO: ADD A "GENERATE AN EXAM NUMBER AS HASMAPS DON'T PRESERVE ORDER
  */
 public class Exam {
     private String mSubject;
     private String mGroup;
     private ArrayList<Question> mQuestions;
+    private int mExamNumber;
 
-    public Exam(@JsonProperty("subjectName") String mSubject,
-                @JsonProperty("group") String mGroup,
-                @JsonProperty("questions") ArrayList<Question> mQuestions) {
-        this.mSubject = mSubject;
-        this.mGroup = mGroup;
-        this.mQuestions = mQuestions;
+    public Exam(@JsonProperty("subjectName") String subject,
+                @JsonProperty("group") String group,
+                @JsonProperty("questions") ArrayList<Question> questions,
+                @JsonProperty("examNumber") int examNumber) {
+        mSubject = subject;
+        mGroup = group;
+        mQuestions = questions;
+        mExamNumber = examNumber;
     }
 
     public String getSubject() {
@@ -42,5 +46,13 @@ public class Exam {
 
     public void setQuestions(ArrayList<Question> questions) {
         mQuestions = questions;
+    }
+
+    public int getExamNumber() {
+        return mExamNumber;
+    }
+
+    public void setExamNumber(int examNumber) {
+        mExamNumber = examNumber;
     }
 }

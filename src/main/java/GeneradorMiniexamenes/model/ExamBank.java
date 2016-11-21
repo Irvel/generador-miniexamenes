@@ -1,66 +1,88 @@
 package GeneradorMiniexamenes.model;
 
-import GeneradorMiniexamenes.controllers.AppState;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
+
+import static GeneradorMiniexamenes.controllers.AppState.saveExamBank;
 
 /**
  * Created by Irvel on 11/12/16.
  */
 public class ExamBank {
-    // Each subject matched by a list of generated exams
-    private HashMap<String, ArrayList<Exam>> mExams;
+    // Each subject matched by a list of Groups with the generated exams
+    private HashMap<String, ArrayList<Group>> mGroups;
 
-    public ExamBank(@JsonProperty("exams") HashMap<String, ArrayList<Exam>> exams) {
-        mExams = exams;
+    public ExamBank(@JsonProperty("groups") HashMap<String, ArrayList<Group>> groups) {
+        mGroups = groups;
     }
 
     public ExamBank() {
-        mExams = new HashMap<>();
+        mGroups = new HashMap<>();
     }
 
-    public HashMap<String, ArrayList<Exam>> getExams() {
-        return mExams;
+    public HashMap<String, ArrayList<Group>> getGroups() {
+        return mGroups;
     }
 
-    public void setExams(HashMap<String, ArrayList<Exam>> mExams) {
-        this.mExams = mExams;
+    public void setGroups(HashMap<String, ArrayList<Group>> mExams) {
+        this.mGroups = mExams;
     }
 
-
-    public void appendExamBank(ExamBank examBank) {
-        this.mExams.putAll(examBank.getExams());
-        // Save the modified ExamBank to storage
-        AppState.saveExamBank(this);
-    }
-
-    public ArrayList<Exam> getExams(String subject) {
-        if (mExams.containsKey(subject)) {
-            return mExams.get(subject);
+    public ArrayList<Group> getGroups(String subject) {
+        if (mGroups.containsKey(subject)) {
+            return mGroups.get(subject);
         }
         return null;
     }
 
-    public void addExam(String subject, Exam exam) {
-        if (mExams.containsKey(subject)) {
-            mExams.get(subject).add(exam);
+    public ArrayList<Exam> getExams(String subject, String groupName) {
+        if (mGroups.containsKey(subject)) {
+            for (Group group : mGroups.get(subject)) {
+                if (group.getGroupName().equalsIgnoreCase(groupName)) {
+                    return group.getExams();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void addGroup(String subject, Group group) {
+        if (mGroups.containsKey(subject)) {
+            mGroups.get(subject).add(group);
         }
         else {
-            mExams.put(subject, new ArrayList<>());
-            mExams.get(subject).add(exam);
+            mGroups.put(subject, new ArrayList<>());
+            mGroups.get(subject).add(group);
         }
+        saveExamBank(this);
     }
 
     public void clearSubject(String subject) {
-        if (mExams.containsKey(subject)) {
-            mExams.remove(subject);
+        if (mGroups.containsKey(subject)) {
+            mGroups.remove(subject);
         }
     }
 
-    public Set<String> getSubjects() {
-        return mExams.keySet();
+    /**
+     * getHighestExamNumber
+     *
+     * Find the exam with the highest examNumber in the exam bank that has the provided group and
+     * belongs to the provided subject. In case that the group hasn't been added before, return
+     * the initial exam number of 1.
+     * @param subjectName The name of the subject to which the group belongs
+     * @param groupName The name of the group to search the highest exam number in
+     * @return The highest exam number in the provided group and subject
+     */
+    public int getHighestExamNumber(String subjectName, String groupName) {
+        if (mGroups.containsKey(subjectName)) {
+            for (Group group : mGroups.get(subjectName)) {
+                if (group.getGroupName().equalsIgnoreCase(groupName)) {
+                    return group.getHighestExamNumber();
+                }
+            }
+        }
+        return 1;
     }
 }

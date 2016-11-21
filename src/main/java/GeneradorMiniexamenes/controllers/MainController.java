@@ -11,9 +11,6 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by Elias Mera on 11/7/2016.
@@ -98,7 +95,7 @@ public class MainController {
     private int[] arrPond;
     public void gradeTabSelected(Event event) throws IOException {
 
-        if(mExamBank.getExams().isEmpty()){
+        if(mExamBank.getGroups().isEmpty()){
             cbTemaG.setDisable(true);
             cbGrupoG.setDisable(true);
             cbExamenesG.setDisable(true);
@@ -112,13 +109,6 @@ public class MainController {
             cbQuestionG.setDisable(false);
             cbAnswerG.setDisable(false);
             cbTemaG.getSelectionModel().selectFirst();
-            HashMap<String, ArrayList<Exam>> mExams = mExamBank.getExams();
-            Iterator it = mExams.entrySet().iterator();
-            while(it.hasNext()){
-                Map.Entry e = (Map.Entry)it.next();
-                if(!cbTemaG.getItems().contains(e.getKey().toString()))
-                    cbTemaG.getItems().add(e.getKey().toString());
-            }
         }
     }
 
@@ -133,7 +123,8 @@ public class MainController {
         cbAnswerG.getItems().clear();
         tfCalif.setText("");
         String subject = cbTemaG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject);
+        String group = cbGrupoG.getValue().toString();
+        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
         for(Exam e : exams){
             if(!cbGrupoG.getItems().contains(e.getGroup()))
                 cbGrupoG.getItems().add(e.getGroup());
@@ -150,7 +141,8 @@ public class MainController {
         cbAnswerG.getItems().clear();
         tfCalif.setText("");
         String subject = cbTemaG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject);
+        String group = cbGrupoG.getValue().toString();
+        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
         int iId = 1;
         for (Exam e : exams) {
             if (e.getGroup().equals(cbGrupoG.getValue().toString())) {
@@ -165,7 +157,8 @@ public class MainController {
         cbAnswerG.getItems().clear();
         tfCalif.setText("");
         String subject = cbTemaG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject);
+        String group = cbGrupoG.getValue().toString();
+        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
         Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
         for(Question q : exam.getQuestions()) {
             if (!cbQuestionG.getItems().contains(q.getQuestion()))
@@ -181,7 +174,8 @@ public class MainController {
         cbAnswerG.getItems().clear();
         String subject = cbTemaG.getValue().toString();
         String question = cbQuestionG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject);
+        String group = cbGrupoG.getValue().toString();
+        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
         Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
         for(Question q : exam.getQuestions()){
             if(q.getQuestion().equals(cbQuestionG.getValue().toString())){
@@ -197,7 +191,8 @@ public class MainController {
     public void selAnswer(ActionEvent actionEvent) {
         String subject = cbTemaG.getValue().toString();
         String question = cbQuestionG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject);
+        String group = cbGrupoG.getValue().toString();
+        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
         Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
         int iC = 0;
         for(Question q : exam.getQuestions()){

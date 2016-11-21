@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
 <VBox prefHeight="600.0" prefWidth="900.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.MainController">
   <children>
       <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
@@ -33,7 +40,9 @@
                                     <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
                                        <children>
                                           <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" />
-                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" fx:id="cbTemaG" onAction="#selToGrade"/>
+                                          <JFXComboBox fx:id="cbTemaG"
+                                                       prefHeight="27.0"
+                                                       prefWidth="152.0" />
                                        </children>
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -42,7 +51,9 @@
                                     <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
                                        <children>
                                           <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" />
-                                          <JFXComboBox prefHeight="27.0" prefWidth="152.0" fx:id="cbGrupoG" onAction="#selGroup"/>
+                                          <JFXComboBox fx:id="cbGrupoG"
+                                                       prefHeight="27.0"
+                                                       prefWidth="152.0" />
                                        </children>
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -50,26 +61,27 @@
                                     </VBox>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="120.0" VBox.vgrow="ALWAYS">
+                              <HBox fx:id="viewExamsContainer" alignment="CENTER"
+                                    prefHeight="245.0" prefWidth="865.0" spacing="120.0" VBox.vgrow="ALWAYS">
                                  <children>
                                      <Label prefWidth="106.0" styleClass="inputLabel" text="Numero de examen" />
-                                    <JFXComboBox prefWidth="106.0" fx:id="cbExamenesG" onAction="#selExam" styleClass="inputLabel" VBox.vgrow="ALWAYS"/>
+                                    <JFXComboBox fx:id="cbExamenesG" onAction="#selExam" prefWidth="106.0" styleClass="inputLabel" VBox.vgrow="ALWAYS" />
                                     <VBox alignment="CENTER" prefHeight="100.0" prefWidth="223.0">
                                        <children>
                                           <HBox alignment="TOP_CENTER" prefHeight="47.0" prefWidth="223.0" spacing="10.0" VBox.vgrow="ALWAYS">
                                              <children>
                                                 <Label prefWidth="106.0" styleClass="inputLabel" text="Pregunta" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
                                                 <Label prefWidth="106.0" styleClass="inputLabel" text="Ponderación" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-                                                 <JFXTextField fx:id="tfPond" editable="false"/>
+                                                 <JFXTextField fx:id="tfPond" editable="false" />
                                              </children>
                                           </HBox>
                                           <HBox alignment="TOP_CENTER" prefHeight="231.0" prefWidth="223.0" spacing="10.0">
                                              <children>
                                                 <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
                                                    <children>
-                                                      <JFXComboBox prefWidth="106.0" styleClass="inputLabel" fx:id="cbQuestionG" VBox.vgrow="ALWAYS" onAction="#selQuestion" />
+                                                      <JFXComboBox fx:id="cbQuestionG" onAction="#selQuestion" prefWidth="106.0" styleClass="inputLabel" VBox.vgrow="ALWAYS" />
                                                       <Label prefWidth="106.0" styleClass="inputLabel" text="Opción elegida:" />
-                                                      <JFXComboBox fx:id="cbAnswerG" prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" onAction="#selAnswer" />
+                                                      <JFXComboBox fx:id="cbAnswerG" onAction="#selAnswer" prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" />
                                                    </children>
                                                 </VBox>
                                              </children>
@@ -80,8 +92,8 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <Label text="Calificación: " fx:id="lbCalif"/>
-                                     <JFXTextField fx:id="tfCalif" editable="false"/>
+                                    <Label fx:id="lbCalif" text="Calificación: " />
+                                     <JFXTextField fx:id="tfCalif" editable="false" />
                                  </children>
                               </HBox>
                            </children>
@@ -100,22 +112,13 @@
                   </AnchorPane>
               </content>
             </Tab>
-          <Tab text="Importar / Exportar" onSelectionChanged="#importTabSelected">
+          <Tab onSelectionChanged="#importTabSelected" text="Importar / Exportar">
               <content>
-                  <AnchorPane
-                          minHeight="0.0"
-                          minWidth="0.0"
-                          prefHeight="180.0"
-                          prefWidth="200.0">
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                       <children>
                           <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Importar / Exportar Preguntas" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                           </Label>
-                          <VBox alignment="CENTER"
-                                AnchorPane.bottomAnchor="0.0"
-                                AnchorPane.leftAnchor="0.0"
-                                AnchorPane.rightAnchor="0.0"
-                                AnchorPane.topAnchor="40.0"
-                                fx:id="mainImExContainer">
+                          <VBox fx:id="mainImExContainer" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
                           </VBox>
                       </children>
                   </AnchorPane>

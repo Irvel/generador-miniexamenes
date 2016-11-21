@@ -2,15 +2,21 @@ package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Elias Mera on 11/7/2016.
@@ -48,6 +54,10 @@ public class MainController {
      * @param event
      */
     public void generateTabSelected(Event event) {
+        if (cbTemaG != null) {
+            cbTemaG.getSelectionModel().selectedItemProperty().removeListener(mSubjectListener);
+            cbGrupoG.getSelectionModel().selectedItemProperty().removeListener(mGroupListener);
+        }
         mGenerate.loadGenerateForm(mainGenContainer);
     }
 
@@ -59,6 +69,10 @@ public class MainController {
      * @param event
      */
     public void importTabSelected(Event event) {
+        if (cbTemaG != null) {
+            cbTemaG.getSelectionModel().selectedItemProperty().removeListener(mSubjectListener);
+            cbGrupoG.getSelectionModel().selectedItemProperty().removeListener(mGroupListener);
+        }
         mImportExportUI.loadImportExport(mainImExContainer);
     }
 
@@ -92,9 +106,76 @@ public class MainController {
     Spinner spPond;
     @FXML
     JFXTextField tfPond;
+    @FXML
+    HBox viewExamsContainer;
     private int[] arrPond;
-    public void gradeTabSelected(Event event) throws IOException {
+    private JFXListView mListView;
+    /**
+     * resetGradeFields
+     *
+     * Basically dump the ExamBank into the GradeView. Specifically, it resets the grade exams form
+     * fields with the available subjects, groups and exams from the ExamBank.
+     *
+     */
+    private void resetGradeFields(Boolean subjectWasSelected, Boolean groupWasSelected) {
+        if (!subjectWasSelected) {
+            // Remove the listener on the combobox to avoid a callback loop
+            cbTemaG.getSelectionModel().selectedItemProperty().removeListener(mSubjectListener);
+            // selecting the first subject
+            // Fill the subject combobox and select the first one
+            cbTemaG.getItems().clear();
+            for (HashMap.Entry<String, ArrayList<Group>> subject : mExamBank.getGroups()
+                                                                            .entrySet()) {
+                cbTemaG.getItems().add(subject.getKey());
+            }
+            cbTemaG.getSelectionModel().selectFirst();
 
+            // After reseting the subject, the group needs to be reset as well
+            groupWasSelected = false;
+        }
+
+        if (!groupWasSelected) {
+            cbGrupoG.getSelectionModel().selectedItemProperty().removeListener(mGroupListener);
+            // Fill the group combobox with the selected subject groups and select the first one
+            cbGrupoG.getItems().clear();
+            for (Group group : mExamBank.getGroups(cbTemaG.getValue().toString())) {
+                cbGrupoG.getItems().add(group.getGroupName());
+            }
+            cbGrupoG.getSelectionModel().selectFirst();
+        }
+        if (mListView != null) {
+            viewExamsContainer.getChildren().remove(mListView);
+        }
+        mListView = new JFXListView<Label>();
+        ArrayList<Exam> exams = mExamBank.getExams(cbTemaG.getValue().toString(),
+                                                   cbGrupoG.getValue().toString());
+        for (Exam exam : exams) {
+            mListView.getItems().add(new Label("Examen número " + exam.getExamNumber()));
+        }
+        mListView.getStyleClass().add("mylistview");
+        viewExamsContainer.getChildren().add(mListView);
+        cbTemaG.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
+        cbGrupoG.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
+    }
+
+    // TODO: Move this to somewhere clean
+    private ChangeListener mSubjectListener = new ChangeListener() {
+        @Override
+        public void changed(ObservableValue ov, Object t, Object t1) {
+            System.out.println("A subject has been selected" + ov.getValue().toString());
+            resetGradeFields(true, false);
+        }
+    };
+    // TODO: Move this as well
+    private ChangeListener mGroupListener = new ChangeListener() {
+        @Override
+        public void changed(ObservableValue ov, Object t, Object t1) {
+            System.out.println("A group as been selected " + ov.getValue().toString());
+            resetGradeFields(true, true);
+        }
+    };
+
+    public void gradeTabSelected(Event event) throws IOException {
         if(mExamBank.getGroups().isEmpty()){
             cbTemaG.setDisable(true);
             cbGrupoG.setDisable(true);
@@ -108,7 +189,7 @@ public class MainController {
             cbExamenesG.setDisable(false);
             cbQuestionG.setDisable(false);
             cbAnswerG.setDisable(false);
-            cbTemaG.getSelectionModel().selectFirst();
+            resetGradeFields(false, false);
         }
     }
 
@@ -116,19 +197,8 @@ public class MainController {
      * Method called when the user selected a topic to grade
      * @param actionEvent
      */
-    public void selToGrade(ActionEvent actionEvent) {
-        cbGrupoG.getItems().clear();
-        cbExamenesG.getItems().clear();
-        cbQuestionG.getItems().clear();
-        cbAnswerG.getItems().clear();
-        tfCalif.setText("");
-        String subject = cbTemaG.getValue().toString();
-        String group = cbGrupoG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
-        for(Exam e : exams){
-            if(!cbGrupoG.getItems().contains(e.getGroup()))
-                cbGrupoG.getItems().add(e.getGroup());
-        }
+    public void selSubjectGrade(ActionEvent actionEvent) {
+        resetGradeFields(true, false);
     }
 
     /**
@@ -136,20 +206,7 @@ public class MainController {
      * @param actionEvent
      */
     public void selGroup(ActionEvent actionEvent) {
-        cbExamenesG.getItems().clear();
-        cbQuestionG.getItems().clear();
-        cbAnswerG.getItems().clear();
-        tfCalif.setText("");
-        String subject = cbTemaG.getValue().toString();
-        String group = cbGrupoG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
-        int iId = 1;
-        for (Exam e : exams) {
-            if (e.getGroup().equals(cbGrupoG.getValue().toString())) {
-                if (!cbExamenesG.getItems().contains(iId))
-                    cbExamenesG.getItems().add(iId++ + "");
-            }
-        }
+        resetGradeFields(true, true);
     }
 
     public void selExam(ActionEvent actionEvent) {

@@ -14,11 +14,11 @@
   <children>
       <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <tabs>
-          <Tab onSelectionChanged="#generateTabSelected" text="Generar Examenes">
+          <Tab onSelectionChanged="#generateTabSelected" text="Generar Exámenes">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Generar Examenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Generar Exámenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                               </Label>
                         <VBox fx:id="mainGenContainer" alignment="CENTER" layoutX="218.0" layoutY="183.0" prefHeight="128.0" prefWidth="867.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
                         </VBox>
@@ -26,13 +26,23 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab onSelectionChanged="#gradeTabSelected" text="Calificar Examenes">
+            <Tab onSelectionChanged="#viewExamsTabSelected" text="Ver Exámenes">
+              <content>
+                <AnchorPane fx:id="mainViewExamsContainer" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label alignment="CENTER" styleClass="H1" text="Ver Exámenes Generados" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0" />
+
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+          <Tab onSelectionChanged="#gradeTabSelected" text="Calificar Exámenes">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                         <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Calificar Examenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                         <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1" text="Calificar Exámenes" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
                                </Label>
-                        <VBox fx:id="mainGradeContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
                            <children>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="240.0" VBox.vgrow="ALWAYS">
                                  <children>
@@ -58,7 +68,7 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="30.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <AnchorPane fx:id="viewExamsContainer" prefHeight="200.0" HBox.hgrow="ALWAYS" />
+                                    <AnchorPane fx:id="viewGradeExamsContainer" prefHeight="200.0" HBox.hgrow="ALWAYS" />
                                     <ScrollPane fx:id="viewQuestionsContainer" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                     </ScrollPane>
                                  </children>
@@ -68,7 +78,11 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <Label fx:id="lbCalif" text="Calificación: " />
+                                    <Label fx:id="lbCalif" text="Calificación: "
+                                           styleClass="calificar">
+                                       <HBox.margin>
+                                          <Insets bottom="40.0" />
+                                       </HBox.margin></Label>
                                  </children>
                               </HBox>
                            </children>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="128.0" prefWidth="867.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="240.0">
+        <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" />
+            <JFXComboBox fx:id="cbTemaViewExams" prefHeight="27.0" prefWidth="152.0" />
+        </VBox>
+        <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" />
+            <JFXComboBox fx:id="cbGrupoViewExams" prefHeight="27.0" prefWidth="152.0" />
+        </VBox>
+      <VBox.margin>
+         <Insets bottom="30.0" />
+      </VBox.margin>
+    </HBox>
+    <AnchorPane fx:id="viewExamsContainer" prefHeight="329.0" prefWidth="867.0" />
+   <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+      <children>
+          <JFXButton fx:id="btnDeleteExam" disable="True" onAction="#deleteSelectedExam" prefHeight="27.0" prefWidth="260.0" styleClass="inputBtn" text="Borrar examen seleccionado" />
+         <JFXButton fx:id="btnDownloadLatex" disable="True" onAction="#downLatexSelectedExam"
+                    prefHeight="27.0"
+                    prefWidth="260.0" styleClass="inputBtn" text="Descargar examen en LaTeX" />
+         <JFXButton fx:id="btnDownloadPdf" disable="True" onAction="#downPdfSelectedExam"
+                    prefHeight="27.0"
+                    prefWidth="260.0" styleClass="inputBtn" text="Descargar examen en PDF" />
+      </children>
+      <VBox.margin>
+         <Insets top="30.0" />
+      </VBox.margin>
+   </HBox>
+   <padding>
+      <Insets bottom="10.0" left="30.0" right="30.0" top="20.0" />
+   </padding>
+</VBox>

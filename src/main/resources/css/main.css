@@ -28,3 +28,8 @@
     -fx-text-fill: WHITE;
     -fx-background-color: rgb(77,102,204);
 }
+
+.calificar {
+    -fx-font-size: 2em;
+    -fx-font-weight: bold;
+}

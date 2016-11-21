@@ -21,11 +21,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by Elias Mera on 11/7/2016.
+ * MainController
+ *
+ * This class is the main view controller for the application. It is responsible for creating
+ * and holding a reference to all the sub-controllers. It is also responsible for holding the
+ * variables that are needed by every sub-controller, and makes them available through getters.
+ * TODO: Remove the Grade exams controller from here into its own sub-controller class
  */
 public class MainController {
     private ImportExportUI mImportExportUI;
     private Generate mGenerate;
+    private ViewExamsUI mViewExamsUI;
     private Grade mGrade;
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
@@ -42,6 +48,8 @@ public class MainController {
     @FXML
     VBox mainGenContainer;
     @FXML
+    AnchorPane mainViewExamsContainer;
+    @FXML
     JFXComboBox cbTemaG;
     @FXML
     JFXComboBox cbGrupoG;
@@ -56,7 +64,7 @@ public class MainController {
     @FXML
     JFXTextField tfPond;
     @FXML
-    AnchorPane viewExamsContainer;
+    AnchorPane viewGradeExamsContainer;
     @FXML
     ScrollPane viewQuestionsContainer;
     private int[] arrPond;
@@ -66,10 +74,11 @@ public class MainController {
      * Initializer of MainController
      */
     public MainController() {
-        mImportExportUI = new ImportExportUI(this);
         mQuestionBank = AppState.loadQuestionBank();
         mExamBank = AppState.loadExamBank();
         mGenerate = new Generate(this);
+        mViewExamsUI = new ViewExamsUI(this);
+        mImportExportUI = new ImportExportUI(this);
         mGrade = new Grade();
         mSubjectListenerActive = false;
         mGroupListenerActive = false;
@@ -125,9 +134,8 @@ public class MainController {
         viewQuestionsContainer.setContent(null);
         lbCalif.setText("Calificación:");
         if (!subjectWasSelected) {
-            // Disable the listener on the combobox to avoid a callback loop
+            // Disable the listener on the combobox to avoid a callback loop when selecting the first subject
             mSubjectListenerActive = false;
-            // selecting the first subject
             // Fill the subject combobox and select the first one
             cbTemaG.getItems().clear();
             for (HashMap.Entry<String, ArrayList<Group>> subject : mExamBank.getGroups()
@@ -150,7 +158,7 @@ public class MainController {
             cbGrupoG.getSelectionModel().selectFirst();
         }
         if (mListView != null) {
-            viewExamsContainer.getChildren().remove(mListView);
+            viewGradeExamsContainer.getChildren().remove(mListView);
         }
         mListView = new JFXListView<String>();
         ArrayList<Exam> exams = mExamBank.getExams(cbTemaG.getValue().toString(),
@@ -166,7 +174,8 @@ public class MainController {
             examIdx++;
         }
         mListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
-        viewExamsContainer.getChildren().add(mListView);
+        mListView.setPrefWidth(160.0);
+        viewGradeExamsContainer.getChildren().add(mListView);
         AnchorPane.setLeftAnchor(mListView, 0.0);
         AnchorPane.setRightAnchor(mListView, 0.0);
         AnchorPane.setTopAnchor(mListView, 0.0);
@@ -231,6 +240,14 @@ public class MainController {
         lbCalif.setText("Calificación:");
     }
 
+    /**
+     * populateQuestionsList
+     *
+     * Fill the right pane in the view with the questions from the selected exam. Each question
+     * has the option to select an answer and when doing so, the score so far is auto calculated
+     * and the obtained percentage of points is given for that answer.
+     *
+     */
     private void populateQuestionsList(ArrayList<Question> questions) {
         int questionIndex = 1;
         VBox questionsBox = new VBox();
@@ -239,7 +256,7 @@ public class MainController {
         for (Question question : questions) {
             mQuestionToNumber.put(question, questionIndex);
             AnchorPane questionPane = new AnchorPane();
-            questionPane.setPadding(new Insets(20, 20, 20, 20));
+            questionPane.setPadding(new Insets(20, 0, 10, 20));
             questionPane.setStyle("-fx-background-color:" + getBackgroundColor());
             Label questionLabel = new Label("Pregunta #" + Integer.toString(questionIndex) + ":");
             questionLabel.setStyle("-fx-font-weight: bold;");
@@ -261,7 +278,7 @@ public class MainController {
                 selAnswer(answerCb.getScene(), selectedAnswer, (Question) answerCb.getUserData());
             });
             Label scoreLabel = new Label("");
-            scoreLabel.setLayoutX(180.0);
+            scoreLabel.setLayoutX(160.0);
             scoreLabel.setLayoutY(50.0);
             scoreLabel.setId("lblScore" + Integer.toString(questionIndex));
             questionPane.getChildren().addAll(questionLabel, answerLabel, answerCb, scoreLabel);
@@ -304,8 +321,16 @@ public class MainController {
             scoreSum += mQuestionNumToValue.get(questionNumber);
         }
         lbCalif.setText("Calificación del examen #" +
-                                Integer.toString(exam.getExamNumber()) + ": " +
+                                Integer.toString(exam.getExamNumber()) + ":   " +
                                 String.format("%.2f",(scoreSum * 1.0 / exam.getQuestions()
                                                                            .size())));
+    }
+
+    public void viewExamsTabSelected(Event event) {
+        mViewExamsUI.loadViewExamsForm(mainViewExamsContainer);
+    }
+
+    public Generate getGenerateInstance() {
+        return mGenerate;
     }
 }

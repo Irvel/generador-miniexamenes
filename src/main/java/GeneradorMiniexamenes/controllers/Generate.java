@@ -80,13 +80,13 @@ public class Generate {
 
             // Load the form for generating exams but do not show it yet
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fxml/GenExamsAction.fxml"));
+            loader.setLocation(getClass().getResource("/fxml/GenerateExams/GenAction.fxml"));
             loader.setController(this);
             mGenerateContainer = loader.load();
 
             // Load the interface for downloading the Generated exams but do not show it yet
             loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fxml/GenExamsDownload.fxml"));
+            loader.setLocation(getClass().getResource("/fxml/GenerateExams/GenDownload.fxml"));
             loader.setController(this);
             mDownloadContainer = loader.load();
         }
@@ -288,16 +288,28 @@ public class Generate {
      * @param actionEvent
      */
     public void downloadLatexAction(ActionEvent actionEvent) {
+        final String filename = makeFilename(mLastGeneratedSubject, mLastGeneratedGroup);
+        downloadLatexExams(actionEvent, filename, mLatexExams);
+    }
+
+    /**
+     * downloadLatexExams
+     *
+     * Prompt a file save dialog and save the received exams in a LaTeX file.
+     *
+     * TODO: Prompting the filesave could be abstracted into a shared method
+     * @param actionEvent The actionEven in which the request for downloading the exams occured
+     * @param fileName The filename to be suggested to the user
+     * @param latexExams A LaTeX string with the exams to be downloaded
+     */
+    public void downloadLatexExams(ActionEvent actionEvent, String fileName, String latexExams) {
         Node source = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
         FileChooser fileChooser = new FileChooser();
         // Set extension filter
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("TEX files (*.tex)", "*.tex"));
-
-        fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + " - " +
-                                               mLastGeneratedGroup + ".tex");
-
+        fileChooser.setInitialFileName(fileName + ".tex");
         // Show the "save exams in LaTeX dialog"
         File latexFile = fileChooser.showSaveDialog(currentStage);
 
@@ -305,30 +317,65 @@ public class Generate {
         if (latexFile == null) {
             return;
         }
+        saveLatexToFile(latexExams, latexFile);
+    }
 
+    /**
+     * saveLatexToFile
+     *
+     * Saves a given LaTeX string to a given file location.
+     * @param latex The LaTeX string to save
+     * @param latexFile The file in which the LaTeX string will be saved
+     */
+    private void saveLatexToFile(String latex, File latexFile) {
         try {
-            Writer latexOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream
-                                                                                (latexFile),
-                                                            "UTF-8"));
-            latexOut.write(mLatexExams);
+            Writer latexOut = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(latexFile), "UTF-8"));
+            latexOut.write(latex);
             latexOut.close();
         }
         catch (IOException e) {
             e.printStackTrace();
             Alerts.displayError("Error", "No fue posible escribir en la ruta especificada.");
         }
-
     }
 
     /**
      * downloadPdfAction
      *
-     * The user clicked the "download all exams in PDF" button. Prompt a file save dialog and
-     * save the last generated exams in the PDF format by first saving the LaTeX file and then
-     * converting it to PDF with the external pdflatex tool.
+     * The user clicked the "download all exams in PDF" button. Gather the files for the exams to
+     * be downloaded an call the method to do so.
      * @param actionEvent
      */
     public void downloadPdfAction(ActionEvent actionEvent) {
+        final String filename = makeFilename(mLastGeneratedSubject, mLastGeneratedGroup);
+        downloadPdfExams(actionEvent, filename, mLatexExams);
+    }
+
+    /**
+     * makeFilename
+     *
+     * Create a filename from a subject and group.
+     * @param subject The subject to create the filename from
+     * @param group The group to create the filename from
+     */
+    private String makeFilename(String subject, String group) {
+        return "Examenes " + subject + " - " + group;
+    }
+
+    /**
+     * downloadPdfExams
+     *
+     * Prompt a file save dialog and save the received exams in PDF to that location. To do this
+     * it first creates a temporary LaTeX file and then uses the external tool pdflatex to
+     * convert LaTeX to PDF.
+     * TODO: Prompting the filesave could be abstracted into a shared method
+     *
+     * @param actionEvent The actionEven in which the request for downloading the exams occured
+     * @param fileName The filename to be suggested to the user
+     * @param latexExams A LaTeX string with the exams to be downloaded
+     */
+    public void downloadPdfExams(ActionEvent actionEvent, String fileName, String latexExams) {
         Node source = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
         FileChooser fileChooser = new FileChooser();
@@ -336,8 +383,7 @@ public class Generate {
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
 
-        fileChooser.setInitialFileName("Examenes " + mLastGeneratedSubject + " - " +
-                                               mLastGeneratedGroup + ".pdf");
+        fileChooser.setInitialFileName(fileName + ".pdf");
 
         // Show the "save exams in Pdf dialog"
         File selectedFile = fileChooser.showSaveDialog(currentStage);
@@ -347,36 +393,32 @@ public class Generate {
             return;
         }
         String targetDirectoryPath = selectedFile.getParent();
-        String tempDirectoryPath = targetDirectoryPath +  File.separator + "generadorMiniTemp";
+        String tempDirectoryPath = targetDirectoryPath +  File.separator + ".generadorMiniTemp";
         // Delete previous temp dir if it still exists
         File tempDir  = new File(tempDirectoryPath);
         if (tempDir.exists()) {
             removeDirectory(tempDir);
         }
-        //TODO: Refactor this to use the other method that does almost the same thing as this
-        boolean couldCreateDirectory = (new File(tempDirectoryPath)).mkdir();
-        if (couldCreateDirectory) {
-            Writer latexOut = null;
+
+        // Create a temporal directory to store the intermediary LaTeX file
+        boolean couldCreateDirectory = (tempDir).mkdir();
+        // Set the temporal directory as hidden in windows
+        if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
             try {
-                File latexTemp = new File(tempDirectoryPath + File.separator + "latexTemp.tex");
-                latexOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(latexTemp),
-                                                                     "UTF-8"));
-                try {
-                    latexOut.write(mLatexExams);
-                    latexOut.close();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                    Alerts.displayError("Error", "No fue posible escribir en la ruta especificada.");
-                }
-                convertToPdf(tempDirectoryPath,
-                             tempDirectoryPath + File.separator + "latexTemp.tex",
-                             selectedFile.getName());
+                Files.setAttribute(tempDir.toPath(), "dos:hidden", true);
             }
-            catch (UnsupportedEncodingException | FileNotFoundException e) {
+            catch (IOException e) {
                 e.printStackTrace();
-                Alerts.displayError("Error", "No fue posible escribir en la ruta especificada.");
             }
+        }
+        if (couldCreateDirectory) {
+            File latexTemp = new File(tempDirectoryPath + File.separator + "latexTemp.tex");
+            saveLatexToFile(latexExams, latexTemp);
+
+            // Convert the temporal LaTeX file to PDF
+            convertToPdf(tempDirectoryPath,
+                         tempDirectoryPath + File.separator + "latexTemp.tex",
+                         selectedFile.getName());
         }
     }
 
@@ -410,11 +452,17 @@ public class Generate {
         }
     }
 
-    private void removeDirectory(File tempDir) {
-        for (File c : tempDir.listFiles()) {
+    /**
+     * removeDirectory
+     *
+     * Delete all the files inside the directory and then delete the directory itself
+     * @param dirToDelete the directory to be deleted
+     */
+    private void removeDirectory(File dirToDelete) {
+        for (File c : dirToDelete.listFiles()) {
             c.delete();
         }
-        tempDir.delete();
+        dirToDelete.delete();
     }
 
     private ArrayList<String> getConverterPaths(String systemName) {
@@ -488,6 +536,7 @@ public class Generate {
         return null;
     }
 
+    // Try to generate multiple version paths for finding the pdflatex in windows
     // TODO: Remove this ugly hack
     private ArrayList<String> getMikTexPaths() {
         ArrayList<String> paths = new ArrayList<>();

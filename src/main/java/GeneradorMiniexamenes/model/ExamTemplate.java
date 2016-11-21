@@ -53,7 +53,7 @@ public class ExamTemplate {
      * @return The LaTeX string representing the first section of the exam
      */
     private static String getFirstSection(String examNumber) {
-        return  "   \\text Número de Exámen: " + examNumber +
+        return  "   \\text Número de Examen: " + examNumber +
                 " \\hspace{75 mm}\n" +
                 "   \\text Matrícula:\n" +
                 "   \\makebox[1in]{\\hrulefill}\n" +

@@ -13,7 +13,11 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 
 /**
- * Created by Irvel on 11/19/16.
+ * ImportExportUI
+ *
+ * This class is the view controller for the ImportExport exams interface. It is responsible for
+ * inflating the fxml into an object and adding it to the displayed layout. It is also the one
+ * that handles actions inside the view.
  */
 public class ImportExportUI {
     private MainController mParentController;

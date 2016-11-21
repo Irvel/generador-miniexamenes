@@ -11,13 +11,13 @@ public class ExamTemplate {
      *
      * Imports the used LaTeX packages and sets the page layout, encoding, headers and removes
      * the extra vertical margin in the first page (vspace*{-1.2cm}).
-     * TODO: Properly escape user-entered LaTeX formulas
+     * NOTE: User entered formulas must be inside $$ to be properly displayed
      */
     private static final String mdocumentHeader =
             "\\documentclass[fleqn]{exam}\n" +
             "\\usepackage[letterpaper, left=.5in, right=.5in, top=.25in, " +
             "bottom=.5in]{geometry}\n" +
-            "\\usepackage{mathexam}\n" +
+            "\\usepackage[nohdr]{mathexam}\n" +
             "\\usepackage[utf8]{inputenc}\n" +
             "\\usepackage{amsmath}\n" +
             "\\begin{document}\n" +
@@ -79,7 +79,7 @@ public class ExamTemplate {
             // Add the question header
             sQuestions += "      \\question ";
             // Add a box so that the student can fill in the answer
-            sQuestions += "      \\framebox(14,14){} ";
+            sQuestions += " \\framebox(14,14){} ";
             // Add the actual question text
             sQuestions +=  q.getQuestion() + ":\n";
             // Open the multiple options section

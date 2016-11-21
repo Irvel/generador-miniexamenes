@@ -2,6 +2,7 @@ package GeneradorMiniexamenes.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+// Assumes that the text in each answer is unique
 public class Answer {
     private String mAnswer;
     private int mWeight;

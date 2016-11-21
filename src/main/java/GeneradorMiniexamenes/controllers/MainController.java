@@ -174,7 +174,7 @@ public class MainController {
             examIdx++;
         }
         mListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
-        mListView.setPrefWidth(160.0);
+        mListView.setPrefWidth(150.0);
         viewGradeExamsContainer.getChildren().add(mListView);
         AnchorPane.setLeftAnchor(mListView, 0.0);
         AnchorPane.setRightAnchor(mListView, 0.0);
@@ -253,22 +253,25 @@ public class MainController {
         VBox questionsBox = new VBox();
         mQuestionToNumber = new HashMap<>();
         mQuestionNumToValue = new HashMap<>();
+        char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
         for (Question question : questions) {
             mQuestionToNumber.put(question, questionIndex);
             AnchorPane questionPane = new AnchorPane();
             questionPane.setPadding(new Insets(20, 0, 10, 20));
             questionPane.setStyle("-fx-background-color:" + getBackgroundColor());
             Label questionLabel = new Label("Pregunta #" + Integer.toString(questionIndex) + ":");
-            questionLabel.setStyle("-fx-font-weight: bold;");
+            questionLabel.setStyle("-fx-font-weight: bold");
             questionLabel.setLayoutX(14.0);
             questionLabel.setLayoutY(14.0);
             questionLabel.setId("lblQuestion" + Integer.toString(questionIndex));
             Label answerLabel = new Label("Opción elegida:");
             answerLabel.setLayoutX(14.0);
-            answerLabel.setLayoutY(48.0);
+            answerLabel.setLayoutY(42.0);
             JFXComboBox answerCb = new JFXComboBox();
+            int letterIdx = 0;
             for (Answer answer : question.getAnswers()) {
-                answerCb.getItems().add(answer.getAnswer());
+                answerCb.getItems().add("(" + alphabet[letterIdx] + ") " + answer.getAnswer());
+                letterIdx++;
             }
             answerCb.setLayoutX(14);
             answerCb.setLayoutY(64);
@@ -278,7 +281,7 @@ public class MainController {
                 selAnswer(answerCb.getScene(), selectedAnswer, (Question) answerCb.getUserData());
             });
             Label scoreLabel = new Label("");
-            scoreLabel.setLayoutX(160.0);
+            scoreLabel.setLayoutX(168.0);
             scoreLabel.setLayoutY(50.0);
             scoreLabel.setId("lblScore" + Integer.toString(questionIndex));
             questionPane.getChildren().addAll(questionLabel, answerLabel, answerCb, scoreLabel);
@@ -307,7 +310,8 @@ public class MainController {
         int questionNumber = mQuestionToNumber.get(question);
         Label scoreLabel = (Label) scene.lookup("#lblScore" + Integer.toString(questionNumber));
         for (Answer answer : question.getAnswers()) {
-            if (answer.getAnswer().equalsIgnoreCase(selectedAnwer)) {
+            // The substring is to account for the first 4 characters being the question Letter
+            if (answer.getAnswer().equalsIgnoreCase(selectedAnwer.substring(4))) {
                 scoreLabel.setText("Porcentaje obtenido: " + Integer.toString(answer.getWeight()));
                 mQuestionNumToValue.put(questionNumber, answer.getWeight());
             }

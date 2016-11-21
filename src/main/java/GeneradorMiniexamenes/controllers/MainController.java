@@ -6,10 +6,10 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
@@ -32,7 +32,10 @@ public class MainController {
     private boolean mSubjectListenerActive;
     private boolean mGroupListenerActive;
     private boolean mBackgroundLight;
+    private boolean mFirstGradeViewLoad;
     private HashMap<Integer, Integer> mExamIdxToNumber;
+    private HashMap<Question, Integer> mQuestionToNumber;
+    private HashMap<Integer, Integer> mQuestionNumToValue;
 
     @FXML
     VBox mainImExContainer;
@@ -47,7 +50,7 @@ public class MainController {
     @FXML
     JFXComboBox cbAnswerG;
     @FXML
-    JFXTextField tfCalif;
+    Label lbCalif;
     @FXML
     Spinner spPond;
     @FXML
@@ -71,6 +74,7 @@ public class MainController {
         mSubjectListenerActive = false;
         mGroupListenerActive = false;
         mBackgroundLight = true;
+        mFirstGradeViewLoad = true;
     }
 
     /**
@@ -117,6 +121,9 @@ public class MainController {
      *
      */
     private void resetGradeFields(Boolean subjectWasSelected, Boolean groupWasSelected) {
+        // Reset the questions view
+        viewQuestionsContainer.setContent(null);
+        lbCalif.setText("Calificación:");
         if (!subjectWasSelected) {
             // Disable the listener on the combobox to avoid a callback loop
             mSubjectListenerActive = false;
@@ -146,7 +153,6 @@ public class MainController {
             viewExamsContainer.getChildren().remove(mListView);
         }
         mListView = new JFXListView<String>();
-        mListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
         ArrayList<Exam> exams = mExamBank.getExams(cbTemaG.getValue().toString(),
                                                    cbGrupoG.getValue().toString());
         // Map the real exam number with its index in the listView
@@ -157,8 +163,9 @@ public class MainController {
                                              exam.getExamNumber() +
                                              " - Grupo: " + cbGrupoG.getValue().toString());
             mExamIdxToNumber.put(examIdx, exam.getExamNumber());
+            examIdx++;
         }
-        mListView.getStyleClass().add("mylistview");
+        mListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
         viewExamsContainer.getChildren().add(mListView);
         AnchorPane.setLeftAnchor(mListView, 0.0);
         AnchorPane.setRightAnchor(mListView, 0.0);
@@ -173,7 +180,6 @@ public class MainController {
         @Override
         public void changed(ObservableValue ov, Object t, Object t1) {
             if (mSubjectListenerActive) {
-                System.out.println("A subject has been selected " + ov.getValue().toString());
                 resetGradeFields(true, false);
             }
         }
@@ -183,7 +189,6 @@ public class MainController {
         @Override
         public void changed(ObservableValue ov, Object t, Object t1) {
             if (mGroupListenerActive) {
-                System.out.println("A group as been selected " + ov.getValue().toString());
                 resetGradeFields(true, true);
             }
         }
@@ -193,75 +198,46 @@ public class MainController {
         @Override
         public void changed(ObservableValue ov, Object t, Object t1) {
             if (mGroupListenerActive) {
-                System.out.println("An exam has been selected " + ov.getValue().toString());
-                System.out.println(mListView.getSelectionModel().getSelectedItem().toString());
                 selExam(mExamIdxToNumber.get(mListView.getSelectionModel().getSelectedIndex()));
             }
         }
     };
 
-    boolean fistTime = true;
     public void gradeTabSelected(Event event) throws IOException {
-        if(mExamBank.getGroups().isEmpty()){
+        if(mExamBank.getGroups().isEmpty()) {
             cbTemaG.setDisable(true);
             cbGrupoG.setDisable(true);
-            cbQuestionG.setDisable(true);
-            cbAnswerG.setDisable(true);
         }
-        else if(fistTime){
-            fistTime = false;
+        else if(mFirstGradeViewLoad) {
+            mFirstGradeViewLoad = false;
             cbTemaG.setDisable(false);
             cbGrupoG.setDisable(false);
-            //cbQuestionG.setDisable(false);
-            //cbAnswerG.setDisable(false);
             resetGradeFields(false, false);
             cbTemaG.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
             cbGrupoG.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
         }
         else {
             resetGradeFields(false, false);
+            viewQuestionsContainer.setContent(null);
+            lbCalif.setText("Calificación:");
         }
-    }
-
-    /**
-     * Method called when the user selected a topic to grade
-     * @param actionEvent
-     */
-    public void selSubjectGrade(ActionEvent actionEvent) {
-        resetGradeFields(true, false);
-    }
-
-    /**
-     * Method called when the user selected a group
-     * @param actionEvent
-     */
-    public void selGroup(ActionEvent actionEvent) {
-        resetGradeFields(true, true);
     }
 
     public void selExam(int examNumber) {
         String subject = cbTemaG.getValue().toString();
         String group = cbGrupoG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
-        Exam exam = exams.get(examNumber);
+        Exam exam = mExamBank.getExam(subject, group, examNumber);
         populateQuestionsList(exam.getQuestions());
-        //cbAnswerG.getItems().clear();
-        tfCalif.setText("");
-        /*
-        for(Question q : exam.getQuestions()) {
-            if (!cbQuestionG.getItems().contains(q.getQuestion()))
-                cbQuestionG.getItems().add(q.getQuestion());
-        }
-        arrPond = new int[exam.getQuestions().size()];
-        for(int i = 0; i < arrPond.length; i++)
-            arrPond[i] = 0;
-        */
+        lbCalif.setText("Calificación:");
     }
 
     private void populateQuestionsList(ArrayList<Question> questions) {
         int questionIndex = 1;
         VBox questionsBox = new VBox();
+        mQuestionToNumber = new HashMap<>();
+        mQuestionNumToValue = new HashMap<>();
         for (Question question : questions) {
+            mQuestionToNumber.put(question, questionIndex);
             AnchorPane questionPane = new AnchorPane();
             questionPane.setPadding(new Insets(20, 20, 20, 20));
             questionPane.setStyle("-fx-background-color:" + getBackgroundColor());
@@ -279,10 +255,14 @@ public class MainController {
             }
             answerCb.setLayoutX(14);
             answerCb.setLayoutY(64);
-            answerCb.setId("cbAnswer" + Integer.toString(questionIndex));
+            answerCb.setUserData(question);
+            answerCb.setOnAction((event) -> {
+                String selectedAnswer = answerCb.getSelectionModel().getSelectedItem().toString();
+                selAnswer(answerCb.getScene(), selectedAnswer, (Question) answerCb.getUserData());
+            });
             Label scoreLabel = new Label("");
-            scoreLabel.setLayoutX(150.0);
-            scoreLabel.setLayoutY(14.0);
+            scoreLabel.setLayoutX(180.0);
+            scoreLabel.setLayoutY(50.0);
             scoreLabel.setId("lblScore" + Integer.toString(questionIndex));
             questionPane.getChildren().addAll(questionLabel, answerLabel, answerCb, scoreLabel);
             questionsBox.getChildren().add(questionPane);
@@ -300,49 +280,32 @@ public class MainController {
         return "#e1e1e1";
     }
 
-    public void selQuestion(ActionEvent actionEvent){
-        cbAnswerG.getItems().clear();
+    public void selAnswer(Scene scene, String selectedAnwer, Question question) {
         String subject = cbTemaG.getValue().toString();
-        String question = cbQuestionG.getValue().toString();
         String group = cbGrupoG.getValue().toString();
         Exam exam = mExamBank.getExam(subject,
                                       group,
                                       mExamIdxToNumber.get(mListView.getSelectionModel()
                                                                     .getSelectedIndex()));
-        for (Question q : exam.getQuestions()) {
-            if (q.getQuestion().equals(cbQuestionG.getValue().toString())) {
-                for(Answer a : q.getAnswers()) {
-                    if(!cbAnswerG.getItems().contains(a.getAnswer())) {
-                        cbAnswerG.getItems().add(a.getAnswer());
-                    }
-                }
+        int questionNumber = mQuestionToNumber.get(question);
+        Label scoreLabel = (Label) scene.lookup("#lblScore" + Integer.toString(questionNumber));
+        for (Answer answer : question.getAnswers()) {
+            if (answer.getAnswer().equalsIgnoreCase(selectedAnwer)) {
+                scoreLabel.setText("Porcentaje obtenido: " + Integer.toString(answer.getWeight()));
+                mQuestionNumToValue.put(questionNumber, answer.getWeight());
             }
         }
+        updateTotalScore(scene, exam);
     }
 
-    public void selAnswer(ActionEvent actionEvent) {
-        String subject = cbTemaG.getValue().toString();
-        String group = cbGrupoG.getValue().toString();
-        Exam exam = mExamBank.getExam(subject,
-                                      group,
-                                      mExamIdxToNumber.get(mListView.getSelectionModel()
-                                                                    .getSelectedIndex()));
-        int iC = 0;
-        for (Question q : exam.getQuestions()) {
-            if(q.getQuestion().equals(cbQuestionG.getValue().toString())){
-                for(Answer a : q.getAnswers()){
-                    if(cbAnswerG.getValue() != null && a.getAnswer().equals(cbAnswerG.getValue().toString())) {
-                        arrPond[iC] = a.getWeight();
-                        tfPond.setText(a.getWeight() + "");
-                    }
-                }
-            }
-            iC++;
+    private void updateTotalScore(Scene scene, Exam exam) {
+        int scoreSum = 0;
+        for (int questionNumber : mQuestionNumToValue.keySet()) {
+            scoreSum += mQuestionNumToValue.get(questionNumber);
         }
-
-        int iSum = 0;
-        for(int i = 0; i < exam.getQuestions().size(); i++)
-            iSum += arrPond[i];
-        tfCalif.setText((iSum*1.0/exam.getQuestions().size()) + "");
+        lbCalif.setText("Calificación del examen #" +
+                                Integer.toString(exam.getExamNumber()) + ": " +
+                                String.format("%.2f",(scoreSum * 1.0 / exam.getQuestions()
+                                                                           .size())));
     }
 }

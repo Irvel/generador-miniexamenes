@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXComboBox?>
-<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -57,11 +56,10 @@
                                     </VBox>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="60.0" VBox.vgrow="ALWAYS">
+                              <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="30.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <AnchorPane fx:id="viewExamsContainer" prefHeight="200.0" HBox.hgrow="ALWAYS" />
-                                    <ScrollPane fx:id="viewQuestionsContainer" fitToHeight="true"
-                                                fitToWidth="true" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                    <ScrollPane fx:id="viewQuestionsContainer" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                     </ScrollPane>
                                  </children>
                                  <padding>
@@ -71,7 +69,6 @@
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <Label fx:id="lbCalif" text="Calificación: " />
-                                     <JFXTextField fx:id="tfCalif" editable="false" />
                                  </children>
                               </HBox>
                            </children>

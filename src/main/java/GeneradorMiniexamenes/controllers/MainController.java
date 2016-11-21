@@ -9,7 +9,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -29,13 +31,33 @@ public class MainController {
     private ExamBank mExamBank;
     private boolean mSubjectListenerActive;
     private boolean mGroupListenerActive;
+    private boolean mBackgroundLight;
+    private HashMap<Integer, Integer> mExamIdxToNumber;
 
     @FXML
     VBox mainImExContainer;
-
     @FXML
     VBox mainGenContainer;
-
+    @FXML
+    JFXComboBox cbTemaG;
+    @FXML
+    JFXComboBox cbGrupoG;
+    @FXML
+    JFXComboBox cbQuestionG;
+    @FXML
+    JFXComboBox cbAnswerG;
+    @FXML
+    JFXTextField tfCalif;
+    @FXML
+    Spinner spPond;
+    @FXML
+    JFXTextField tfPond;
+    @FXML
+    AnchorPane viewExamsContainer;
+    @FXML
+    ScrollPane viewQuestionsContainer;
+    private int[] arrPond;
+    private JFXListView mListView;
 
     /**
      * Initializer of MainController
@@ -48,6 +70,7 @@ public class MainController {
         mGrade = new Grade();
         mSubjectListenerActive = false;
         mGroupListenerActive = false;
+        mBackgroundLight = true;
     }
 
     /**
@@ -86,26 +109,6 @@ public class MainController {
         return mExamBank;
     }
 
-    @FXML
-    JFXComboBox cbTemaG;
-    @FXML
-    JFXComboBox cbGrupoG;
-    @FXML
-    JFXComboBox cbExamenesG;
-    @FXML
-    JFXComboBox cbQuestionG;
-    @FXML
-    JFXComboBox cbAnswerG;
-    @FXML
-    JFXTextField tfCalif;
-    @FXML
-    Spinner spPond;
-    @FXML
-    JFXTextField tfPond;
-    @FXML
-    AnchorPane viewExamsContainer;
-    private int[] arrPond;
-    private JFXListView mListView;
     /**
      * resetGradeFields
      *
@@ -146,8 +149,14 @@ public class MainController {
         mListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
         ArrayList<Exam> exams = mExamBank.getExams(cbTemaG.getValue().toString(),
                                                    cbGrupoG.getValue().toString());
+        // Map the real exam number with its index in the listView
+        mExamIdxToNumber = new HashMap<>();
+        int examIdx = 0;
         for (Exam exam : exams) {
-            mListView.getItems().add("Examen número " + exam.getExamNumber());
+            mListView.getItems().add("Examen #" +
+                                             exam.getExamNumber() +
+                                             " - Grupo: " + cbGrupoG.getValue().toString());
+            mExamIdxToNumber.put(examIdx, exam.getExamNumber());
         }
         mListView.getStyleClass().add("mylistview");
         viewExamsContainer.getChildren().add(mListView);
@@ -186,6 +195,7 @@ public class MainController {
             if (mGroupListenerActive) {
                 System.out.println("An exam has been selected " + ov.getValue().toString());
                 System.out.println(mListView.getSelectionModel().getSelectedItem().toString());
+                selExam(mExamIdxToNumber.get(mListView.getSelectionModel().getSelectedIndex()));
             }
         }
     };
@@ -195,7 +205,6 @@ public class MainController {
         if(mExamBank.getGroups().isEmpty()){
             cbTemaG.setDisable(true);
             cbGrupoG.setDisable(true);
-            cbExamenesG.setDisable(true);
             cbQuestionG.setDisable(true);
             cbAnswerG.setDisable(true);
         }
@@ -203,9 +212,8 @@ public class MainController {
             fistTime = false;
             cbTemaG.setDisable(false);
             cbGrupoG.setDisable(false);
-            cbExamenesG.setDisable(false);
-            cbQuestionG.setDisable(false);
-            cbAnswerG.setDisable(false);
+            //cbQuestionG.setDisable(false);
+            //cbAnswerG.setDisable(false);
             resetGradeFields(false, false);
             cbTemaG.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
             cbGrupoG.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
@@ -231,22 +239,65 @@ public class MainController {
         resetGradeFields(true, true);
     }
 
-    public void selExam(ActionEvent actionEvent) {
-        cbQuestionG.getItems().clear();
-        cbAnswerG.getItems().clear();
-        tfCalif.setText("");
+    public void selExam(int examNumber) {
         String subject = cbTemaG.getValue().toString();
         String group = cbGrupoG.getValue().toString();
         ArrayList<Exam> exams = mExamBank.getExams(subject, group);
-        Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
+        Exam exam = exams.get(examNumber);
+        populateQuestionsList(exam.getQuestions());
+        //cbAnswerG.getItems().clear();
+        tfCalif.setText("");
+        /*
         for(Question q : exam.getQuestions()) {
             if (!cbQuestionG.getItems().contains(q.getQuestion()))
                 cbQuestionG.getItems().add(q.getQuestion());
         }
-        System.out.println(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
         arrPond = new int[exam.getQuestions().size()];
         for(int i = 0; i < arrPond.length; i++)
             arrPond[i] = 0;
+        */
+    }
+
+    private void populateQuestionsList(ArrayList<Question> questions) {
+        int questionIndex = 1;
+        VBox questionsBox = new VBox();
+        for (Question question : questions) {
+            AnchorPane questionPane = new AnchorPane();
+            questionPane.setPadding(new Insets(20, 20, 20, 20));
+            questionPane.setStyle("-fx-background-color:" + getBackgroundColor());
+            Label questionLabel = new Label("Pregunta #" + Integer.toString(questionIndex) + ":");
+            questionLabel.setStyle("-fx-font-weight: bold;");
+            questionLabel.setLayoutX(14.0);
+            questionLabel.setLayoutY(14.0);
+            questionLabel.setId("lblQuestion" + Integer.toString(questionIndex));
+            Label answerLabel = new Label("Opción elegida:");
+            answerLabel.setLayoutX(14.0);
+            answerLabel.setLayoutY(48.0);
+            JFXComboBox answerCb = new JFXComboBox();
+            for (Answer answer : question.getAnswers()) {
+                answerCb.getItems().add(answer.getAnswer());
+            }
+            answerCb.setLayoutX(14);
+            answerCb.setLayoutY(64);
+            answerCb.setId("cbAnswer" + Integer.toString(questionIndex));
+            Label scoreLabel = new Label("");
+            scoreLabel.setLayoutX(150.0);
+            scoreLabel.setLayoutY(14.0);
+            scoreLabel.setId("lblScore" + Integer.toString(questionIndex));
+            questionPane.getChildren().addAll(questionLabel, answerLabel, answerCb, scoreLabel);
+            questionsBox.getChildren().add(questionPane);
+            questionIndex++;
+        }
+        viewQuestionsContainer.setContent(questionsBox);
+    }
+
+    private String getBackgroundColor() {
+        if (mBackgroundLight) {
+            mBackgroundLight = false;
+            return "#fafafa";
+        }
+        mBackgroundLight = true;
+        return "#e1e1e1";
     }
 
     public void selQuestion(ActionEvent actionEvent){
@@ -254,12 +305,14 @@ public class MainController {
         String subject = cbTemaG.getValue().toString();
         String question = cbQuestionG.getValue().toString();
         String group = cbGrupoG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
-        Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
-        for(Question q : exam.getQuestions()){
-            if(q.getQuestion().equals(cbQuestionG.getValue().toString())){
-                for(Answer a : q.getAnswers()){
-                    if(!cbAnswerG.getItems().contains(a.getAnswer())){
+        Exam exam = mExamBank.getExam(subject,
+                                      group,
+                                      mExamIdxToNumber.get(mListView.getSelectionModel()
+                                                                    .getSelectedIndex()));
+        for (Question q : exam.getQuestions()) {
+            if (q.getQuestion().equals(cbQuestionG.getValue().toString())) {
+                for(Answer a : q.getAnswers()) {
+                    if(!cbAnswerG.getItems().contains(a.getAnswer())) {
                         cbAnswerG.getItems().add(a.getAnswer());
                     }
                 }
@@ -269,17 +322,18 @@ public class MainController {
 
     public void selAnswer(ActionEvent actionEvent) {
         String subject = cbTemaG.getValue().toString();
-        String question = cbQuestionG.getValue().toString();
         String group = cbGrupoG.getValue().toString();
-        ArrayList<Exam> exams = mExamBank.getExams(subject, group);
-        Exam exam = exams.get(Integer.parseInt(cbExamenesG.getValue().toString()) - 1);
+        Exam exam = mExamBank.getExam(subject,
+                                      group,
+                                      mExamIdxToNumber.get(mListView.getSelectionModel()
+                                                                    .getSelectedIndex()));
         int iC = 0;
-        for(Question q : exam.getQuestions()){
+        for (Question q : exam.getQuestions()) {
             if(q.getQuestion().equals(cbQuestionG.getValue().toString())){
                 for(Answer a : q.getAnswers()){
                     if(cbAnswerG.getValue() != null && a.getAnswer().equals(cbAnswerG.getValue().toString())) {
                         arrPond[iC] = a.getWeight();
-                        tfPond.setText(a.getWeight()+"");
+                        tfPond.setText(a.getWeight() + "");
                     }
                 }
             }

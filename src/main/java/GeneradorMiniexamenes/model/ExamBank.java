@@ -48,6 +48,21 @@ public class ExamBank {
         return null;
     }
 
+    public Exam getExam(String subject, String groupName, int examNumber) {
+        if (mGroups.containsKey(subject)) {
+            for (Group group : mGroups.get(subject)) {
+                if (group.getGroupName().equalsIgnoreCase(groupName)) {
+                    for (Exam exam : group.getExams()) {
+                        if (exam.getExamNumber() == examNumber) {
+                            return exam;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public void addGroup(String subject, Group group) {
         if (mGroups.containsKey(subject)) {
             mGroups.get(subject).add(group);

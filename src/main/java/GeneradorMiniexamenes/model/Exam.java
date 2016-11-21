@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 /**
  * Created by Irvel on 11/12/16.
- * TODO: ADD A "GENERATE AN EXAM NUMBER AS HASMAPS DON'T PRESERVE ORDER
  */
 public class Exam {
     private String mSubject;

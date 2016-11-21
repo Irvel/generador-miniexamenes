@@ -4,6 +4,7 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -56,37 +57,16 @@
                                     </VBox>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0"
-                                    spacing="120.0" VBox.vgrow="ALWAYS">
+                              <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="60.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <AnchorPane fx:id="viewExamsContainer"
-                                                prefHeight="200.0"
-                                                prefWidth="200.0" />
-                                     <Label prefWidth="106.0" styleClass="inputLabel" text="Numero de examen" />
-                                    <JFXComboBox fx:id="cbExamenesG" onAction="#selExam" prefWidth="106.0" styleClass="inputLabel" VBox.vgrow="ALWAYS" />
-                                    <VBox alignment="CENTER" prefHeight="100.0" prefWidth="223.0">
-                                       <children>
-                                          <HBox alignment="TOP_CENTER" prefHeight="47.0" prefWidth="223.0" spacing="10.0" VBox.vgrow="ALWAYS">
-                                             <children>
-                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Pregunta" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-                                                <Label prefWidth="106.0" styleClass="inputLabel" text="Ponderación" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-                                                 <JFXTextField fx:id="tfPond" editable="false" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="TOP_CENTER" prefHeight="231.0" prefWidth="223.0" spacing="10.0">
-                                             <children>
-                                                <VBox prefHeight="80.0" prefWidth="160.0" spacing="10.0">
-                                                   <children>
-                                                      <JFXComboBox fx:id="cbQuestionG" onAction="#selQuestion" prefWidth="106.0" styleClass="inputLabel" VBox.vgrow="ALWAYS" />
-                                                      <Label prefWidth="106.0" styleClass="inputLabel" text="Opción elegida:" />
-                                                      <JFXComboBox fx:id="cbAnswerG" onAction="#selAnswer" prefHeight="27.0" prefWidth="152.0" VBox.vgrow="ALWAYS" />
-                                                   </children>
-                                                </VBox>
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
+                                    <AnchorPane fx:id="viewExamsContainer" prefHeight="200.0" HBox.hgrow="ALWAYS" />
+                                    <ScrollPane fx:id="viewQuestionsContainer" fitToHeight="true"
+                                                fitToWidth="true" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                    </ScrollPane>
                                  </children>
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <children>

@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import static GeneradorMiniexamenes.controllers.Alerts.displayError;
-import static GeneradorMiniexamenes.controllers.Alerts.displayInfo;
+import static GeneradorMiniexamenes.controllers.AlertMaker.displayError;
+import static GeneradorMiniexamenes.controllers.AlertMaker.displayInfo;
 
 /**
  * Imports the subjects from either a .json file or from the .txt legacy

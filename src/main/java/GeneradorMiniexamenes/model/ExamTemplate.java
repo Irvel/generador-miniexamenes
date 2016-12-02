@@ -26,7 +26,7 @@ public class ExamTemplate {
     /**
      * getTitle
      *
-     * Generate a LaTeX string representing the main title of the exam to be shown. This title is
+     * GenerateExamsController a LaTeX string representing the main title of the exam to be shown. This title is
      * composed of the name of the course, the name of the subject and the user-entered group.
      *
      * @param course The name of the class course
@@ -46,7 +46,7 @@ public class ExamTemplate {
     /**
      * getFirstSection
      *
-     * Generate a LaTeX string representing a first section of the exam. This first section is
+     * GenerateExamsController a LaTeX string representing a first section of the exam. This first section is
      * the part in which the student enters his/her ID and in which the Exam number is displayed.
      *
      * @param examNumber The exam number to be displayed
@@ -66,7 +66,7 @@ public class ExamTemplate {
     /**
      * getQuestions
      *
-     * Generate a LaTeX string representing a set of questions. This set of questions is given as
+     * GenerateExamsController a LaTeX string representing a set of questions. This set of questions is given as
      * a group and provides numbering to each question and for its multiple option answers.
      *
      * @param questions A list of questions that will be converted into the LaTeX string
@@ -96,7 +96,7 @@ public class ExamTemplate {
     /**
      * makeLatexExam
      *
-     * Generate a LaTeX string containing a single exam. This string is not parseable because it
+     * GenerateExamsController a LaTeX string containing a single exam. This string is not parseable because it
      * lacks the header and closing part, however it can be grouped along other sections of the
      * same kind.
      * @param exam The exam used to to create the LaTeX string
@@ -115,7 +115,7 @@ public class ExamTemplate {
     /**
      * makeLatexExams
      *
-     * Generate a parseable LaTeX string containing a document with a set of exams.
+     * GenerateExamsController a parseable LaTeX string containing a document with a set of exams.
      * @param exams The set of exams from which the document will be created
      * @return The LaTeX string containing the exams
      */

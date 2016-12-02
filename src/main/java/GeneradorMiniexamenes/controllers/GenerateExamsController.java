@@ -27,20 +27,13 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * Randomly generates exams from the subjects and questions available in the
  * model.
  */
-public class Generate {
+public class GenerateExamsController {
     private MainController mParentController;
 
-    @FXML
-    JFXComboBox<String> cbTema;
-
-    @FXML
-    SpinnerAutoCommit spCantidad;
-
-    @FXML
-    JFXButton btnGenerate;
-
-    @FXML
-    JFXTextField tfGrupo;
+    @FXML private JFXComboBox<String> comboBoxSubject;
+    @FXML private SpinnerAutoCommit spinnerAmount;
+    @FXML private JFXButton buttonGenerate;
+    @FXML private JFXTextField textFieldGroup;
 
     private HBox mGenerateContainer;
     private HBox mDownloadContainer;
@@ -60,7 +53,7 @@ public class Generate {
                                                           "3.0\\miktex\\bin\\x64\\pdflatex.exe"};
 
 
-    public Generate(MainController parentController) {
+    public GenerateExamsController(MainController parentController) {
         // Keep a reference to the main controller to get important shared variables
         mParentController = parentController;
         mFirstLoad = true;
@@ -80,13 +73,13 @@ public class Generate {
 
             // Load the form for generating exams but do not show it yet
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fxml/GenerateExams/GenAction.fxml"));
+            loader.setLocation(getClass().getResource("/fxml/GenerateExamsTab/GenAction.fxml"));
             loader.setController(this);
             mGenerateContainer = loader.load();
 
             // Load the interface for downloading the Generated exams but do not show it yet
             loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fxml/GenerateExams/GenDownload.fxml"));
+            loader.setLocation(getClass().getResource("/fxml/GenerateExamsTab/GenDownload.fxml"));
             loader.setController(this);
             mDownloadContainer = loader.load();
         }
@@ -106,13 +99,13 @@ public class Generate {
             return;
         }
 
-        // Get the selected subject object from the cbTema ComboBox
+        // Get the selected subject object from the comboBoxSubject ComboBox
         Subject subject = mParentController.getQuestionBank()
-                                           .getSubjectByName(cbTema.getValue());
-        int examQuantity = Integer.parseInt(spCantidad.getValue().toString());
+                                           .getSubjectByName(comboBoxSubject.getValue());
+        int examQuantity = Integer.parseInt(spinnerAmount.getValue().toString());
         Group generatedExams = generateExams(subject,
                                              examQuantity,
-                                             tfGrupo.getText().trim());
+                                             textFieldGroup.getText().trim());
 
         // Add the newly generated exams to the list of generated exams for this subject
         mParentController.getExamBank().addGroup(subject.getSubjectName(), generatedExams);
@@ -145,28 +138,28 @@ public class Generate {
      *
      */
     private void resetFormFields() {
-        spCantidad.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 40));
-        tfGrupo.setText("");
+        spinnerAmount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 40));
+        textFieldGroup.setText("");
         if (mGenerateContainer != null) {
             // Checks if there is at least one subject in the QuestionBank
             if (mParentController.getQuestionBank().getSubjects().isEmpty()) {
-                btnGenerate.setDisable(true);
-                cbTema.setDisable(true);
+                buttonGenerate.setDisable(true);
+                comboBoxSubject.setDisable(true);
             }
             else {
-                btnGenerate.setDisable(false);
-                cbTema.setDisable(false);
+                buttonGenerate.setDisable(false);
+                comboBoxSubject.setDisable(false);
                 // Load each subject name from the QuestionBank into the combo box
                 mParentController.getQuestionBank()
                                  .getSubjects()
                                  .stream()
-                                 .filter(s -> !cbTema.getItems().contains(s.getSubjectName()))
+                                 .filter(s -> !comboBoxSubject.getItems().contains(s.getSubjectName()))
                                  .forEach(s -> {
-                                     cbTema.getItems().add(s.getSubjectName());
+                                     comboBoxSubject.getItems().add(s.getSubjectName());
                                  });
 
                 // Set the preselected subject in the combo box as the first one
-                cbTema.getSelectionModel().selectFirst();
+                comboBoxSubject.getSelectionModel().selectFirst();
             }
         }
     }
@@ -174,21 +167,21 @@ public class Generate {
     /**
      * areFieldsInvalid
      *
-     * Verifies that the user-entered values in the Generate form fields are valid.
+     * Verifies that the user-entered values in the GenerateExamsController form fields are valid.
      * @return True if the user-entered values are invalid, false otherwise.
      *
      */
     private boolean areFieldsInvalid() {
         // Validate that a group was entered
-        if (tfGrupo.getText() == null || tfGrupo.getText().equals("")) {
-            Alerts.displayError("Error", "Favor de ingresar un grupo");
+        if (textFieldGroup.getText() == null || textFieldGroup.getText().equals("")) {
+            AlertMaker.displayError("Error", "Favor de ingresar un grupo");
             return true;
         }
 
         // Validate that the entered amount of exams is larger than 0
-        if (spCantidad.getValue() == null ||
-                Integer.parseInt(spCantidad.getValue().toString()) <= 0) {
-            Alerts.displayError("Error", "Favor de ingresar una cantidad de examenes mayor a 0");
+        if (spinnerAmount.getValue() == null ||
+                Integer.parseInt(spinnerAmount.getValue().toString()) <= 0) {
+            AlertMaker.displayError("Error", "Favor de ingresar una cantidad de examenes mayor a 0");
             return true;
         }
         return false;
@@ -198,7 +191,7 @@ public class Generate {
      * loadGenerateForm
      *
      * Loads the subjects from the QuestionBank instance in memory if there is at least one subject.
-     * In case there are no subjects, prevent the exam generation by disabling the btnGenerate.
+     * In case there are no subjects, prevent the exam generation by disabling the buttonGenerate.
      * @param mainContainer A reference to the main container to which the GenerateForm will
      *                         be added in
      *
@@ -257,7 +250,7 @@ public class Generate {
             // Reuse the questions variable for another exam
             questions.clear();
         }
-        // Generate the LaTeX document of the exams and store in the member variable
+        // GenerateExamsController the LaTeX document of the exams and store in the member variable
         mLatexExams = ExamTemplate.makeLatexExams(generatedExams);
         // Store the last generated subject and group to be used in the filename when downloading
         // the generated exams
@@ -274,10 +267,10 @@ public class Generate {
      * @param actionEvent
      */
     public void backGenAction(ActionEvent actionEvent) {
-        // Get a reference to the parent container to be able to add the Generate form to it
+        // Get a reference to the parent container to be able to add the GenerateExamsController form to it
         VBox parentContainer = (VBox) mDownloadContainer.getParent();
 
-        // Clean the container to re-initialize the Generate exams form view
+        // Clean the container to re-initialize the GenerateExamsController exams form view
         parentContainer.getChildren().clear();
 
         // Set this to true so that loadGenerateForm reloads the views from the fxml's
@@ -341,7 +334,7 @@ public class Generate {
         }
         catch (IOException e) {
             e.printStackTrace();
-            Alerts.displayError("Error", "No fue posible escribir en la ruta especificada.");
+            AlertMaker.displayError("Error", "No fue posible escribir en la ruta especificada.");
         }
     }
 
@@ -452,7 +445,7 @@ public class Generate {
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            Alerts.displayError("Error", "No fue posible exportar los examenes en formato PDF. " +
+            AlertMaker.displayError("Error", "No fue posible exportar los examenes en formato PDF. " +
                     "Verifique que tenga una instalación funcional de LaTeX");
         }
     }
@@ -535,7 +528,7 @@ public class Generate {
                 return currentPath;
             }
         }
-        Alerts.displayError("Error: pdflatex no encontrado", "El programa pdflatex no fue " +
+        AlertMaker.displayError("Error: pdflatex no encontrado", "El programa pdflatex no fue " +
                 "encontrado. Favor de instalar pdflatex para habilitar la exportación " +
                 "directa a PDF.");
         return null;

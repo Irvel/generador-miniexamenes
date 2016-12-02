@@ -12,17 +12,15 @@
     <padding>
         <Insets left="30.0" right="30.0"/>
     </padding>
-    <JFXButton fx:id="btnBack" onAction="#backGenAction" styleClass="inputBtn" text="Regresar">
+    <JFXButton onAction="#backGenAction" styleClass="inputBtn" text="Regresar">
         <HBox.margin>
           <Insets right="36.0"/>
         </HBox.margin>
     </JFXButton>
-    <JFXButton fx:id="btnDownloadLatex"
-               onAction="#downloadLatexAction"
+    <JFXButton onAction="#downloadLatexAction"
                styleClass="inputBtn"
                text="Descargar examenes en formato LaTeX"/>
-    <JFXButton fx:id="btnDownloadPdf"
-               onAction="#downloadPdfAction"
+    <JFXButton onAction="#downloadPdfAction"
                styleClass="inputBtn"
                text="Descargar examenes en formato PDF"/>
 </HBox>

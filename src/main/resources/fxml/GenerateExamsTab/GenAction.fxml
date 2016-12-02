@@ -7,6 +7,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
+
 <HBox alignment="CENTER"
       spacing="20.0"
       VBox.vgrow="NEVER"
@@ -19,7 +20,7 @@
                        styleClass="inputLabel"
                        text="Tema:"
                        VBox.vgrow="ALWAYS" />
-                <JFXComboBox fx:id="cbTema"
+                <JFXComboBox fx:id="comboBoxSubject"
                              prefHeight="27.0"
                              prefWidth="152.0"
                              VBox.vgrow="ALWAYS" />
@@ -31,7 +32,7 @@
         <VBox prefHeight="200.0" prefWidth="160.0" spacing="10.0" HBox.hgrow="ALWAYS">
             <children>
                 <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" VBox.vgrow="ALWAYS" />
-                <JFXTextField fx:id="tfGrupo" VBox.vgrow="ALWAYS" />
+                <JFXTextField fx:id="textFieldGroup" VBox.vgrow="ALWAYS" />
             </children>
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -43,7 +44,7 @@
         <VBox prefHeight="200.0" prefWidth="160.0" spacing="10.0" HBox.hgrow="ALWAYS">
             <children>
                 <Label prefWidth="106.0" styleClass="inputLabel" text="Cantidad:" VBox.vgrow="ALWAYS" />
-                <SpinnerAutoCommit fx:id="spCantidad" editable="true" BorderPane.alignment="CENTER">
+                <SpinnerAutoCommit fx:id="spinnerAmount" editable="true" BorderPane.alignment="CENTER">
                 </SpinnerAutoCommit>
             </children>
             <padding>
@@ -55,7 +56,7 @@
         </VBox>
         <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
             <children>
-                <JFXButton fx:id="btnGenerate" disable="True" layoutX="11.0" layoutY="27.0"
+                <JFXButton fx:id="buttonGenerate" disable="True" layoutX="11.0" layoutY="27.0"
                            onAction="#generateAction" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Generar" />
             </children>
         </AnchorPane>

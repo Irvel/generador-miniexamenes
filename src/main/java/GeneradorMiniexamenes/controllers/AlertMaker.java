@@ -5,7 +5,7 @@ import javafx.scene.control.Alert;
 /**
  * Created by Irvel on 11/13/16.
  */
-public class Alerts {
+public class AlertMaker {
     /**
      * displayError
      *

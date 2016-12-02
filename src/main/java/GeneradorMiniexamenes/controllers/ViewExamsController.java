@@ -8,71 +8,61 @@ import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
 /**
- * ViewExamsUI
+ * ViewExamsController
  *
  * This class is the view controller for the View Generated Exams interface.
  */
-public class ViewExamsUI {
+public class ViewExamsController {
     private MainController mParentController;
-    private VBox mViewExamsContainer;
+
     private JFXListView mExamListView;
     private ChangeListener mSubjectListener;
     private ChangeListener mGroupListener;
     private ChangeListener mExamListListener;
-    private boolean mFirstLoad;
     private boolean mSubjectListenerActive;
     private boolean mGroupListenerActive;
     private HashMap<Integer, Integer> mExamIdxToNumber;
 
-    @FXML
-    ComboBox cbTemaViewExams;
-    @FXML
-    ComboBox cbGrupoViewExams;
-    @FXML
-    AnchorPane viewExamsContainer;
-    @FXML
-    JFXButton btnDeleteExam;
-    @FXML
-    JFXButton btnDownloadLatex;
-    @FXML
-    JFXButton btnDownloadPdf;
+    @FXML private ComboBox cbSubjectViewExams;
+    @FXML private ComboBox cbGroupViewExams;
+    @FXML private AnchorPane parentContainer;
+    @FXML private JFXButton buttonDeleteExam;
+    @FXML private JFXButton buttonDownloadLatex;
+    @FXML private JFXButton buttonDownloadPdf;
 
-    public ViewExamsUI(MainController parentController) {
-        // Keep a reference to the parent to access central variables
-        mParentController = parentController;
-
-        // Load the interface for viewing the previously generated exams
-        inflateView();
-
-        // Create the change listeners for the comboxes and the listview
-        setListeners();
-        mFirstLoad = true;
+    public ViewExamsController() {
         mSubjectListenerActive = false;
         mGroupListenerActive = false;
+    }
+
+    public void initialize() {
+        // Create the change listeners for the ComboBoxes and the ListView
+        setListeners();
+    }
+
+    public void injectMainController(MainController mainController) {
+        this.mParentController = mainController;
     }
 
     /**
      * setListeners
      *
-     * Set the listeners responsible for handling the actions of the cbTemaViewExams and
-     * cbGrupoViewExams comboboxes and the mExamListView listview.
+     * Set the listeners responsible for handling the actions of the cbSubjectViewExams and
+     * cbGroupViewExams comboboxes and the mExamListView listview.
      *
      */
     private void setListeners() {
-        // Called when the user has selected a subject in the cbTemaViewExams combobox
+        // Called when the user has selected a subject in the cbSubjectViewExams combobox
         mSubjectListener = (ov, t, t1) -> {
             if (mSubjectListenerActive) {
                 // The grade field
@@ -80,7 +70,7 @@ public class ViewExamsUI {
             }
         };
 
-        // Called when the user has selected a group in the cbTemaViewExams cbGrupoViewExams
+        // Called when the user has selected a group in the cbSubjectViewExams cbGroupViewExams
         mGroupListener = (ov, t, t1) -> {
             if (mGroupListenerActive) {
                 resetViewFields(true, true);
@@ -106,13 +96,13 @@ public class ViewExamsUI {
             // Disable the listener on the combobox to avoid a callback loop when selecting the first subject
             mSubjectListenerActive = false;
             // Fill the subject combobox and select the first one
-            cbTemaViewExams.getItems().clear();
+            cbSubjectViewExams.getItems().clear();
             for (HashMap.Entry<String, ArrayList<Group>> subject : mParentController.getExamBank()
                                                                                     .getGroups()
                                                                                     .entrySet()) {
-                cbTemaViewExams.getItems().add(subject.getKey());
+                cbSubjectViewExams.getItems().add(subject.getKey());
             }
-            cbTemaViewExams.getSelectionModel().selectFirst();
+            cbSubjectViewExams.getSelectionModel().selectFirst();
 
             // After reseting the subject, the group needs to be reset as well
             groupWasSelected = false;
@@ -121,11 +111,11 @@ public class ViewExamsUI {
         if (!groupWasSelected) {
             mGroupListenerActive = false;
             // Fill the group combobox with the selected subject groups and select the first one
-            cbGrupoViewExams.getItems().clear();
-            for (Group group : mParentController.getExamBank().getGroups(cbTemaViewExams.getValue().toString())) {
-                cbGrupoViewExams.getItems().add(group.getGroupName());
+            cbGroupViewExams.getItems().clear();
+            for (Group group : mParentController.getExamBank().getGroups(cbSubjectViewExams.getValue().toString())) {
+                cbGroupViewExams.getItems().add(group.getGroupName());
             }
-            cbGrupoViewExams.getSelectionModel().selectFirst();
+            cbGroupViewExams.getSelectionModel().selectFirst();
         }
 
         // Refresh the contents of the displayed ListView
@@ -146,24 +136,24 @@ public class ViewExamsUI {
         disableAllButtons();
 
         if (mExamListView != null) {
-            viewExamsContainer.getChildren().remove(mExamListView);
+            parentContainer.getChildren().remove(mExamListView);
         }
         mExamListView = new JFXListView<String>();
         ArrayList<Exam> exams = mParentController.getExamBank()
-                                                 .getExams(cbTemaViewExams.getValue().toString(),
-                                                           cbGrupoViewExams.getValue().toString());
+                                                 .getExams(cbSubjectViewExams.getValue().toString(),
+                                                           cbGroupViewExams.getValue().toString());
         // Map the real exam number with its index in the listView
         mExamIdxToNumber = new HashMap<>();
         int examIdx = 0;
         for (Exam exam : exams) {
             mExamListView.getItems().add("Examen #" +
                                              exam.getExamNumber() +
-                                             " - Grupo: " + cbGrupoViewExams.getValue().toString());
+                                             " - Grupo: " + cbGroupViewExams.getValue().toString());
             mExamIdxToNumber.put(examIdx, exam.getExamNumber());
             examIdx++;
         }
         mExamListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
-        viewExamsContainer.getChildren().add(mExamListView);
+        parentContainer.getChildren().add(mExamListView);
         AnchorPane.setLeftAnchor(mExamListView, 0.0);
         AnchorPane.setRightAnchor(mExamListView, 0.0);
         AnchorPane.setTopAnchor(mExamListView, 0.0);
@@ -177,9 +167,9 @@ public class ViewExamsUI {
      *
      */
     private void disableAllButtons() {
-        btnDeleteExam.setDisable(true);
-        btnDownloadLatex.setDisable(true);
-        btnDownloadPdf.setDisable(true);
+        buttonDeleteExam.setDisable(true);
+        buttonDownloadLatex.setDisable(true);
+        buttonDownloadPdf.setDisable(true);
     }
 
     /**
@@ -189,53 +179,30 @@ public class ViewExamsUI {
      *
      */
     private void enableAllButtons() {
-        btnDeleteExam.setDisable(false);
-        btnDownloadLatex.setDisable(false);
-        btnDownloadPdf.setDisable(false);
-    }
-
-    /**
-     * inflateView
-     *
-     * Load the fxml interface definition into an object stored in mViewExamsContainer.
-     *
-     */
-    private void inflateView() {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/fxml/ViewExams.fxml"));
-        loader.setController(this);
-        try {
-            mViewExamsContainer = loader.load();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        buttonDeleteExam.setDisable(false);
+        buttonDownloadLatex.setDisable(false);
+        buttonDownloadPdf.setDisable(false);
     }
 
     /**
      * loadViewExamsForm
      *
-     * Load the viewExam interface into the currently displayed user interface if its the first
-     * time and initialize the shown fields.
+     * Initialize view exam fields.
      *
      */
-    public void loadViewExamsForm(AnchorPane mainViewExamsContainer) {
-        if (mFirstLoad) {
-            mFirstLoad = false;
-            mainViewExamsContainer.getChildren().add(mViewExamsContainer);
-        }
+    public void loadViewExamsForm() {
         if (mParentController.getExamBank().getGroups().isEmpty()) {
-            cbTemaViewExams.setDisable(true);
-            cbGrupoViewExams.setDisable(true);
+            cbSubjectViewExams.setDisable(true);
+            cbGroupViewExams.setDisable(true);
             disableAllButtons();
         }
         else {
-            cbTemaViewExams.setDisable(false);
-            cbGrupoViewExams.setDisable(false);
+            cbSubjectViewExams.setDisable(false);
+            cbGroupViewExams.setDisable(false);
             disableAllButtons();
             resetViewFields(false, false);
-            cbTemaViewExams.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
-            cbGrupoViewExams.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
+            cbSubjectViewExams.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
+            cbGroupViewExams.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
         }
     }
 
@@ -262,13 +229,13 @@ public class ViewExamsUI {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == btnSi) {
-            String subject = cbTemaViewExams.getValue().toString();
-            String group = cbGrupoViewExams.getValue().toString();
+            String subject = cbSubjectViewExams.getValue().toString();
+            String group = cbGroupViewExams.getValue().toString();
             int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
             mParentController.getExamBank().deleteExam(subject, group, examNumber);
             // Refresh the entire view to account for the deletion of a group or subject after
             // deleting the exam
-            loadViewExamsForm(null);
+            loadViewExamsForm();
         }
     }
 
@@ -280,8 +247,8 @@ public class ViewExamsUI {
      * @param actionEvent The context in which the user click the download exam button.
      */
     public void downLatexSelectedExam(ActionEvent actionEvent) {
-        String subject = cbTemaViewExams.getValue().toString();
-        String group = cbGrupoViewExams.getValue().toString();
+        String subject = cbSubjectViewExams.getValue().toString();
+        String group = cbGroupViewExams.getValue().toString();
         int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
         Exam exam = mParentController.getExamBank()
                                      .getExam(subject, group, examNumber);
@@ -302,8 +269,8 @@ public class ViewExamsUI {
      * @param actionEvent The context in which the user click the download exam button.
      */
     public void downPdfSelectedExam(ActionEvent actionEvent) {
-        String subject = cbTemaViewExams.getValue().toString();
-        String group = cbGrupoViewExams.getValue().toString();
+        String subject = cbSubjectViewExams.getValue().toString();
+        String group = cbGroupViewExams.getValue().toString();
         int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
         Exam exam = mParentController.getExamBank()
                                      .getExam(subject, group, examNumber);

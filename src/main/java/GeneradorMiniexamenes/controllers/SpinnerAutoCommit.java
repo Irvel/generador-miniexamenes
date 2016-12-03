@@ -62,7 +62,14 @@ public class SpinnerAutoCommit<T> extends Spinner<T> {
             if (converter != null) {
                 try {
                     T value = converter.fromString(text);
-                    valueFactory.setValue(value);
+                    if (value != null) {
+                        valueFactory.setValue(value);
+                    }
+                    else {
+                        value = converter.fromString("1");
+                        valueFactory.setValue(value);
+                        getEditor().setText("1");
+                    }
                 }
                 catch(NumberFormatException e) {
                     T value = converter.fromString("1");

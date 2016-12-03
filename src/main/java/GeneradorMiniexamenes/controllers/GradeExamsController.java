@@ -1,9 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.Answer;
-import GeneradorMiniexamenes.model.Exam;
-import GeneradorMiniexamenes.model.Group;
-import GeneradorMiniexamenes.model.Question;
+import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
@@ -26,7 +23,8 @@ import java.util.HashMap;
  * that handles actions inside the view.
  */
 public class GradeExamsController {
-    private MainController mParentController;
+    // A reference to the Model of the application
+    private ExamBank mExamBank;
 
     private HashMap<Integer, Integer> mExamIdxToNumber;
     private HashMap<Question, Integer> mQuestionToNumber;
@@ -57,10 +55,9 @@ public class GradeExamsController {
         // This makes the app load the listeners for a theme and group change
         mFirstGradeViewLoad = true;
     }
-
-    public void injectMainController(MainController mainController) {
-        // Keep a reference to the main controller to get important shared variables
-        mParentController = mainController;
+    
+    public void setModel(ExamBank examBank) {
+        mExamBank = examBank;
     }
 
     /**
@@ -79,7 +76,7 @@ public class GradeExamsController {
             mSubjectListenerActive = false;
             // Fill the subject combobox and select the first one
             comboBoxSubjectGrade.getItems().clear();
-            for (HashMap.Entry<String, ArrayList<Group>> subject : mParentController.getExamBank().getGroups().entrySet()) {
+            for (HashMap.Entry<String, ArrayList<Group>> subject : mExamBank.getGroups().entrySet()) {
                 comboBoxSubjectGrade.getItems().add(subject.getKey());
             }
             comboBoxSubjectGrade.getSelectionModel().selectFirst();
@@ -92,7 +89,7 @@ public class GradeExamsController {
             mGroupListenerActive = false;
             // Fill the group combobox with the selected subject groups and select the first one
             comboBoxGroupGrade.getItems().clear();
-            for (Group group : mParentController.getExamBank().getGroups(comboBoxSubjectGrade.getValue().toString())) {
+            for (Group group : mExamBank.getGroups(comboBoxSubjectGrade.getValue().toString())) {
                 comboBoxGroupGrade.getItems().add(group.getGroupName());
             }
             comboBoxGroupGrade.getSelectionModel().selectFirst();
@@ -101,7 +98,7 @@ public class GradeExamsController {
             viewGradeExamsContainer.getChildren().remove(mListView);
         }
         mListView = new JFXListView<String>();
-        ArrayList<Exam> exams = mParentController.getExamBank().getExams(comboBoxSubjectGrade.getValue().toString(),
+        ArrayList<Exam> exams = mExamBank.getExams(comboBoxSubjectGrade.getValue().toString(),
                                                                          comboBoxGroupGrade.getValue().toString());
         // Map the real exam number with its index in the listView
         mExamIdxToNumber = new HashMap<>();
@@ -152,7 +149,7 @@ public class GradeExamsController {
     public void examSelected(int examNumber) {
         String subject = comboBoxSubjectGrade.getValue().toString();
         String group = comboBoxGroupGrade.getValue().toString();
-        Exam exam = mParentController.getExamBank().getExam(subject, group, examNumber);
+        Exam exam = mExamBank.getExam(subject, group, examNumber);
         populateQuestionsList(exam.getQuestions());
         labelGrade.setText("Calificación:");
     }
@@ -220,7 +217,7 @@ public class GradeExamsController {
     public void selAnswer(Scene scene, String selectedAnwer, Question question) {
         String subject = comboBoxSubjectGrade.getValue().toString();
         String group = comboBoxGroupGrade.getValue().toString();
-        Exam exam = mParentController.getExamBank().getExam(subject,
+        Exam exam = mExamBank.getExam(subject,
                                       group,
                                       mExamIdxToNumber.get(mListView.getSelectionModel()
                                                                     .getSelectedIndex()));
@@ -248,7 +245,7 @@ public class GradeExamsController {
     }
 
     public void tabSelected() {
-        if(mParentController.getExamBank().getGroups().isEmpty()) {
+        if(mExamBank.getGroups().isEmpty()) {
             comboBoxSubjectGrade.setDisable(true);
             comboBoxGroupGrade.setDisable(true);
         }

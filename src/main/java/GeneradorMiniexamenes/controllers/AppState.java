@@ -29,7 +29,7 @@ public class AppState {
      * @return The question bank stored inside the Application
      */
     public static QuestionBank loadQuestionBank() {
-        checkDataExists();
+        checkDataDirectoryExists();
         ObjectMapper mapper = new ObjectMapper();
         try {
             File file = new File(QUESTIONS_PATH);
@@ -41,15 +41,27 @@ public class AppState {
         return new QuestionBank();
     }
 
+    public static QuestionBank loadQuestionBank(String path) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            File file = new File(path);
+            return mapper.readValue(file, QuestionBank.class);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new QuestionBank();
+    }
+
     /**
      * saveQuestionBank
      *
      * Save the current question bank to persistent Storage in QUESTIONS_PATH.
-     *
+     * TODO: Do this in another thread
      * @param questionBank The question bank to be saved
      */
     public static void saveQuestionBank(QuestionBank questionBank) {
-        checkDataExists();
+        checkDataDirectoryExists();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             FileOutputStream outFile = new FileOutputStream(QUESTIONS_PATH, false);
@@ -69,7 +81,7 @@ public class AppState {
      * @param examBank The exam bank to be saved
      */
     public static void saveExamBank(ExamBank examBank) {
-        checkDataExists();
+        checkDataDirectoryExists();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             FileOutputStream outFile = new FileOutputStream(EXAMS_PATH, false);
@@ -89,7 +101,7 @@ public class AppState {
      * @return The previously generated exams
      */
     public static ExamBank loadExamBank() {
-        checkDataExists();
+        checkDataDirectoryExists();
         ObjectMapper mapper = new ObjectMapper();
         try {
             File file = new File(EXAMS_PATH);
@@ -103,12 +115,12 @@ public class AppState {
     }
 
     /**
-     * checkDataExists
+     * checkDataDirectoryExists
      *
      * Check if the data directory exists. If it doesn't, create it.
      *
      */
-    private static void checkDataExists() {
+    private static void checkDataDirectoryExists() {
         File dataPath = new File("data");
         if (dataPath.exists()) {
             return;

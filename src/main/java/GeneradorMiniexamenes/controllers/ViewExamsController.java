@@ -1,8 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.Exam;
-import GeneradorMiniexamenes.model.ExamTemplate;
-import GeneradorMiniexamenes.model.Group;
+import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
@@ -23,8 +21,6 @@ import java.util.Optional;
  * This class is the view controller for the View Generated Exams interface.
  */
 public class ViewExamsController {
-    private MainController mParentController;
-
     private JFXListView mExamListView;
     private ChangeListener mSubjectListener;
     private ChangeListener mGroupListener;
@@ -39,6 +35,9 @@ public class ViewExamsController {
     @FXML private JFXButton buttonDeleteExam;
     @FXML private JFXButton buttonDownloadLatex;
     @FXML private JFXButton buttonDownloadPdf;
+    private ExamBank mExamBank;
+    // Keep a reference to the Generate tab to be able to call its generate methods
+    private GenerateExamsController mGenerateExamsController;
 
     public ViewExamsController() {
         mSubjectListenerActive = false;
@@ -50,8 +49,9 @@ public class ViewExamsController {
         setListeners();
     }
 
-    public void injectMainController(MainController mainController) {
-        this.mParentController = mainController;
+    public void setModel(ExamBank examBank, GenerateExamsController generateExamsController) {
+        mExamBank = examBank;
+        mGenerateExamsController = generateExamsController;
     }
 
     /**
@@ -97,9 +97,7 @@ public class ViewExamsController {
             mSubjectListenerActive = false;
             // Fill the subject combobox and select the first one
             cbSubjectViewExams.getItems().clear();
-            for (HashMap.Entry<String, ArrayList<Group>> subject : mParentController.getExamBank()
-                                                                                    .getGroups()
-                                                                                    .entrySet()) {
+            for (HashMap.Entry<String, ArrayList<Group>> subject : mExamBank.getGroups().entrySet()) {
                 cbSubjectViewExams.getItems().add(subject.getKey());
             }
             cbSubjectViewExams.getSelectionModel().selectFirst();
@@ -112,7 +110,7 @@ public class ViewExamsController {
             mGroupListenerActive = false;
             // Fill the group combobox with the selected subject groups and select the first one
             cbGroupViewExams.getItems().clear();
-            for (Group group : mParentController.getExamBank().getGroups(cbSubjectViewExams.getValue().toString())) {
+            for (Group group : mExamBank.getGroups(cbSubjectViewExams.getValue().toString())) {
                 cbGroupViewExams.getItems().add(group.getGroupName());
             }
             cbGroupViewExams.getSelectionModel().selectFirst();
@@ -139,7 +137,7 @@ public class ViewExamsController {
             parentContainer.getChildren().remove(mExamListView);
         }
         mExamListView = new JFXListView<String>();
-        ArrayList<Exam> exams = mParentController.getExamBank()
+        ArrayList<Exam> exams = mExamBank
                                                  .getExams(cbSubjectViewExams.getValue().toString(),
                                                            cbGroupViewExams.getValue().toString());
         // Map the real exam number with its index in the listView
@@ -191,7 +189,7 @@ public class ViewExamsController {
      *
      */
     public void loadViewExamsForm() {
-        if (mParentController.getExamBank().getGroups().isEmpty()) {
+        if (mExamBank.getGroups().isEmpty()) {
             cbSubjectViewExams.setDisable(true);
             cbGroupViewExams.setDisable(true);
             disableAllButtons();
@@ -232,7 +230,7 @@ public class ViewExamsController {
             String subject = cbSubjectViewExams.getValue().toString();
             String group = cbGroupViewExams.getValue().toString();
             int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
-            mParentController.getExamBank().deleteExam(subject, group, examNumber);
+            mExamBank.deleteExam(subject, group, examNumber);
             // Refresh the entire view to account for the deletion of a group or subject after
             // deleting the exam
             loadViewExamsForm();
@@ -250,16 +248,15 @@ public class ViewExamsController {
         String subject = cbSubjectViewExams.getValue().toString();
         String group = cbGroupViewExams.getValue().toString();
         int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
-        Exam exam = mParentController.getExamBank()
-                                     .getExam(subject, group, examNumber);
+        Exam exam = mExamBank
+                .getExam(subject, group, examNumber);
 
         // Encapsulate the exam in an ArrayList because that's how the method wants it
         String latexExam = ExamTemplate.makeLatexExams(new ArrayList<Exam>() {{ add(exam); }});
 
         final String filename = "Examen #" + Integer.toString(examNumber) + " - " + group;
         // Download the exam as a latex file
-        mParentController.getGenerateInstance()
-                         .downloadLatexExams(actionEvent, filename, latexExam);
+        mGenerateExamsController.downloadLatexExams(actionEvent, filename, latexExam);
     }
 
     /**
@@ -272,15 +269,13 @@ public class ViewExamsController {
         String subject = cbSubjectViewExams.getValue().toString();
         String group = cbGroupViewExams.getValue().toString();
         int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
-        Exam exam = mParentController.getExamBank()
-                                     .getExam(subject, group, examNumber);
+        Exam exam = mExamBank.getExam(subject, group, examNumber);
 
         // Encapsulate the exam in an ArrayList because that's how the method wants it
         String latexExam = ExamTemplate.makeLatexExams(new ArrayList<Exam>() {{ add(exam); }});
 
         final String filename = "Examen #" + Integer.toString(examNumber) + " - " + group;
         // Download the exam as a PDF file
-        mParentController.getGenerateInstance()
-                         .downloadPdfExams(actionEvent, filename, latexExam);
+        mGenerateExamsController.downloadPdfExams(actionEvent, filename, latexExam);
     }
 }

@@ -27,7 +27,7 @@ import static GeneradorMiniexamenes.controllers.AlertMaker.displayInfo;
  */
 public class Import {
     /**
-     * generateExams
+     * importFromFile
      *
      * Imports a set of questions from a single subject when importing from the
      * legacy .txt format or imports questions form a set of subjects when importing
@@ -35,32 +35,44 @@ public class Import {
      *
      * @param ae actionEvent to get the Window
      */
-    public QuestionBank onClick(ActionEvent ae, QuestionBank questionBank) {
-        Node source = (Node) ae.getSource();
-        Stage theStage = (Stage) source.getScene().getWindow();
-        File file = getFile(theStage);
+    public void importFromFile(ActionEvent ae, QuestionBank questionBank) {
+        File file = getFile(ae);
         // The user selected the "cancel" option
         if (file == null) {
-            return null;
+            return;
         }
-        // Checks the extension of the file selected (txt or json)
-        String extension = "";
-        String name = "";
-        int dotIdx = file.getName().lastIndexOf('.');
-        if (dotIdx > 0) {
-            extension = file.getName().substring(dotIdx + 1);
-        }
-        // Get the filename without the extension
-        name = file.getName().substring(0, dotIdx).trim();
+        String extension = getExtension(file.getName());
+        String name = getFileName(file.getName());
 
+        // Checks the extension of the file selected (txt or json)
         if (extension.equals("txt")) {
             Subject imported = importFromText(file, name);
-            return appendToModel(imported, questionBank, name);
+            appendToModel(imported, questionBank, name);
         }
         else {
             Subject imported = importFromJson(file);
-            return appendToModel(imported, questionBank, name);
+            appendToModel(imported, questionBank, name);
         }
+    }
+
+    private String getExtension(String name) {
+        String extension = "";
+        int dotIdx = name.lastIndexOf('.');
+        if (dotIdx > 0) {
+            extension = name.substring(dotIdx + 1);
+        }
+        return extension;
+    }
+
+    // Get the filename without the extension
+    private String getFileName(String longName) {
+        return longName.substring(0, longName.lastIndexOf('.')).trim();
+    }
+
+    private File getFile(ActionEvent ae) {
+        Node source = (Node) ae.getSource();
+        Stage theStage = (Stage) source.getScene().getWindow();
+        return getFile(theStage);
     }
 
     /**
@@ -88,15 +100,11 @@ public class Import {
      *
      * Appends the imported subject data into the working model. If there already exists a
      * subject with the given name, replace the existing subject with the imported one.
+     * TODO: Use the name of the json instead of the filename when using json import
      *
      */
-    private QuestionBank appendToModel(Subject imported,
-                                       QuestionBank questionBank,
-                                       String filename) {
+    private void appendToModel(Subject imported, QuestionBank questionBank, String filename) {
         if (imported == null) {
-            if (questionBank == null) {
-                questionBank = new QuestionBank();
-            }
             displayError("Error al importar",
                          "No fue posible importar el tema del archivo seleccionado. El " +
                                            "banco de preguntas actual permanecerá sin cambios");
@@ -104,11 +112,10 @@ public class Import {
         else {
             // Ensure that the name of the imported subject is the same as it's containing filename
             imported.setSubjectName(filename);
-            displayInfo("Se ha agregado el tema " + filename + " al banco de " +
-                                          "preguntas.");
+            displayInfo("Se ha agregado el tema " + filename + " al banco de preguntas.");
             questionBank.addSubject(imported);
         }
-        return questionBank;
+        AppState.saveQuestionBank(questionBank);
     }
 
     /**

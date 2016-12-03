@@ -28,7 +28,9 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * model.
  */
 public class GenerateExamsController {
-    private MainController mParentController;
+    // Keep a reference to the Model of the application
+    private QuestionBank mQuestionBank;
+    private ExamBank mExamBank;
 
     @FXML private JFXComboBox<String> comboBoxSubject;
     @FXML private SpinnerAutoCommit spinnerAmount;
@@ -52,10 +54,10 @@ public class GenerateExamsController {
                                                   "C:\\Program Files\\MiKTeX " +
                                                           "3.0\\miktex\\bin\\x64\\pdflatex.exe"};
 
-
-    public GenerateExamsController(MainController parentController) {
-        // Keep a reference to the main controller to get important shared variables
-        mParentController = parentController;
+    
+    public GenerateExamsController(QuestionBank questionBank, ExamBank examBank) {
+        mQuestionBank = questionBank;
+        mExamBank = examBank;
         mFirstLoad = true;
         mLatexExams = "";
     }
@@ -100,15 +102,14 @@ public class GenerateExamsController {
         }
 
         // Get the selected subject object from the comboBoxSubject ComboBox
-        Subject subject = mParentController.getQuestionBank()
-                                           .getSubjectByName(comboBoxSubject.getValue());
+        Subject subject = mQuestionBank.getSubjectByName(comboBoxSubject.getValue());
         int examQuantity = Integer.parseInt(spinnerAmount.getValue().toString());
         Group generatedExams = generateExams(subject,
                                              examQuantity,
                                              textFieldGroup.getText().trim());
 
         // Add the newly generated exams to the list of generated exams for this subject
-        mParentController.getExamBank().addGroup(subject.getSubjectName(), generatedExams);
+        mExamBank.addGroup(subject.getSubjectName(), generatedExams);
         displayGeneratedExams(generatedExams);
     }
 
@@ -142,7 +143,7 @@ public class GenerateExamsController {
         textFieldGroup.setText("");
         if (mGenerateContainer != null) {
             // Checks if there is at least one subject in the QuestionBank
-            if (mParentController.getQuestionBank().getSubjects().isEmpty()) {
+            if (mQuestionBank.getSubjects().isEmpty()) {
                 buttonGenerate.setDisable(true);
                 comboBoxSubject.setDisable(true);
             }
@@ -150,13 +151,10 @@ public class GenerateExamsController {
                 buttonGenerate.setDisable(false);
                 comboBoxSubject.setDisable(false);
                 // Load each subject name from the QuestionBank into the combo box
-                mParentController.getQuestionBank()
-                                 .getSubjects()
-                                 .stream()
-                                 .filter(s -> !comboBoxSubject.getItems().contains(s.getSubjectName()))
-                                 .forEach(s -> {
-                                     comboBoxSubject.getItems().add(s.getSubjectName());
-                                 });
+                mQuestionBank.getSubjects()
+                             .stream()
+                             .filter(s -> !comboBoxSubject.getItems().contains(s.getSubjectName()))
+                             .forEach(s -> {comboBoxSubject.getItems().add(s.getSubjectName());});
 
                 // Set the preselected subject in the combo box as the first one
                 comboBoxSubject.getSelectionModel().selectFirst();
@@ -217,21 +215,17 @@ public class GenerateExamsController {
      * @param groupName The group of the exams to be generated
      * @return examBank The set of generated exams
      */
-    public Group generateExams(Subject subject,
-                                  int amount,
-                                  String groupName) {
+    public Group generateExams(Subject subject, int amount, String groupName) {
         ArrayList<Question> questions = new ArrayList<>();
         ArrayList<Exam> generatedExams = new ArrayList<>();
-        int startingExamNumber = mParentController.getExamBank()
-                                                  .getHighestExamNumber(subject.getSubjectName(),
-                                                                        groupName);
+        int startingExamNumber = mExamBank.getHighestExamNumber(subject.getSubjectName(), groupName);
         // When there are no existing exams, the starting number should be one, however when
         // there are exams, the starting number should be one more than the current highest
-        if (startingExamNumber != 1) {
-            startingExamNumber += 1;
-        }
+        //if (startingExamNumber != 1) {
+          //  startingExamNumber += 1;
+        //}
         // Generates the user selected amount of exams
-        for (int i = 0; i < amount; i++) {
+        for (int i = 1; i <= amount; i++) {
             // For each block in the subject, add a random question
             questions.addAll(subject.getBlocks()
                                      .stream()

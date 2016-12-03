@@ -15,7 +15,7 @@ import javafx.fxml.FXML;
  * that handles actions inside the view.
  */
 public class ImportExportController {
-    private MainController mParentController;
+    private QuestionBank mQuestionBank;
     private Import mImport;
     private Export mExport;
 
@@ -27,21 +27,19 @@ public class ImportExportController {
         mExport = new Export();
     }
 
-    public void injectMainController(MainController mainController) {
-        this.mParentController = mainController;
+    public void setModel(QuestionBank model) {
+        mQuestionBank = model;
     }
+
 
     /**
      * The user clicked the import button
      * @param actionEvent
      */
     public void importAction(ActionEvent actionEvent) {
-        QuestionBank imported = mImport.onClick(actionEvent, mParentController.getQuestionBank());
-        if (imported != null) {
-            mParentController.setQuestionBank(imported);
-            // Display the just imported subject as available to export
-            resetExportOptions();
-        }
+        mImport.importFromFile(actionEvent, mQuestionBank);
+        // Display the just imported subject as available to export
+        resetExportOptions();
     }
 
     /**
@@ -50,14 +48,13 @@ public class ImportExportController {
      */
     public void exportAction(ActionEvent actionEvent) {
         // Get the selected subject object from the comboBoxSubject ComboBox
-        Subject subject = mParentController.getQuestionBank()
-                                           .getSubjectByName(comboBoxSubject.getValue());
+        Subject subject = mQuestionBank.getSubjectByName(comboBoxSubject.getValue());
         mExport.onClick(actionEvent, subject);
     }
 
     public void resetExportOptions() {
         // Checks if there is at least one subject in the QuestionBank
-        if (mParentController.getQuestionBank().getSubjects().isEmpty()) {
+        if (mQuestionBank.getSubjects().isEmpty()) {
             buttonExport.setDisable(true);
             comboBoxSubject.setDisable(true);
         }
@@ -65,13 +62,10 @@ public class ImportExportController {
             buttonExport.setDisable(false);
             comboBoxSubject.setDisable(false);
             // Load each subject name from the QuestionBank into the combo box
-            mParentController.getQuestionBank()
-                             .getSubjects()
-                             .stream()
-                             .filter(s -> !comboBoxSubject.getItems().contains(s.getSubjectName()))
-                             .forEach(s -> {
-                                 comboBoxSubject.getItems().add(s.getSubjectName());
-                             });
+            mQuestionBank.getSubjects()
+                         .stream()
+                         .filter(s -> !comboBoxSubject.getItems().contains(s.getSubjectName()))
+                         .forEach(s -> {comboBoxSubject.getItems().add(s.getSubjectName());});
 
             // Set the preselected subject in the combo box as the first one
             comboBoxSubject.getSelectionModel().selectFirst();

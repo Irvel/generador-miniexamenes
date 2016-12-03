@@ -133,7 +133,7 @@ public class ExamBank {
                 }
             }
         }
-        return 1;
+        return 0;
     }
 
     /**

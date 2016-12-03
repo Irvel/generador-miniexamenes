@@ -35,13 +35,13 @@ public class MainController {
     public MainController() {
         mQuestionBank = AppState.loadQuestionBank();
         mExamBank = AppState.loadExamBank();
-        mGenerateExamsController = new GenerateExamsController(this);
+        this.mGenerateExamsController = new GenerateExamsController(mQuestionBank, mExamBank);
     }
 
     @FXML private void initialize() {
-        this.gradeExamsTabController.injectMainController(this);
-        this.importExportTabController.injectMainController(this);
-        this.viewExamsTabController.injectMainController(this);
+        this.gradeExamsTabController.setModel(mExamBank);
+        this.importExportTabController.setModel(mQuestionBank);
+        this.viewExamsTabController.setModel(mExamBank, mGenerateExamsController);
     }
     /**
      * generateTabSelected
@@ -85,9 +85,5 @@ public class MainController {
 
     public void viewExamsTabSelected(Event event) {
         this.viewExamsTabController.loadViewExamsForm();
-    }
-
-    public GenerateExamsController getGenerateInstance() {
-        return mGenerateExamsController;
     }
 }

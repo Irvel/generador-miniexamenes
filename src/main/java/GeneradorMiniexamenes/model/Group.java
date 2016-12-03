@@ -24,6 +24,7 @@ public class Group {
     public Group(String groupName, ArrayList<Exam> exams) {
         mGroupName = groupName;
         mExams = exams;
+        mHighestExamNumber = 0;
         setHighestExamNumber();
     }
 
@@ -61,7 +62,7 @@ public class Group {
         int highestNumber = 1;
         for (Exam exam : mExams) {
             if (exam.getExamNumber() > highestNumber) {
-                mHighestExamNumber = exam.getExamNumber();
+                highestNumber = exam.getExamNumber();
             }
         }
         if (highestNumber > mHighestExamNumber) {

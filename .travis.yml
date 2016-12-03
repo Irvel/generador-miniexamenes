@@ -1,7 +1,7 @@
 language: java
 jdk: oraclejdk8
 sudo: false
-script: gradle clean shadowJar
+script: gradle clean shadowJar -PsetBuildNumber=$TRAVIS_BUILD_NUMBER
 addons:
   apt:
     packages:

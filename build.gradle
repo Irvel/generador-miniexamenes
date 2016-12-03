@@ -4,17 +4,18 @@ plugins {
 }
 
 group 'GeneradorMiniexamenes'
-version '0.5.2'
 sourceCompatibility = 1.8
 
 apply plugin: 'java'
 
 mainClassName = "GeneradorMiniexamenes.Main"
 
+ext.setVersion = project.hasProperty('setBuildNumber') ? project.getProperty('setBuildNumber') : ''
+
 shadowJar {
     baseName = 'Generador de Miniexamenes'
     classifier = null
-    version = version
+    version = setVersion
 }
 
 repositories {

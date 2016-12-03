@@ -4,21 +4,12 @@ plugins {
 }
 
 group 'GeneradorMiniexamenes'
-version '0.5'
+version '0.5.2'
 sourceCompatibility = 1.8
 
 apply plugin: 'java'
 
 mainClassName = "GeneradorMiniexamenes.Main"
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'Generador de Miniexamenes',
-                'Implementation-Version': version,
-                'Description': 'This is an application JAR',
-                "Main-Class": mainClassName
-    }
-}
 
 shadowJar {
     baseName = 'Generador de Miniexamenes'

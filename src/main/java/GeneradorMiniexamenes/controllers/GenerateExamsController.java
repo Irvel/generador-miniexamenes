@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -36,9 +37,10 @@ public class GenerateExamsController {
     @FXML private SpinnerAutoCommit spinnerAmount;
     @FXML private JFXButton buttonGenerate;
     @FXML private JFXTextField textFieldGroup;
+    @FXML private AnchorPane parentGenContainer;
 
     private HBox mGenerateContainer;
-    private HBox mDownloadContainer;
+    private VBox mDownloadContainer;
     private boolean mFirstLoad;
     private String mLatexExams;
     private String mLastGeneratedSubject;
@@ -127,6 +129,8 @@ public class GenerateExamsController {
         // Remove container with the form for generating exams from the view
         mainGenContainer.getChildren().remove(mGenerateContainer);
         // TODO: Add table with the generated exams
+        ExamListView genExamsView = new ExamListView(parentGenContainer);
+        genExamsView.refreshListView(generatedExams);
         // Add buttons for downloading the newly generated exams
         mainGenContainer.getChildren().add(mDownloadContainer);
     }
@@ -154,7 +158,7 @@ public class GenerateExamsController {
                 mQuestionBank.getSubjects()
                              .stream()
                              .filter(s -> !comboBoxSubject.getItems().contains(s.getSubjectName()))
-                             .forEach(s -> {comboBoxSubject.getItems().add(s.getSubjectName());});
+                             .forEach(s -> comboBoxSubject.getItems().add(s.getSubjectName()));
 
                 // Set the preselected subject in the combo box as the first one
                 comboBoxSubject.getSelectionModel().selectFirst();

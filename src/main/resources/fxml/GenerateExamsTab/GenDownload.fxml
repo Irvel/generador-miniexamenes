@@ -2,25 +2,23 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="downloadContainer"
-      alignment="CENTER_RIGHT"
-      spacing="30.0"
-      xmlns="http://javafx.com/javafx/8.0.65"
-      xmlns:fx="http://javafx.com/fxml/1">
-    <padding>
-        <Insets left="30.0" right="30.0"/>
-    </padding>
-    <JFXButton onAction="#backGenAction" styleClass="inputBtn" text="Regresar">
-        <HBox.margin>
-          <Insets right="36.0"/>
-        </HBox.margin>
-    </JFXButton>
-    <JFXButton onAction="#downloadLatexAction"
-               styleClass="inputBtn"
-               text="Descargar examenes en formato LaTeX"/>
-    <JFXButton onAction="#downloadPdfAction"
-               styleClass="inputBtn"
-               text="Descargar examenes en formato PDF"/>
-</HBox>
+<VBox fx:id="downloadContainer" alignment="CENTER" spacing="30.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+    <AnchorPane fx:id="parentGenContainer" prefHeight="329.0" prefWidth="867.0" />
+   <HBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="30.0">
+      <children>
+          <JFXButton onAction="#backGenAction" styleClass="inputBtn" text="Regresar" />
+          <JFXButton onAction="#downloadLatexAction" styleClass="inputBtn" text="Descargar examenes en formato LaTeX" />
+          <JFXButton onAction="#downloadPdfAction" styleClass="inputBtn" text="Descargar examenes en formato PDF" />
+      </children>
+      <VBox.margin>
+         <Insets />
+      </VBox.margin>
+   </HBox>
+   <padding>
+      <Insets left="30.0" right="30.0" top="30.0" />
+   </padding>
+</VBox>

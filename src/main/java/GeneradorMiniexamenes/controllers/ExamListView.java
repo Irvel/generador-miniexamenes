@@ -4,6 +4,7 @@ import GeneradorMiniexamenes.model.Exam;
 import GeneradorMiniexamenes.model.Group;
 import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -19,6 +20,17 @@ public class ExamListView {
         AnchorPane.setRightAnchor(mExamListView, 0.0);
         AnchorPane.setTopAnchor(mExamListView, 0.0);
         AnchorPane.setBottomAnchor(mExamListView, 0.0);
+        parentContainer.getChildren().add(mExamListView);
+    }
+
+    public ExamListView(AnchorPane parentContainer) {
+        mExamListView = new JFXListView<Exam>();
+        AnchorPane.setLeftAnchor(mExamListView, 0.0);
+        AnchorPane.setRightAnchor(mExamListView, 0.0);
+        AnchorPane.setTopAnchor(mExamListView, 0.0);
+        AnchorPane.setBottomAnchor(mExamListView, 0.0);
+        mExamListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        //listView.getSelectionModel().getSelectedItems()
         parentContainer.getChildren().add(mExamListView);
     }
 

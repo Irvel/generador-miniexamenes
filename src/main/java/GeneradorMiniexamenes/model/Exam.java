@@ -54,4 +54,9 @@ public class Exam {
     public void setExamNumber(int examNumber) {
         mExamNumber = examNumber;
     }
+
+    @Override
+    public String toString(){
+        return "Examen #" + getExamNumber() + " - Grupo: " + getGroup();
+    }
 }

@@ -42,6 +42,26 @@ public class ExamBank {
     }
 
     /**
+     * getGroup
+     *
+     * Given a subject and a group name return that group object instance
+     * subject is not in the exam bank, return null.
+     * @param subject The name of the subject that holds the group to get
+     * @param groupName The name of the group to get
+     * @return The group instance
+     */
+    public Group getGroup(String subject, String groupName) {
+        if (mGroups.containsKey(subject)) {
+            for (Group group : mGroups.get(subject)) {
+                if (group.getGroupName().equalsIgnoreCase(groupName)) {
+                    return group;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * getExams
      *
      * Given a subject and a group name, return the list of exams they contain.

@@ -27,7 +27,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * Randomly generates exams from the subjects and questions available in the
  * model.
  */
-class GenerateExamsController {
+public class GenerateExamsController {
     // Keep a reference to the Model of the application
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;

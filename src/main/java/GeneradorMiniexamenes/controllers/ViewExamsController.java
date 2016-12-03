@@ -1,8 +1,10 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.*;
+import GeneradorMiniexamenes.model.Exam;
+import GeneradorMiniexamenes.model.ExamBank;
+import GeneradorMiniexamenes.model.ExamTemplate;
+import GeneradorMiniexamenes.model.Group;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,13 +23,11 @@ import java.util.Optional;
  * This class is the view controller for the View Generated Exams interface.
  */
 public class ViewExamsController {
-    private JFXListView mExamListView;
+    private ExamListView mExamListView;
     private ChangeListener mSubjectListener;
     private ChangeListener mGroupListener;
-    private ChangeListener mExamListListener;
     private boolean mSubjectListenerActive;
     private boolean mGroupListenerActive;
-    private HashMap<Integer, Integer> mExamIdxToNumber;
 
     @FXML private ComboBox cbSubjectViewExams;
     @FXML private ComboBox cbGroupViewExams;
@@ -79,7 +79,10 @@ public class ViewExamsController {
 
         // Called when an exam has been selected from the ListView
         // Enable the delete and download buttons
-        mExamListListener = (ov, t, t1) -> enableAllButtons();
+        mExamListView = new ExamListView(parentContainer, (ov, t, t1) -> enableAllButtons());
+
+        cbSubjectViewExams.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
+        cbGroupViewExams.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
     }
 
     /**
@@ -117,46 +120,18 @@ public class ViewExamsController {
         }
 
         // Refresh the contents of the displayed ListView
-        refreshListView();
+        mExamListView.refreshListView(
+                mExamBank.getGroup(cbSubjectViewExams.getValue().toString(),
+                                   cbGroupViewExams.getValue().toString()));
+
+        // Disable every button as no exam is currently selected
+        disableAllButtons();
+
         mSubjectListenerActive = true;
         mGroupListenerActive = true;
     }
 
-    /**
-     * refreshListView
-     *
-     * Delete any existing ListView and create a new one with the exams from the selected subject
-     * and group.
-     *
-     */
-    private void refreshListView() {
-        // Disable every button as no exam is currently selected
-        disableAllButtons();
 
-        if (mExamListView != null) {
-            parentContainer.getChildren().remove(mExamListView);
-        }
-        mExamListView = new JFXListView<String>();
-        ArrayList<Exam> exams = mExamBank
-                                                 .getExams(cbSubjectViewExams.getValue().toString(),
-                                                           cbGroupViewExams.getValue().toString());
-        // Map the real exam number with its index in the listView
-        mExamIdxToNumber = new HashMap<>();
-        int examIdx = 0;
-        for (Exam exam : exams) {
-            mExamListView.getItems().add("Examen #" +
-                                             exam.getExamNumber() +
-                                             " - Grupo: " + cbGroupViewExams.getValue().toString());
-            mExamIdxToNumber.put(examIdx, exam.getExamNumber());
-            examIdx++;
-        }
-        mExamListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
-        parentContainer.getChildren().add(mExamListView);
-        AnchorPane.setLeftAnchor(mExamListView, 0.0);
-        AnchorPane.setRightAnchor(mExamListView, 0.0);
-        AnchorPane.setTopAnchor(mExamListView, 0.0);
-        AnchorPane.setBottomAnchor(mExamListView, 0.0);
-    }
 
     /**
      * enableAllButtons
@@ -199,8 +174,6 @@ public class ViewExamsController {
             cbGroupViewExams.setDisable(false);
             disableAllButtons();
             resetViewFields(false, false);
-            cbSubjectViewExams.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
-            cbGroupViewExams.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
         }
     }
 
@@ -212,14 +185,13 @@ public class ViewExamsController {
      * @param actionEvent The context in which the user click the delete exam button.
      */
     public void deleteSelectedExam(ActionEvent actionEvent) {
+        Exam selectedExam = mExamListView.getSelectedExam();
         ButtonType btnSi = new ButtonType("Si");
         ButtonType btnNo = new ButtonType("No");
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmar eliminación de examen");
         alert.setContentText("¿Está seguro de querer eliminar el examen " +
-                                    mExamListView.getSelectionModel()
-                                                 .getSelectedItem()
-                                                 .toString() +
+                                     selectedExam.toString() +
                                     " de la lista de exámenes " +
                                     "generados en el programa?");
         alert.getButtonTypes().setAll(btnNo, btnSi);
@@ -227,10 +199,7 @@ public class ViewExamsController {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == btnSi) {
-            String subject = cbSubjectViewExams.getValue().toString();
-            String group = cbGroupViewExams.getValue().toString();
-            int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
-            mExamBank.deleteExam(subject, group, examNumber);
+            mExamBank.deleteExam(selectedExam.getSubject(), selectedExam.getGroup(), selectedExam.getExamNumber());
             // Refresh the entire view to account for the deletion of a group or subject after
             // deleting the exam
             loadViewExamsForm();
@@ -241,22 +210,10 @@ public class ViewExamsController {
      * downLatexSelectedExam
      *
      * The user clicked the "download exam in LaTeX" button. Save that exam to a latex file.
-     * TODO: This method is very similar to downPdfSelectedExam and can be further abstracted
      * @param actionEvent The context in which the user click the download exam button.
      */
     public void downLatexSelectedExam(ActionEvent actionEvent) {
-        String subject = cbSubjectViewExams.getValue().toString();
-        String group = cbGroupViewExams.getValue().toString();
-        int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
-        Exam exam = mExamBank
-                .getExam(subject, group, examNumber);
-
-        // Encapsulate the exam in an ArrayList because that's how the method wants it
-        String latexExam = ExamTemplate.makeLatexExams(new ArrayList<Exam>() {{ add(exam); }});
-
-        final String filename = "Examen #" + Integer.toString(examNumber) + " - " + group;
-        // Download the exam as a latex file
-        mGenerateExamsController.downloadLatexExams(actionEvent, filename, latexExam);
+        downloadExam(actionEvent, false);
     }
 
     /**
@@ -266,16 +223,22 @@ public class ViewExamsController {
      * @param actionEvent The context in which the user click the download exam button.
      */
     public void downPdfSelectedExam(ActionEvent actionEvent) {
-        String subject = cbSubjectViewExams.getValue().toString();
-        String group = cbGroupViewExams.getValue().toString();
-        int examNumber = mExamIdxToNumber.get(mExamListView.getSelectionModel().getSelectedIndex());
-        Exam exam = mExamBank.getExam(subject, group, examNumber);
+        downloadExam(actionEvent, true);
+    }
 
+    private void downloadExam(ActionEvent actionEvent, Boolean usePdf) {
+        Exam exam = mExamListView.getSelectedExam();
         // Encapsulate the exam in an ArrayList because that's how the method wants it
         String latexExam = ExamTemplate.makeLatexExams(new ArrayList<Exam>() {{ add(exam); }});
 
-        final String filename = "Examen #" + Integer.toString(examNumber) + " - " + group;
-        // Download the exam as a PDF file
-        mGenerateExamsController.downloadPdfExams(actionEvent, filename, latexExam);
+        final String filename = "Examen #" + Integer.toString(exam.getExamNumber()) + " - " +
+                exam.getGroup();
+
+        if (usePdf) {
+            mGenerateExamsController.downloadPdfExams(actionEvent, filename, latexExam);
+        }
+        else {
+            mGenerateExamsController.downloadLatexExams(actionEvent, filename, latexExam);
+        }
     }
 }

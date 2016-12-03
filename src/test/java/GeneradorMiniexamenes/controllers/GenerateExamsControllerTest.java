@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.io.File;
 
 import static GeneradorMiniexamenes.controllers.AppState.loadQuestionBank;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * Created by Irvel on 12/2/16.

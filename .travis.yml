@@ -1,16 +1,7 @@
-# Build setup for Travis CI
-
-language:
-  - java
-
-jdk:
-  - oraclejdk8
-
-os:
-  - linux
-
+language: java
+jdk: oraclejdk8
 sudo: false
-
+script: gradle clean shadowJar
 addons:
   apt:
     packages:

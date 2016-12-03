@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'GeneradorMiniexamenes'
-version '0.5'
+version '0.5.2'
 sourceCompatibility = 1.8
 
 apply plugin: 'java'

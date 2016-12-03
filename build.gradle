@@ -11,15 +11,6 @@ apply plugin: 'java'
 
 mainClassName = "GeneradorMiniexamenes.Main"
 
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'Generador de Miniexamenes',
-                'Implementation-Version': version,
-                'Description': 'This is an application JAR',
-                "Main-Class": mainClassName
-    }
-}
-
 shadowJar {
     baseName = 'Generador de Miniexamenes'
     classifier = null

@@ -10,8 +10,7 @@ import org.junit.Test;
 import java.io.File;
 
 import static GeneradorMiniexamenes.controllers.AppState.loadQuestionBank;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * Created by Irvel on 12/2/16.
@@ -103,9 +102,22 @@ public class GenerateExamsControllerTest {
             File createdDir = new File(testDir);
             assertTrue("The test directory was in fact created",createdDir.exists());
             assertTrue("The test directory is a directory", createdDir.isDirectory());
+            assertEquals("The test directory is empty", createdDir.list().length, 0);
             assertTrue("The test directory is hidden", createdDir.isHidden());
             createdDir.deleteOnExit();
         }
     }
 
+    @Test
+    public void testRemoveTempDirectory() {
+        final String parentTestDir = ".testDirectory1";
+        final String nestedDirs = parentTestDir + File.separator + "testDirectory2" +
+                File.separator + "testDirectory3" + File.separator + "testDirectory4";
+
+        if (new File(nestedDirs).mkdirs()) {
+            File createdDir = new File(parentTestDir);
+            mGenerateController.removeDirectory(createdDir);
+            assertFalse("The test directory doesn't exist", createdDir.exists());
+        }
+    }
 }

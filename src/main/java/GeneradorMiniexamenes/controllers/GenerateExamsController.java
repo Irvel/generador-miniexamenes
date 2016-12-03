@@ -466,14 +466,21 @@ class GenerateExamsController {
     /**
      * removeDirectory
      *
-     * Delete all the files inside the directory and then delete the directory itself
+     * Delete all the files inside the directory recursively and then delete the directory itself
      * @param dirToDelete the directory to be deleted
      */
-    private void removeDirectory(File dirToDelete) {
-        for (File c : dirToDelete.listFiles()) {
-            c.delete();
+    void removeDirectory(File dirToDelete) {
+        if (dirToDelete != null && dirToDelete.exists() && dirToDelete.isDirectory()) {
+            for (File f : dirToDelete.listFiles()) {
+                if (f.isDirectory()) {
+                    removeDirectory(f);
+                }
+                else {
+                    f.delete();
+                }
+            }
+            dirToDelete.delete();
         }
-        dirToDelete.delete();
     }
 
     private ArrayList<String> getConverterPaths(String systemName) {

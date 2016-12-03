@@ -27,7 +27,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * Randomly generates exams from the subjects and questions available in the
  * model.
  */
-public class GenerateExamsController {
+class GenerateExamsController {
     // Keep a reference to the Model of the application
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
@@ -219,11 +219,7 @@ public class GenerateExamsController {
         ArrayList<Question> questions = new ArrayList<>();
         ArrayList<Exam> generatedExams = new ArrayList<>();
         int startingExamNumber = mExamBank.getHighestExamNumber(subject.getSubjectName(), groupName);
-        // When there are no existing exams, the starting number should be one, however when
-        // there are exams, the starting number should be one more than the current highest
-        //if (startingExamNumber != 1) {
-          //  startingExamNumber += 1;
-        //}
+
         // Generates the user selected amount of exams
         for (int i = 1; i <= amount; i++) {
             // For each block in the subject, add a random question
@@ -289,7 +285,6 @@ public class GenerateExamsController {
      *
      * Prompt a file save dialog and save the received exams in a LaTeX file.
      *
-     * TODO: Prompting the filesave could be abstracted into a shared method
      * @param actionEvent The actionEven in which the request for downloading the exams occured
      * @param fileName The filename to be suggested to the user
      * @param latexExams A LaTeX string with the exams to be downloaded
@@ -297,19 +292,34 @@ public class GenerateExamsController {
     public void downloadLatexExams(ActionEvent actionEvent, String fileName, String latexExams) {
         Node source = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
-        FileChooser fileChooser = new FileChooser();
-        // Set extension filter
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("TEX files (*.tex)", "*.tex"));
-        fileChooser.setInitialFileName(fileName + ".tex");
-        // Show the "save exams in LaTeX dialog"
-        File latexFile = fileChooser.showSaveDialog(currentStage);
 
+        File latexFile = promptFileChooser(currentStage,
+                                           fileName + ".tex",
+                                           new FileChooser.ExtensionFilter("TEX files (*.tex)", "*.tex"));
         // The user canceled the save dialog, don't do anything
         if (latexFile == null) {
             return;
         }
+
         saveLatexToFile(latexExams, latexFile);
+    }
+
+    /**
+     * promptFileChooser
+     *
+     * Generic method to prompt a file save dialog in the given stage.
+     * @return The file chosen by the user or null if the dialog was canceled
+     */
+    private File promptFileChooser(Stage stage,
+                                   String initialFilename,
+                                   FileChooser.ExtensionFilter extensions){
+        FileChooser fileChooser = new FileChooser();
+        // Set extension filter
+        fileChooser.getExtensionFilters().add(extensions);
+
+        fileChooser.setInitialFileName(initialFilename);
+        // Show the dialog and capture the file if selected
+        return fileChooser.showSaveDialog(stage);
     }
 
     /**
@@ -361,7 +371,6 @@ public class GenerateExamsController {
      * Prompt a file save dialog and save the received exams in PDF to that location. To do this
      * it first creates a temporary LaTeX file and then uses the external tool pdflatex to
      * convert LaTeX to PDF.
-     * TODO: Prompting the filesave could be abstracted into a shared method
      *
      * @param actionEvent The actionEven in which the request for downloading the exams occured
      * @param fileName The filename to be suggested to the user
@@ -370,15 +379,11 @@ public class GenerateExamsController {
     public void downloadPdfExams(ActionEvent actionEvent, String fileName, String latexExams) {
         Node source = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
-        FileChooser fileChooser = new FileChooser();
-        // Set extension filter
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
-
-        fileChooser.setInitialFileName(fileName + ".pdf");
 
         // Show the "save exams in Pdf dialog"
-        File selectedFile = fileChooser.showSaveDialog(currentStage);
+        File selectedFile = promptFileChooser(currentStage,
+                                           fileName + ".pdf",
+                                           new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
 
         // The user canceled the save dialog, don't do anything
         if (selectedFile == null) {
@@ -386,6 +391,27 @@ public class GenerateExamsController {
         }
         String targetDirectoryPath = selectedFile.getParent();
         String tempDirectoryPath = targetDirectoryPath +  File.separator + ".generadorMiniTemp";
+        boolean couldCreateDirectory = tempDirectorySetup(tempDirectoryPath);
+
+        if (couldCreateDirectory) {
+            File latexTemp = new File(tempDirectoryPath + File.separator + "latexTemp.tex");
+            saveLatexToFile(latexExams, latexTemp);
+
+            // Convert the temporal LaTeX file to PDF
+            convertToPdf(tempDirectoryPath,
+                         tempDirectoryPath + File.separator + "latexTemp.tex",
+                         selectedFile.getName());
+        }
+    }
+
+    /**
+     * tempDirectorySetup
+     * Tries to create a temporary directory in tempDirectoryPath.
+     * Assumes the received path points to a hidden filename for the directory.
+     * @param tempDirectoryPath The path to which the directory will be attempted to be created
+     * @return True if it was able to create the directory in tempDirectoryPath
+     */
+    boolean tempDirectorySetup(String tempDirectoryPath) {
         // Delete previous temp dir if it still exists
         File tempDir  = new File(tempDirectoryPath);
         if (tempDir.exists()) {
@@ -401,17 +427,10 @@ public class GenerateExamsController {
             }
             catch (IOException e) {
                 e.printStackTrace();
+                couldCreateDirectory = false;
             }
         }
-        if (couldCreateDirectory) {
-            File latexTemp = new File(tempDirectoryPath + File.separator + "latexTemp.tex");
-            saveLatexToFile(latexExams, latexTemp);
-
-            // Convert the temporal LaTeX file to PDF
-            convertToPdf(tempDirectoryPath,
-                         tempDirectoryPath + File.separator + "latexTemp.tex",
-                         selectedFile.getName());
-        }
+        return couldCreateDirectory;
     }
 
     private void convertToPdf(String tempDirPath, String latexFilePath, String pdfName) {

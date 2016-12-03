@@ -1,4 +1,5 @@
-import GeneradorMiniexamenes.controllers.GenerateExamsController;
+package GeneradorMiniexamenes.controllers;
+
 import GeneradorMiniexamenes.model.Exam;
 import GeneradorMiniexamenes.model.ExamBank;
 import GeneradorMiniexamenes.model.Group;
@@ -6,8 +7,11 @@ import GeneradorMiniexamenes.model.QuestionBank;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+
 import static GeneradorMiniexamenes.controllers.AppState.loadQuestionBank;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by Irvel on 12/2/16.
@@ -87,6 +91,20 @@ public class GenerateExamsControllerTest {
             // mQuantityToGenerate * 2
             assertEquals(expectedNumber, exam.getExamNumber());
             expectedNumber++;
+        }
+    }
+
+    @Test
+    public void testCreateTempDirectory() {
+        final String testDir = ".testDirectory1";
+        if (new File(testDir + File.separator + "testDirectory2").mkdirs()) {
+            // Create a directory when an existing one with files was already there
+            assertTrue(mGenerateController.tempDirectorySetup(testDir));
+            File createdDir = new File(testDir);
+            assertTrue("The test directory was in fact created",createdDir.exists());
+            assertTrue("The test directory is a directory", createdDir.isDirectory());
+            assertTrue("The test directory is hidden", createdDir.isHidden());
+            createdDir.deleteOnExit();
         }
     }
 

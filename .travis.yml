@@ -1,17 +1,21 @@
-# Build setup for Travis CI
-
-language:
-  - java
-
-jdk:
-  - oraclejdk8
-
-os:
-  - linux
-
+language: java
+jdk: oraclejdk8
 sudo: false
-
+script: gradle clean build shadowJar
 addons:
   apt:
     packages:
       - oracle-java8-installer
+deploy:
+  provider: releases
+  api_key:
+    secure: Kqfa36EnhIIkAqVhM9nfiPLNAoZIK5JCfsl3Aly2bYktYIiAWz8yMTYqPMKVzOg4FFHKjSUg3VY/41pfcKsTwEzJL/dgfrkYkqCSvrLx23OwNYEn5FsbeeC+8Uqb4dINBRP++wTNHtCRxyHbWphxezeZxezMFwvgJj5j6BeY9YDd6AeJmwS7IuwkNdoeMXFExEWrUttL0c+u+GzgksrfahkXihsJlyiH0Ef6/4aWtFvkqjCicyEhTgpt1bWKh+fzK1iT/PiszT9e2D1BJ9JJ73tmygKt1me0DsN+X2ZrxMlDxSSo0SfCK2jT/nyA6pu82wLXcQYucKL/Y/GAfdnbsUUpV0hxNqdiEbVjqUX1/uRPbkfsfPnEbyC/vsoC0e9SGM//Ex9ObjbvQisk7/5G45jYYVlGF8yEFUWWDaBLrZDCGZFacLoc/TWDKtE/3hzDUFwBbjYRjv+Vq+4os3BCmD93aY+F7nBeqm0lrzZovcOmkxeJAihHs+pzwvzl6AaAx5MP575TCao2/7ZrNz6L2hjZ2QYmkRoNsxuScSYP5pQZZtgClpPY1q73qqHnK6KttJQER/usDtntHzcGsJSj5Vqdxo8r/GwkujnN/8U6yWzY+S0+tZRG4zvH4sSn5EgQOsPJKlwPguBCbYv3uS7Kj3m+oTLEr51XN05VbV9/4WU=
+  file: "generador-miniexamenes/build/libs/Generador\\ de\\ Miniexamenes-*release*.jar"
+  file_glob: "true"
+  skip_cleanup: true
+  on:
+    branch: master
+    repo: Irvel/generador-miniexamenes
+
+after_success:
+  - sh set_tags.sh

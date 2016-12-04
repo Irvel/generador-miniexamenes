@@ -7,6 +7,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 
+import java.util.ArrayList;
+
 /**
  * Created by Irvel on 12/3/16.
  */
@@ -20,17 +22,7 @@ public class ExamListView {
         AnchorPane.setRightAnchor(mExamListView, 0.0);
         AnchorPane.setTopAnchor(mExamListView, 0.0);
         AnchorPane.setBottomAnchor(mExamListView, 0.0);
-        parentContainer.getChildren().add(mExamListView);
-    }
-
-    public ExamListView(AnchorPane parentContainer) {
-        mExamListView = new JFXListView<Exam>();
-        AnchorPane.setLeftAnchor(mExamListView, 0.0);
-        AnchorPane.setRightAnchor(mExamListView, 0.0);
-        AnchorPane.setTopAnchor(mExamListView, 0.0);
-        AnchorPane.setBottomAnchor(mExamListView, 0.0);
         mExamListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        //listView.getSelectionModel().getSelectedItems()
         parentContainer.getChildren().add(mExamListView);
     }
 
@@ -48,8 +40,14 @@ public class ExamListView {
         }
     }
 
-    // TODO: Add support for selecting multiple exams
     public Exam getSelectedExam() {
         return mExamListView.getSelectionModel().getSelectedItem();
+    }
+
+    public ArrayList<Exam> getSelectedExams() {
+        if (mExamListView.getSelectionModel().getSelectedItems() != null) {
+            return new ArrayList<Exam>(mExamListView.getSelectionModel().getSelectedItems());
+        }
+        return null;
     }
 }

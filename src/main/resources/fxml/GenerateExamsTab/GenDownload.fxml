@@ -11,8 +11,13 @@
    <HBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="30.0">
       <children>
           <JFXButton onAction="#backGenAction" styleClass="inputBtn" text="Regresar" />
-          <JFXButton onAction="#downloadLatexAction" styleClass="inputBtn" text="Descargar examenes en formato LaTeX" />
-          <JFXButton onAction="#downloadPdfAction" styleClass="inputBtn" text="Descargar examenes en formato PDF" />
+          <JFXButton fx:id="buttonDownLatexGen" onAction="#downloadLatexAction"
+                     styleClass="inputBtn"
+                     disable="True"
+                     text="Descargar exámenes en formato LaTeX" />
+          <JFXButton fx:id="buttonDownPdfGen" onAction="#downloadPdfAction"
+                     styleClass="inputBtn" disable="True"
+                     text="Descargar exámenes en formato PDF" />
       </children>
       <VBox.margin>
          <Insets />

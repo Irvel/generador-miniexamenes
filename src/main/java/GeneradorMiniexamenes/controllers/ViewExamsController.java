@@ -2,7 +2,6 @@ package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.Exam;
 import GeneradorMiniexamenes.model.ExamBank;
-import GeneradorMiniexamenes.model.ExamTemplate;
 import GeneradorMiniexamenes.model.Group;
 import com.jfoenix.controls.JFXButton;
 import javafx.beans.value.ChangeListener;
@@ -134,7 +133,7 @@ public class ViewExamsController {
 
 
     /**
-     * enableAllButtons
+     * disableAllButtons
      *
      * Set all the buttons in the view to disabled
      *
@@ -227,18 +226,12 @@ public class ViewExamsController {
     }
 
     private void downloadExam(ActionEvent actionEvent, Boolean usePdf) {
-        Exam exam = mExamListView.getSelectedExam();
-        // Encapsulate the exam in an ArrayList because that's how the method wants it
-        String latexExam = ExamTemplate.makeLatexExams(new ArrayList<Exam>() {{ add(exam); }});
-
-        final String filename = "Examen #" + Integer.toString(exam.getExamNumber()) + " - " +
-                exam.getGroup();
-
+        ArrayList<Exam> selectedExams = mExamListView.getSelectedExams();
         if (usePdf) {
-            mGenerateExamsController.downloadPdfExams(actionEvent, filename, latexExam);
+            mGenerateExamsController.downloadPdfExams(actionEvent, selectedExams);
         }
         else {
-            mGenerateExamsController.downloadLatexExams(actionEvent, filename, latexExam);
+            mGenerateExamsController.downloadLatexExams(actionEvent, selectedExams);
         }
     }
 }

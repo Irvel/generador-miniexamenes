@@ -4,6 +4,7 @@ import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,13 +39,13 @@ public class GenerateExamsController {
     @FXML private JFXButton buttonGenerate;
     @FXML private JFXTextField textFieldGroup;
     @FXML private AnchorPane parentGenContainer;
+    @FXML private JFXButton buttonDownLatexGen;
+    @FXML private JFXButton buttonDownPdfGen;
 
     private HBox mGenerateContainer;
     private VBox mDownloadContainer;
+    private ExamListView mGenExamsView;
     private boolean mFirstLoad;
-    private String mLatexExams;
-    private String mLastGeneratedSubject;
-    private String mLastGeneratedGroup;
 
     private final String[] MAC_CONVERTER_PATHS = {"/Library/TeX/texbin/pdflatex", "/usr/texbin/pdflatex",
                                                   "/Library/TeX/Root/bin/x86_64-darwin/pdflatex"};
@@ -61,7 +62,6 @@ public class GenerateExamsController {
         mQuestionBank = questionBank;
         mExamBank = examBank;
         mFirstLoad = true;
-        mLatexExams = "";
     }
 
     /**
@@ -129,8 +129,28 @@ public class GenerateExamsController {
         // Remove container with the form for generating exams from the view
         mainGenContainer.getChildren().remove(mGenerateContainer);
         // TODO: Add table with the generated exams
-        ExamListView genExamsView = new ExamListView(parentGenContainer);
-        genExamsView.refreshListView(generatedExams);
+        ChangeListener examListListener = (ov, t, t1) -> {
+            int selectedAmount = mGenExamsView.getSelectedExams().size();
+            // Give visual feedback with on the selection with the buttons themselves
+            buttonDownLatexGen.setDisable(false);
+            buttonDownPdfGen.setDisable(false);
+
+            if (selectedAmount == 1) {
+                buttonDownLatexGen.setText("Descargar " + selectedAmount + " examen en formato " +
+                                                   "LaTeX");
+                buttonDownPdfGen.setText("Descargar " + selectedAmount + " examen en formato " +
+                                                   "PDF");
+            }
+            else {
+                buttonDownLatexGen.setText("Descargar " + selectedAmount + " exámenes en formato " +
+                                                   "LaTeX");
+                buttonDownPdfGen.setText("Descargar " + selectedAmount + " exámenes en formato " +
+                                                   "PDF");
+            }
+        };
+
+        mGenExamsView = new ExamListView(parentGenContainer, examListListener);
+        mGenExamsView.refreshListView(generatedExams);
         // Add buttons for downloading the newly generated exams
         mainGenContainer.getChildren().add(mDownloadContainer);
     }
@@ -244,12 +264,6 @@ public class GenerateExamsController {
             // Reuse the questions variable for another exam
             questions.clear();
         }
-        // GenerateExamsController the LaTeX document of the exams and store in the member variable
-        mLatexExams = ExamTemplate.makeLatexExams(generatedExams);
-        // Store the last generated subject and group to be used in the filename when downloading
-        // the generated exams
-        mLastGeneratedSubject = subject.getSubjectName();
-        mLastGeneratedGroup = groupName;
 
         return new Group(groupName, generatedExams);
     }
@@ -266,6 +280,7 @@ public class GenerateExamsController {
 
         // Clean the container to re-initialize the GenerateExamsController exams form view
         parentContainer.getChildren().clear();
+        mGenExamsView = null;
 
         // Set this to true so that loadGenerateForm reloads the views from the fxml's
         mFirstLoad = true;
@@ -280,8 +295,26 @@ public class GenerateExamsController {
      * @param actionEvent
      */
     public void downloadLatexAction(ActionEvent actionEvent) {
-        final String filename = makeFilename(mLastGeneratedSubject, mLastGeneratedGroup);
-        downloadLatexExams(actionEvent, filename, mLatexExams);
+        ArrayList<Exam> generatedExams = mGenExamsView.getSelectedExams();
+        if (generatedExams == null){
+            return;
+        }
+        downloadLatexExams(actionEvent, generatedExams);
+    }
+
+    /**
+     * downloadPdfAction
+     *
+     * The user clicked the "download all exams in PDF" button. Gather the files for the exams to
+     * be downloaded an call the method to do so.
+     * @param actionEvent
+     */
+    public void downloadPdfAction(ActionEvent actionEvent) {
+        ArrayList<Exam> generatedExams = mGenExamsView.getSelectedExams();
+        if (generatedExams == null){
+            return;
+        }
+        downloadPdfExams(actionEvent, mGenExamsView.getSelectedExams());
     }
 
     /**
@@ -290,22 +323,69 @@ public class GenerateExamsController {
      * Prompt a file save dialog and save the received exams in a LaTeX file.
      *
      * @param actionEvent The actionEven in which the request for downloading the exams occured
-     * @param fileName The filename to be suggested to the user
-     * @param latexExams A LaTeX string with the exams to be downloaded
+     * @param exams The list of exams to be downloaded
      */
-    public void downloadLatexExams(ActionEvent actionEvent, String fileName, String latexExams) {
+    public void downloadLatexExams(ActionEvent actionEvent, ArrayList<Exam> exams) {
         Node source = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
-
+        final String fileName = makeFilename(exams.get(0).getSubject(),
+                                             exams.get(0).getGroup(),
+                                             exams.size());
+        String latexExams = ExamTemplate.makeLatexExams(exams);
         File latexFile = promptFileChooser(currentStage,
                                            fileName + ".tex",
                                            new FileChooser.ExtensionFilter("TEX files (*.tex)", "*.tex"));
+
         // The user canceled the save dialog, don't do anything
         if (latexFile == null) {
             return;
         }
 
         saveLatexToFile(latexExams, latexFile);
+    }
+
+    /**
+     * downloadPdfExams
+     *
+     * Prompt a file save dialog and save the received exams in PDF to that location. To do this
+     * it first creates a temporary LaTeX file and then uses the external tool pdflatex to
+     * convert LaTeX to PDF.
+     *
+     * @param actionEvent The actionEven in which the request for downloading the exams occurred
+     * @param exams The list of exams to be downloaded
+     */
+    public void downloadPdfExams(ActionEvent actionEvent, ArrayList<Exam> exams) {
+        Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        final String fileName = makeFilename(exams.get(0).getSubject(),
+                                             exams.get(0).getGroup(),
+                                             exams.size());
+        String latexExams = ExamTemplate.makeLatexExams(exams);
+        // Show the "save exams in Pdf dialog"
+        File selectedFile = promptFileChooser(currentStage,
+                                              fileName + ".pdf",
+                                              new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
+
+        // The user canceled the save dialog, don't do anything
+        if (selectedFile == null) {
+            return;
+        }
+        String targetDirectoryPath = selectedFile.getParent();
+        String tempDirectoryPath = targetDirectoryPath +  File.separator + ".generadorMiniTemp";
+        boolean couldCreateDirectory = tempDirectorySetup(tempDirectoryPath);
+
+        if (couldCreateDirectory) {
+            File latexTemp = new File(tempDirectoryPath + File.separator + "latexTemp.tex");
+            saveLatexToFile(latexExams, latexTemp);
+
+            // Convert the temporal LaTeX file to PDF
+            convertToPdf(tempDirectoryPath,
+                         tempDirectoryPath + File.separator + "latexTemp.tex",
+                         selectedFile.getName());
+        }
+        else {
+            AlertMaker.displayError("Error", "No fue posible escribir en la ruta especificada.");
+        }
     }
 
     /**
@@ -347,65 +427,17 @@ public class GenerateExamsController {
     }
 
     /**
-     * downloadPdfAction
-     *
-     * The user clicked the "download all exams in PDF" button. Gather the files for the exams to
-     * be downloaded an call the method to do so.
-     * @param actionEvent
-     */
-    public void downloadPdfAction(ActionEvent actionEvent) {
-        final String filename = makeFilename(mLastGeneratedSubject, mLastGeneratedGroup);
-        downloadPdfExams(actionEvent, filename, mLatexExams);
-    }
-
-    /**
      * makeFilename
      *
      * Create a filename from a subject and group.
      * @param subject The subject to create the filename from
      * @param group The group to create the filename from
      */
-    private String makeFilename(String subject, String group) {
-        return "Examenes " + subject + " - " + group;
-    }
-
-    /**
-     * downloadPdfExams
-     *
-     * Prompt a file save dialog and save the received exams in PDF to that location. To do this
-     * it first creates a temporary LaTeX file and then uses the external tool pdflatex to
-     * convert LaTeX to PDF.
-     *
-     * @param actionEvent The actionEven in which the request for downloading the exams occured
-     * @param fileName The filename to be suggested to the user
-     * @param latexExams A LaTeX string with the exams to be downloaded
-     */
-    public void downloadPdfExams(ActionEvent actionEvent, String fileName, String latexExams) {
-        Node source = (Node) actionEvent.getSource();
-        Stage currentStage = (Stage) source.getScene().getWindow();
-
-        // Show the "save exams in Pdf dialog"
-        File selectedFile = promptFileChooser(currentStage,
-                                           fileName + ".pdf",
-                                           new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
-
-        // The user canceled the save dialog, don't do anything
-        if (selectedFile == null) {
-            return;
+    private String makeFilename(String subject, String group, int quantity) {
+        if (quantity == 1) {
+            return "Examen " + subject + " - Grupo " + group;
         }
-        String targetDirectoryPath = selectedFile.getParent();
-        String tempDirectoryPath = targetDirectoryPath +  File.separator + ".generadorMiniTemp";
-        boolean couldCreateDirectory = tempDirectorySetup(tempDirectoryPath);
-
-        if (couldCreateDirectory) {
-            File latexTemp = new File(tempDirectoryPath + File.separator + "latexTemp.tex");
-            saveLatexToFile(latexExams, latexTemp);
-
-            // Convert the temporal LaTeX file to PDF
-            convertToPdf(tempDirectoryPath,
-                         tempDirectoryPath + File.separator + "latexTemp.tex",
-                         selectedFile.getName());
-        }
+        return "Examenes " + subject + " - Grupo " + group;
     }
 
     /**

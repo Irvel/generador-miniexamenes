@@ -12,7 +12,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/main" +
                                                                      ".fxml"));
         primaryStage.setTitle("Generador de Minexámenes");
-        primaryStage.setScene(new Scene(root, 900, 600));
+        primaryStage.setScene(new Scene(root, 1100, 600));
         primaryStage.show();
     }
 

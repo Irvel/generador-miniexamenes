@@ -6,12 +6,16 @@ import GeneradorMiniexamenes.model.Options;
 import GeneradorMiniexamenes.model.QuestionBank;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Handles data persistence on the application. Is responsible of restoring a previous state and

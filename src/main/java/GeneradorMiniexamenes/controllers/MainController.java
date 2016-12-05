@@ -86,4 +86,8 @@ public class MainController {
     public void viewExamsTabSelected(Event event) {
         this.viewExamsTabController.loadViewExamsForm();
     }
+
+    public void optionsTabSelected(Event event) {
+        System.out.println("WORK IN PROGRESS FELLAS");
+    }
 }

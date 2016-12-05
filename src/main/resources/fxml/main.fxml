@@ -65,6 +65,20 @@
                               AnchorPane.topAnchor="40.0"/>
               </AnchorPane>
           </Tab>
+          <Tab onSelectionChanged="#optionsTabSelected" text="Opciones">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" styleClass="H1"
+                         text="Opciones" AnchorPane.leftAnchor="30.0"
+                         AnchorPane.topAnchor="30.0">
+                  </Label>
+                  <fx:include fx:id="optionsTab"
+                              source="OptionsTab.fxml"
+                              AnchorPane.bottomAnchor="0.0"
+                              AnchorPane.leftAnchor="0.0"
+                              AnchorPane.rightAnchor="0.0"
+                              AnchorPane.topAnchor="40.0"/>
+              </AnchorPane>
+          </Tab>
       </tabs>
     </TabPane>
 </VBox>

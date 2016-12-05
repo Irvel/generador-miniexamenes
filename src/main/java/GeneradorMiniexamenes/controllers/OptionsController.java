@@ -6,23 +6,27 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
+import static GeneradorMiniexamenes.controllers.AlertMaker.displayInfo;
+
 /**
- * ImportExportController
+ * OptionsController
  *
- * This class is the view controller for the ImportExport exams interface. It is responsible for
- * inflating the fxml into an object and adding it to the displayed layout. It is also the one
- * that handles actions inside the view.
+ * Modify general options from the program..
+ * TODO: Add the ability to delete groups
  */
 public class OptionsController {
     private GroupList mGroupList;
 
     @FXML private JFXTextField textFieldAddGroup;
+    @FXML private JFXTextField textFieldHeader;
 
     public OptionsController() {
     }
 
-    public void setModel(QuestionBank model) {
-        mQuestionBank = model;
+    @FXML private void initialize() {
+        textFieldHeader.setText(ExamTemplate.className);
+        textFieldHeader.textProperty()
+                       .addListener((ov, t, t1) -> ExamTemplate.className = textFieldHeader.getText().trim());
     }
 
     public void setModel(GroupList groupList) {
@@ -33,7 +37,10 @@ public class OptionsController {
      * The user clicked the import button
      * @param actionEvent
      */
-    public void importAction(ActionEvent actionEvent) {
+    public void addGroupAction(ActionEvent actionEvent) {
+        mGroupList.addGroup(textFieldAddGroup.getText().trim());
+        displayInfo("Se ha agregado el grupo " + textFieldAddGroup.getText() + ".");
+        textFieldAddGroup.setText("");
     }
 
 }

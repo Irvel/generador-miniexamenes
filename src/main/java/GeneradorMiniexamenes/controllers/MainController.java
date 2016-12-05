@@ -27,6 +27,7 @@ public class MainController {
     @FXML private ViewExamsController viewExamsTabController;
     @FXML private ImportExportController importExportTabController;
     @FXML private GradeExamsController gradeExamsTabController;
+    @FXML private OptionsController optionsTabController;
 
 
     @FXML private VBox mainGenContainer;

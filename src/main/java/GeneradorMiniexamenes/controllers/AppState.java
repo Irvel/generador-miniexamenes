@@ -2,6 +2,7 @@ package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.ExamBank;
 import GeneradorMiniexamenes.model.Group;
+import GeneradorMiniexamenes.model.Options;
 import GeneradorMiniexamenes.model.QuestionBank;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 public class AppState {
     private static final String QUESTIONS_PATH = "data/QuestionBank.json";
     private static final String EXAMS_PATH = "data/ExamBank.json";
+    private static final String OPTIONS_PATH = "data/Options.json";
 
     /**
      * loadQuestionBank
@@ -61,16 +63,59 @@ public class AppState {
      * @param questionBank The question bank to be saved
      */
     public static void saveQuestionBank(QuestionBank questionBank) {
+        Service<Void> service = new Service<Void>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        //Background work
+                        final CountDownLatch latch = new CountDownLatch(1);
+                        Platform.runLater(() -> {
+                            try{
+                                checkDataDirectoryExists();
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                try {
+                                    FileOutputStream outFile = new FileOutputStream(QUESTIONS_PATH, false);
+                                    objectMapper.writeValue(outFile, questionBank);
+                                    outFile.close();
+                                }
+                                catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }finally{
+                                latch.countDown();
+                            }
+                        });
+                        latch.await();
+                        //Keep with the background work
+                        return null;
+                    }
+                };
+            }
+        };
+        service.start();
+    }
+
+    /**
+     * loadExamBank
+     *
+     * Import the previously generated Exams from the application
+     *
+     * @return The previously generated exams
+     */
+    public static ExamBank loadExamBank() {
         checkDataDirectoryExists();
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            FileOutputStream outFile = new FileOutputStream(QUESTIONS_PATH, false);
-            objectMapper.writeValue(outFile, questionBank);
-            outFile.close();
+            File file = new File(EXAMS_PATH);
+            return new ExamBank(mapper.readValue(file, new TypeReference<HashMap<String,
+                    ArrayList<Group>>>(){}));
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (IOException e) {
+            System.out.println("Creating an empty ExamBank");
         }
+        return new ExamBank();
     }
 
     /**
@@ -94,24 +139,41 @@ public class AppState {
     }
 
     /**
-     * loadExamBank
+     * loadOptions
      *
-     * Import the previously generated Exams from the application
+     * Import general options for the application
      *
-     * @return The previously generated exams
      */
-    public static ExamBank loadExamBank() {
+    public static Options loadOptions() {
         checkDataDirectoryExists();
         ObjectMapper mapper = new ObjectMapper();
         try {
-            File file = new File(EXAMS_PATH);
-            return new ExamBank(mapper.readValue(file, new TypeReference<HashMap<String,
-                    ArrayList<Group>>>(){}));
+            File file = new File(OPTIONS_PATH);
+            return mapper.readValue(file, Options.class);
         }
         catch (IOException e) {
-            System.out.println("Creating an empty ExamBank");
+            System.out.println("Initializing with default options");
         }
-        return new ExamBank();
+        return new Options();
+    }
+
+    /**
+     * saveOptions
+     *
+     * Save general options for the application
+     *
+     */
+    public static void saveOptions(Options options) {
+        checkDataDirectoryExists();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            FileOutputStream outFile = new FileOutputStream(OPTIONS_PATH, false);
+            objectMapper.writeValue(outFile, options);
+            outFile.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

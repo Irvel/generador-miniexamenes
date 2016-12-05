@@ -32,7 +32,7 @@ public class GenerateExamsController {
     // Keep a reference to the Model of the application
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
-    private GroupList mGroupList;
+    private Options mOptions;
 
     @FXML private JFXComboBox<String> comboBoxSubject;
     @FXML private SpinnerAutoCommit spinnerAmount;
@@ -64,11 +64,11 @@ public class GenerateExamsController {
                                                           "3.0\\miktex\\bin\\pdflatex.exe"};
 
     
-    public GenerateExamsController(QuestionBank questionBank, ExamBank examBank, GroupList groupList) {
+    public GenerateExamsController(QuestionBank questionBank, ExamBank examBank, Options options) {
         mQuestionBank = questionBank;
         mExamBank = examBank;
         mFirstLoad = true;
-        mGroupList = groupList;
+        mOptions = options;
     }
 
     /**
@@ -172,7 +172,7 @@ public class GenerateExamsController {
     private void resetFormFields() {
         // Add the stored groups to the combo box
         cbGenFieldGroup.getItems().clear();
-        cbGenFieldGroup.getItems().addAll(mGroupList.getGroupNames());
+        cbGenFieldGroup.getItems().addAll(mOptions.getGroupNames());
         cbGenFieldGroup.getSelectionModel().selectFirst();
         spinnerAmount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 40));
         if (mGenerateContainer != null) {

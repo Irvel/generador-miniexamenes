@@ -16,15 +16,15 @@ public class GenerateExamsControllerTest {
     private GenerateExamsController mGenerateController;
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
-    private GroupList mGroupList;
+    private Options mOptions;
     private final int mQuantityToGenerate = 3;
 
     @Before
     public void setUp() {
         mQuestionBank = loadQuestionBank("src/test/resources/dummyQuestionBank.json");
         mExamBank = new ExamBank();
-        mGroupList = new GroupList();
-        mGenerateController = new GenerateExamsController(mQuestionBank, mExamBank, mGroupList);
+        mOptions = new Options();
+        mGenerateController = new GenerateExamsController(mQuestionBank, mExamBank, mOptions);
     }
 
     @Test

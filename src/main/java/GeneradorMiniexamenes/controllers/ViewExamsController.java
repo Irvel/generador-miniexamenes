@@ -20,6 +20,7 @@ import java.util.Optional;
  * ViewExamsController
  *
  * This class is the view controller for the View Generated Exams interface.
+ * TODO: Check that selecting multiple exams for deletion works
  */
 public class ViewExamsController {
     private ExamListView mExamListView;

@@ -12,3 +12,4 @@ out
 *.log
 data/questionBank.json
 data/ExamBank.json
+data/Options.json

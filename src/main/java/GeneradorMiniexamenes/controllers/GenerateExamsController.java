@@ -3,7 +3,6 @@ package GeneradorMiniexamenes.controllers;
 import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextField;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,7 +36,7 @@ public class GenerateExamsController {
     @FXML private JFXComboBox<String> comboBoxSubject;
     @FXML private SpinnerAutoCommit spinnerAmount;
     @FXML private JFXButton buttonGenerate;
-    @FXML private JFXTextField textFieldGroup;
+    @FXML private JFXComboBox<String> cbGenFieldGroup;
     @FXML private AnchorPane parentGenContainer;
     @FXML private JFXButton buttonDownLatexGen;
     @FXML private JFXButton buttonDownPdfGen;
@@ -108,7 +107,7 @@ public class GenerateExamsController {
         int examQuantity = Integer.parseInt(spinnerAmount.getValue().toString());
         Group generatedExams = generateExams(subject,
                                              examQuantity,
-                                             textFieldGroup.getText().trim());
+                                             cbGenFieldGroup.getValue());
 
         // Add the newly generated exams to the list of generated exams for this subject
         mExamBank.addGroup(subject.getSubjectName(), generatedExams);
@@ -164,7 +163,6 @@ public class GenerateExamsController {
      */
     private void resetFormFields() {
         spinnerAmount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 40));
-        textFieldGroup.setText("");
         if (mGenerateContainer != null) {
             // Checks if there is at least one subject in the QuestionBank
             if (mQuestionBank.getSubjects().isEmpty()) {
@@ -195,10 +193,13 @@ public class GenerateExamsController {
      */
     private boolean areFieldsInvalid() {
         // Validate that a group was entered
-        if (textFieldGroup.getText() == null || textFieldGroup.getText().equals("")) {
+        // TODO: Do this only when adding a new group
+        /*
+        if (cbGenFieldGroup.getText() == null || cbGenFieldGroup.getText().equals("")) {
             AlertMaker.displayError("Error", "Favor de ingresar un grupo");
             return true;
         }
+        */
 
         // Validate that the entered amount of exams is larger than 0
         if (spinnerAmount.getValue() == null ||
@@ -253,8 +254,7 @@ public class GenerateExamsController {
                                                 .get(ThreadLocalRandom.current()
                                                                       .nextInt(0,
                                                                                b.getQuestions()
-                                                                                .size())))
-                                     .collect(Collectors.toList()));
+                                                                                .size()))).collect(Collectors.toList()));
             // The exam number is the highest exam number in the group plus the sequence
             // number in the generated exams list
             Exam exam = new Exam(subject.getSubjectName(),

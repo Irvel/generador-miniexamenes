@@ -6,7 +6,6 @@ import java.util.ArrayList;
  * A template model for generating LaTeX exams given a set of Exams
  */
 public class ExamTemplate {
-    public static String className = "Teoría de la Computación";
     /**
      * mdocumentHeader
      *
@@ -37,7 +36,7 @@ public class ExamTemplate {
      */
     private static String getTitle(String course, String subject, String group) {
         return "   \\begin{center}\n" +
-                "      \\scshape \\large Miniexamen " + course + " \\\\ (" +
+                "      \\scshape \\large " + course + " \\\\ (" +
                 subject + ", Grupo " + group + ")\\vspace{-.3em}\n" +
                 "   \\end{center}\n" +
                 "   \\thispagestyle{empty}\n" +
@@ -104,8 +103,8 @@ public class ExamTemplate {
      * @param examNumber The exam number to be displayed in the exam second line
      * @return The LaTeX string with the section containing a single exam
      */
-    private static String makeLatexExam(Exam exam, String examNumber) {
-        final String title = getTitle(className, exam.getSubject(), exam.getGroup());
+    private static String makeLatexExam(String headerText, Exam exam, String examNumber) {
+        final String title = getTitle(headerText, exam.getSubject(), exam.getGroup());
         final String questions = getQuestions(exam.getQuestions());
         final String firstSection = getFirstSection(examNumber);
         return title + firstSection + questions;
@@ -118,7 +117,7 @@ public class ExamTemplate {
      * @param exams The set of exams from which the document will be created
      * @return The LaTeX string containing the exams
      */
-    public static String makeLatexExams(ArrayList<Exam> exams) {
+    public static String makeLatexExams(String headerText, ArrayList<Exam> exams) {
         // Get the document header
         String latexExams = mdocumentHeader;
 
@@ -126,10 +125,14 @@ public class ExamTemplate {
         for (Exam exam : exams) {
             if (examCount < exams.size()) {
                 // Insert a new page after each exam that is not the last one
-                latexExams += makeLatexExam(exam, Integer.toString(exam.getExamNumber())) + "   \\newpage\n";
+                latexExams += makeLatexExam(headerText,
+                                            exam,
+                                            Integer.toString(exam.getExamNumber())) + "   \\newpage\n";
             }
             else {
-                latexExams += makeLatexExam(exam, Integer.toString(exam.getExamNumber()));
+                latexExams += makeLatexExam(headerText,
+                                            exam,
+                                            Integer.toString(exam.getExamNumber()));
             }
             examCount++;
         }

@@ -343,7 +343,7 @@ public class GenerateExamsController {
         final String fileName = makeFilename(exams.get(0).getSubject(),
                                              exams.get(0).getGroup(),
                                              exams.size());
-        String latexExams = ExamTemplate.makeLatexExams(exams);
+        String latexExams = ExamTemplate.makeLatexExams(mOptions.getClassTitle(), exams);
         File latexFile = promptFileChooser(currentStage,
                                            fileName + ".tex",
                                            new FileChooser.ExtensionFilter("TEX files (*.tex)", "*.tex"));
@@ -372,7 +372,7 @@ public class GenerateExamsController {
         final String fileName = makeFilename(exams.get(0).getSubject(),
                                              exams.get(0).getGroup(),
                                              exams.size());
-        String latexExams = ExamTemplate.makeLatexExams(exams);
+        String latexExams = ExamTemplate.makeLatexExams(mOptions.getClassTitle(), exams);
         // Show the "save exams in Pdf dialog"
         File selectedFile = promptFileChooser(currentStage,
                                               fileName + ".pdf",

@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * A template model for generating LaTeX exams given a set of Exams
  */
 public class ExamTemplate {
+    public static String className = "Teoría de la Computación";
     /**
      * mdocumentHeader
      *
@@ -104,8 +105,6 @@ public class ExamTemplate {
      * @return The LaTeX string with the section containing a single exam
      */
     private static String makeLatexExam(Exam exam, String examNumber) {
-        // TODO: Add a way to edit this class name in the user interface
-        final String className = "Teoría de la Computación";
         final String title = getTitle(className, exam.getSubject(), exam.getGroup());
         final String questions = getQuestions(exam.getQuestions());
         final String firstSection = getFirstSection(examNumber);

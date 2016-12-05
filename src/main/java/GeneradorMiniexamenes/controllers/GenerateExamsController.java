@@ -32,6 +32,7 @@ public class GenerateExamsController {
     // Keep a reference to the Model of the application
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
+    private GroupList mGroupList;
 
     @FXML private JFXComboBox<String> comboBoxSubject;
     @FXML private SpinnerAutoCommit spinnerAmount;
@@ -63,10 +64,11 @@ public class GenerateExamsController {
                                                           "3.0\\miktex\\bin\\pdflatex.exe"};
 
     
-    public GenerateExamsController(QuestionBank questionBank, ExamBank examBank) {
+    public GenerateExamsController(QuestionBank questionBank, ExamBank examBank, GroupList groupList) {
         mQuestionBank = questionBank;
         mExamBank = examBank;
         mFirstLoad = true;
+        mGroupList = groupList;
     }
 
     /**

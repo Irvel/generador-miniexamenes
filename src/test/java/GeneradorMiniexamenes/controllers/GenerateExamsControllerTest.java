@@ -1,9 +1,6 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.Exam;
-import GeneradorMiniexamenes.model.ExamBank;
-import GeneradorMiniexamenes.model.Group;
-import GeneradorMiniexamenes.model.QuestionBank;
+import GeneradorMiniexamenes.model.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,13 +16,15 @@ public class GenerateExamsControllerTest {
     private GenerateExamsController mGenerateController;
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
+    private GroupList mGroupList;
     private final int mQuantityToGenerate = 3;
 
     @Before
     public void setUp() {
         mQuestionBank = loadQuestionBank("src/test/resources/dummyQuestionBank.json");
         mExamBank = new ExamBank();
-        mGenerateController = new GenerateExamsController(mQuestionBank, mExamBank);
+        mGroupList = new GroupList();
+        mGenerateController = new GenerateExamsController(mQuestionBank, mExamBank, mGroupList);
     }
 
     @Test

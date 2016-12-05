@@ -1,6 +1,7 @@
 package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.ExamBank;
+import GeneradorMiniexamenes.model.GroupList;
 import GeneradorMiniexamenes.model.QuestionBank;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ public class MainController {
     // Model of the application
     private QuestionBank mQuestionBank;
     private ExamBank mExamBank;
+    private GroupList mGroupList;
 
     // Sub-controllers for each tab
     private GenerateExamsController mGenerateExamsController;
@@ -35,13 +37,15 @@ public class MainController {
     public MainController() {
         mQuestionBank = AppState.loadQuestionBank();
         mExamBank = AppState.loadExamBank();
-        this.mGenerateExamsController = new GenerateExamsController(mQuestionBank, mExamBank);
+        mGroupList = new GroupList();
+        this.mGenerateExamsController = new GenerateExamsController(mQuestionBank, mExamBank, mGroupList);
     }
 
     @FXML private void initialize() {
         this.gradeExamsTabController.setModel(mExamBank);
         this.importExportTabController.setModel(mQuestionBank);
         this.viewExamsTabController.setModel(mExamBank, mGenerateExamsController);
+        this.optionsTabController.setModel(mGroupList);
     }
     /**
      * generateTabSelected

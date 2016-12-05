@@ -5,6 +5,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
+
 <VBox fx:id="optionsTab"
       alignment="CENTER"
       prefHeight="111.0"

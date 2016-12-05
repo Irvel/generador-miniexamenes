@@ -1,6 +1,7 @@
 package GeneradorMiniexamenes.controllers;
 
-import GeneradorMiniexamenes.model.QuestionBank;
+import GeneradorMiniexamenes.model.ExamTemplate;
+import GeneradorMiniexamenes.model.GroupList;
 import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,7 +14,7 @@ import javafx.fxml.FXML;
  * that handles actions inside the view.
  */
 public class OptionsController {
-    private QuestionBank mQuestionBank;
+    private GroupList mGroupList;
 
     @FXML private JFXTextField textFieldAddGroup;
 
@@ -24,6 +25,9 @@ public class OptionsController {
         mQuestionBank = model;
     }
 
+    public void setModel(GroupList groupList) {
+        mGroupList = groupList;
+    }
 
     /**
      * The user clicked the import button
@@ -31,6 +35,5 @@ public class OptionsController {
      */
     public void importAction(ActionEvent actionEvent) {
     }
-
 
 }

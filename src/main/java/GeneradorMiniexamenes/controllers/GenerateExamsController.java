@@ -170,6 +170,10 @@ public class GenerateExamsController {
      *
      */
     private void resetFormFields() {
+        // Add the stored groups to the combo box
+        cbGenFieldGroup.getItems().clear();
+        cbGenFieldGroup.getItems().addAll(mGroupList.getGroupNames());
+        cbGenFieldGroup.getSelectionModel().selectFirst();
         spinnerAmount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 40));
         if (mGenerateContainer != null) {
             // Checks if there is at least one subject in the QuestionBank

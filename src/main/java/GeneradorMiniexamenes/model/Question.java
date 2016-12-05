@@ -14,14 +14,6 @@ public class Question {
         this.mQuestion = question;
     }
 
-    public void setQuestion(String mQuestion) {
-        this.mQuestion = mQuestion;
-    }
-
-    public void setAnswers(ArrayList<Answer> mAnswers) {
-        this.mAnswers = mAnswers;
-    }
-
     public String getQuestion() {
         return mQuestion;
     }

@@ -13,10 +13,6 @@ public class QuestionBank {
         this.mSubjects = new ArrayList<>();
     }
 
-    public QuestionBank(ArrayList<Subject> subjects) {
-        this.mSubjects = subjects;
-    }
-
     public ArrayList<Subject> getSubjects() {
         return mSubjects;
     }

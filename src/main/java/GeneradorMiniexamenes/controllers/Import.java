@@ -130,7 +130,6 @@ public class Import {
         // line and number of stars in a line
         String line;
         String questionName = "";
-        int iSequence = 1;
         String answer;
         int iWeight;
         ArrayList<Block> blocks = new ArrayList<>();
@@ -150,7 +149,7 @@ public class Import {
                         if (!answers.isEmpty()) { // if there are answers, add the block
                             questions.add(new Question(new ArrayList<>(answers), questionName));
                         }
-                        blocks.add(new Block(new ArrayList<>(questions), iSequence++));
+                        blocks.add(new Block(new ArrayList<>(questions)));
                         questions.clear();
                         answers.clear();
                     }
@@ -176,11 +175,11 @@ public class Import {
                 questions.add(new Question(new ArrayList<>(answers), questionName));
             }
             if (!questions.isEmpty()) {
-                blocks.add(new Block(new ArrayList<>(questions), iSequence));
+                blocks.add(new Block(new ArrayList<>(questions)));
             }
 
             // Creates the Subject
-            return new Subject(blocks, fileName);
+            return new Subject(fileName, blocks);
 
         } catch (FileNotFoundException e) {
             System.out.println("El archivo no pudo ser abierto");

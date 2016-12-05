@@ -35,24 +35,12 @@ public class Exam {
         return mGroup;
     }
 
-    public void setGroup(String group) {
-        mGroup = group;
-    }
-
     public ArrayList<Question> getQuestions() {
         return mQuestions;
     }
 
-    public void setQuestions(ArrayList<Question> questions) {
-        mQuestions = questions;
-    }
-
     public int getExamNumber() {
         return mExamNumber;
-    }
-
-    public void setExamNumber(int examNumber) {
-        mExamNumber = examNumber;
     }
 
     @Override

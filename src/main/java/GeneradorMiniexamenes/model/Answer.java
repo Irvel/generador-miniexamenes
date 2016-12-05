@@ -17,15 +17,7 @@ public class Answer {
         return mAnswer;
     }
 
-    public void setAnswer(String answer) {
-        mAnswer = answer;
-    }
-
     public int getWeight() {
         return mWeight;
-    }
-
-    public void setWeight(int weight) {
-        this.mWeight = weight;
     }
 }

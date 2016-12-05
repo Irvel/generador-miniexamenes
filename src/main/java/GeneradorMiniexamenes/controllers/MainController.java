@@ -65,20 +65,6 @@ public class MainController {
         this.importExportTabController.resetExportOptions();
     }
 
-    public QuestionBank getQuestionBank() {
-        return mQuestionBank;
-    }
-
-    public void setQuestionBank(QuestionBank questionBank) {
-        mQuestionBank = questionBank;
-        // Persist any changes to the current QuestionBank
-        AppState.saveQuestionBank(mQuestionBank);
-    }
-
-    public ExamBank getExamBank() {
-        return mExamBank;
-    }
-
     public void gradeTabSelected(Event event) throws IOException {
         gradeExamsTabController.tabSelected();
     }

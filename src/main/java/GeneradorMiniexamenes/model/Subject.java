@@ -8,18 +8,10 @@ public class Subject {
     private ArrayList<Block> mBlocks;
     private String mSubjectName;
 
-    public Subject(@JsonProperty("blocks") ArrayList<Block> blocks,
-                   @JsonProperty("subjectName") String subject) {
-        this.mBlocks = blocks;
+    public Subject(@JsonProperty("subjectName") String subject,
+                   @JsonProperty("blocks") ArrayList<Block> blocks) {
         this.mSubjectName = subject;
-    }
-
-    public ArrayList<Block> getBlocks() {
-        return mBlocks;
-    }
-
-    public void setBlocks(ArrayList<Block> mBlocks) {
-        this.mBlocks = mBlocks;
+        this.mBlocks = blocks;
     }
 
     public String getSubjectName() {
@@ -28,5 +20,9 @@ public class Subject {
 
     public void setSubjectName(String subject) {
         this.mSubjectName = subject;
+    }
+
+    public ArrayList<Block> getBlocks() {
+        return mBlocks;
     }
 }

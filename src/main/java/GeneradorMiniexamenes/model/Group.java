@@ -32,17 +32,8 @@ public class Group {
         return mGroupName;
     }
 
-    public void setGroupName(String groupName) {
-        mGroupName = groupName;
-    }
-
     public ArrayList<Exam> getExams() {
         return mExams;
-    }
-
-    public void setExams(ArrayList<Exam> exams) {
-        mExams = exams;
-        setHighestExamNumber();
     }
 
     public int getHighestExamNumber() {

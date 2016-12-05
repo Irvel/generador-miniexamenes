@@ -54,7 +54,13 @@ public class GenerateExamsController {
                                                   "C:\\Program Files\\MiKTeX " +
                                                           "2.9\\miktex\\bin\\x64\\pdflatex.exe",
                                                   "C:\\Program Files\\MiKTeX " +
-                                                          "3.0\\miktex\\bin\\x64\\pdflatex.exe"};
+                                                          "3.0\\miktex\\bin\\x64\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "2.9\\miktex\\bin\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "2.8\\miktex\\bin\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "3.0\\miktex\\bin\\pdflatex.exe"};
 
     
     public GenerateExamsController(QuestionBank questionBank, ExamBank examBank) {

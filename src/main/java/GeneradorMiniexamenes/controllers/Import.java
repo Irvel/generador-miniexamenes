@@ -48,6 +48,11 @@ public class Import {
         // Checks the extension of the file selected (txt or json)
         if (extension.equals("txt")) {
             Subject imported = importFromText(file, name);
+            // Ensure that the name of the imported subject is the same as it's containing
+            // filename only for text files
+            if (imported != null) {
+                imported.setSubjectName(name);
+            }
             appendToModel(imported, questionBank, name);
         }
         else {
@@ -111,9 +116,9 @@ public class Import {
                                            "banco de preguntas actual permanecerá sin cambios");
         }
         else {
-            // Ensure that the name of the imported subject is the same as it's containing filename
-            imported.setSubjectName(filename);
-            displayInfo("Se ha agregado el tema " + filename + " al banco de preguntas.");
+            // Clean any trailing user-left spaces
+            imported.setSubjectName(imported.getSubjectName().trim());
+            displayInfo("Se ha agregado el tema " + imported.getSubjectName() + " al banco de preguntas.");
             questionBank.addSubject(imported);
         }
         AppState.saveQuestionBank(questionBank, AppState.QUESTIONS_PATH);

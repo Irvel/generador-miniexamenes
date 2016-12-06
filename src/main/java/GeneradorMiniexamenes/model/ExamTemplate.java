@@ -4,16 +4,24 @@ import java.util.ArrayList;
 
 /**
  * A template model for generating LaTeX exams given a set of Exams
+ *
+ * Important considerations for a nice exam:
+ *      - When entering a formula, Enclose it with $$ for example:
+ *         In physics, the mass-energy equivalence is stated by the equation $E=mc^2$
+ *
+ *      - Escape any special of the 10 special LaTeX characters: & % $ # _ { } ~ ^ \ with a backslash
+ *        (\) before them.
+ *
  */
 public class ExamTemplate {
     /**
-     * mdocumentHeader
+     * mDocumentHeader
      *
      * Imports the used LaTeX packages and sets the page layout, encoding, headers and removes
      * the extra vertical margin in the first page (vspace*{-1.2cm}).
      * NOTE: User entered formulas must be inside $$ to be properly displayed
      */
-    private static final String mdocumentHeader =
+    private static final String mDocumentHeader =
             "\\documentclass[fleqn]{exam}\n" +
             "\\usepackage[letterpaper, left=.5in, right=.5in, top=.25in, " +
             "bottom=.5in]{geometry}\n" +
@@ -119,7 +127,7 @@ public class ExamTemplate {
      */
     public static String makeLatexExams(String headerText, ArrayList<Exam> exams) {
         // Get the document header
-        String latexExams = mdocumentHeader;
+        String latexExams = mDocumentHeader;
 
         int examCount = 0;
         for (Exam exam : exams) {

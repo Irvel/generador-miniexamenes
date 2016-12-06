@@ -20,7 +20,8 @@
     </VBox.margin>
    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
       <children>
-           <JFXButton buttonType="RAISED" onAction="#importAction" prefHeight="27.0" prefWidth="180.0" styleClass="inputBtn" text="Importar" />
+           <JFXButton buttonType="RAISED" fx:id="buttonImport" onAction="#importAction"
+                      prefHeight="27.0" prefWidth="180.0" styleClass="inputBtn" text="Importar" />
       </children>
    </VBox>
    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" HBox.hgrow="ALWAYS">

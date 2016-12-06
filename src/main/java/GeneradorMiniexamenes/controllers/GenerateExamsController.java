@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import static GeneradorMiniexamenes.controllers.AlertMaker.displayInfo;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
@@ -172,6 +173,15 @@ public class GenerateExamsController {
     private void resetFormFields() {
         // Add the stored groups to the combo box
         cbGenFieldGroup.getItems().clear();
+        if (mOptions.getGroupNames().size() <= 0) {
+            displayInfo("Para poder generar exámenes, es necesario primero agregar un grupo en " +
+                                "la pestaña de \"Opciones\".");
+            buttonGenerate.setDisable(true);
+            comboBoxSubject.setDisable(true);
+            cbGenFieldGroup.setDisable(true);
+            spinnerAmount.setDisable(true);
+            return;
+        }
         cbGenFieldGroup.getItems().addAll(mOptions.getGroupNames());
         cbGenFieldGroup.getSelectionModel().selectFirst();
         spinnerAmount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 40));
@@ -180,10 +190,17 @@ public class GenerateExamsController {
             if (mQuestionBank.getSubjects().isEmpty()) {
                 buttonGenerate.setDisable(true);
                 comboBoxSubject.setDisable(true);
+                cbGenFieldGroup.setDisable(true);
+                spinnerAmount.setDisable(true);
+                displayInfo("Para poder generar exámenes, es necesario primero agregar por lo " +
+                                    "menos un tema al banco de preguntas en la pestaña de " +
+                                    "\"Importar / Exportar\"");
             }
             else {
                 buttonGenerate.setDisable(false);
                 comboBoxSubject.setDisable(false);
+                cbGenFieldGroup.setDisable(false);
+                spinnerAmount.setDisable(false);
                 // Load each subject name from the QuestionBank into the combo box
                 mQuestionBank.getSubjects()
                              .stream()

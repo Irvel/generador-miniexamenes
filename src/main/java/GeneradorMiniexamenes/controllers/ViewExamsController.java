@@ -44,7 +44,7 @@ public class ViewExamsController {
         mGroupListenerActive = false;
     }
 
-    public void initialize() {
+    @FXML public void initialize() {
         // Create the change listeners for the ComboBoxes and the ListView
         setListeners();
     }

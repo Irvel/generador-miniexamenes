@@ -6,6 +6,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Tooltip;
 
 /**
  * ImportExportController
@@ -20,6 +21,7 @@ public class ImportExportController {
     private Export mExport;
 
     @FXML private JFXButton buttonExport;
+    @FXML private JFXButton buttonImport;
     @FXML private JFXComboBox<String> comboBoxSubject;
 
     public ImportExportController() {
@@ -31,6 +33,11 @@ public class ImportExportController {
         mQuestionBank = model;
     }
 
+    @FXML public void initialize() {
+        buttonImport.setTooltip(new Tooltip("Importar un tema al banco de preguntas"));
+        buttonExport.setTooltip(new Tooltip("Exportar un tema del banco de preguntas"));
+        comboBoxSubject.setTooltip(new Tooltip("El tema a ser exportado"));
+    }
 
     /**
      * The user clicked the import button

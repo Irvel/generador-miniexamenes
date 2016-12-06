@@ -12,7 +12,6 @@ import static GeneradorMiniexamenes.controllers.AppState.saveOptions;
  *
  * General options to be used across the application. This includes the set of groups to be
  * displayed to the user and generated exam class title.
- * TODO: Add the option to delete a group
  */
 public class Options {
     private HashSet<String> mGroupNames;
@@ -48,6 +47,11 @@ public class Options {
 
     public void setClassTitle(String classTitle) {
         mClassTitle = classTitle;
+        saveOptions(this);
+    }
+
+    public void removeGroup(String toDelete) {
+        mGroupNames.remove(toDelete);
         saveOptions(this);
     }
 }

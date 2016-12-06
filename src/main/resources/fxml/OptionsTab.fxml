@@ -60,12 +60,13 @@
                      <Insets />
                   </VBox.margin>
                </Label>
-               <JFXComboBox minWidth="300.0">
+               <JFXComboBox fx:id="comboBoxRemoveGroup" minWidth="300.0">
                   <VBox.margin>
                      <Insets top="5.0" />
                   </VBox.margin>
                </JFXComboBox>
-               <JFXButton fx:id="buttonAddNewGroup1" onAction="#addGroupAction" prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Eliminar Grupo">
+               <JFXButton onAction="#removeGroupAction" fx:id="buttonRemoveGroup"
+                          prefHeight="27.0" prefWidth="179.0" styleClass="inputBtn" text="Eliminar Grupo">
                   <VBox.margin>
                      <Insets top="25.0" />
                   </VBox.margin>

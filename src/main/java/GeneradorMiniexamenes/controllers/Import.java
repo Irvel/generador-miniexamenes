@@ -1,6 +1,7 @@
 package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.*;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -196,6 +197,10 @@ public class Import {
      */
     private Subject importFromJson(File file) {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+        mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         try {
             return mapper.readValue(file, Subject.class);
         }

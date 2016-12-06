@@ -115,7 +115,7 @@ public class Import {
             displayInfo("Se ha agregado el tema " + filename + " al banco de preguntas.");
             questionBank.addSubject(imported);
         }
-        AppState.saveQuestionBank(questionBank);
+        AppState.saveQuestionBank(questionBank, AppState.QUESTIONS_PATH);
     }
 
     /**

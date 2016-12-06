@@ -36,9 +36,9 @@ public class MainController {
      * Initializer of MainController
      */
     public MainController() {
-        mQuestionBank = AppState.loadQuestionBank();
-        mExamBank = AppState.loadExamBank();
-        mOptions = AppState.loadOptions();
+        mQuestionBank = AppState.loadQuestionBank(AppState.QUESTIONS_PATH);
+        mExamBank = AppState.loadExamBank(AppState.EXAMS_PATH);
+        mOptions = AppState.loadOptions(AppState.OPTIONS_PATH);
         this.mGenerateExamsController = new GenerateExamsController(mQuestionBank,
                                                                     mExamBank,
                                                                     mOptions);

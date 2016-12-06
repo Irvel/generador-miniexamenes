@@ -23,9 +23,9 @@ import java.util.concurrent.CountDownLatch;
  *
  */
 public class AppState {
-    private static final String QUESTIONS_PATH = "data/QuestionBank.json";
-    private static final String EXAMS_PATH = "data/ExamBank.json";
-    private static final String OPTIONS_PATH = "data/Options.json";
+    static final String QUESTIONS_PATH = "data/QuestionBank.json";
+    static final String EXAMS_PATH = "data/ExamBank.json";
+    static final String OPTIONS_PATH = "data/Options.json";
 
     /**
      * loadQuestionBank
@@ -34,20 +34,8 @@ public class AppState {
      *
      * @return The question bank stored inside the Application
      */
-    public static QuestionBank loadQuestionBank() {
-        checkDataDirectoryExists();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            File file = new File(QUESTIONS_PATH);
-            return mapper.readValue(file, QuestionBank.class);
-        }
-        catch (IOException e) {
-            System.out.println("Creating an empty QuestionBank");
-        }
-        return new QuestionBank();
-    }
-
     public static QuestionBank loadQuestionBank(String path) {
+        checkDataDirectoryExists();
         ObjectMapper mapper = new ObjectMapper();
         try {
             File file = new File(path);
@@ -55,6 +43,7 @@ public class AppState {
         }
         catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Creating an empty QuestionBank");
         }
         return new QuestionBank();
     }
@@ -63,42 +52,24 @@ public class AppState {
      * saveQuestionBank
      *
      * Save the current question bank to persistent Storage in QUESTIONS_PATH.
-     * TODO: Do this in another thread
      * @param questionBank The question bank to be saved
      */
-    public static void saveQuestionBank(QuestionBank questionBank) {
-        Service<Void> service = new Service<Void>() {
-            @Override
-            protected Task<Void> createTask() {
-                return new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        //Background work
-                        final CountDownLatch latch = new CountDownLatch(1);
-                        Platform.runLater(() -> {
-                            try{
-                                checkDataDirectoryExists();
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                try {
-                                    FileOutputStream outFile = new FileOutputStream(QUESTIONS_PATH, false);
-                                    objectMapper.writeValue(outFile, questionBank);
-                                    outFile.close();
-                                }
-                                catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }finally{
-                                latch.countDown();
-                            }
-                        });
-                        latch.await();
-                        //Keep with the background work
-                        return null;
-                    }
-                };
+    public static void saveQuestionBank(QuestionBank questionBank, String path) {
+        runInBackground(() -> {
+            checkDataDirectoryExists();
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                FileOutputStream outFile = new FileOutputStream(path, false);
+                objectMapper.writeValue(outFile, questionBank);
+                // Yes this is hacky. But for some reason sometimes Jackson doesn't output an
+                // endline at the end of the file, so when it tries to read it again, it crashes.
+                objectMapper.writeValueAsString("\n");
+                outFile.close();
             }
-        };
-        service.start();
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -108,11 +79,11 @@ public class AppState {
      *
      * @return The previously generated exams
      */
-    public static ExamBank loadExamBank() {
+    public static ExamBank loadExamBank(String path) {
         checkDataDirectoryExists();
         ObjectMapper mapper = new ObjectMapper();
         try {
-            File file = new File(EXAMS_PATH);
+            File file = new File(path);
             return new ExamBank(mapper.readValue(file, new TypeReference<HashMap<String,
                     ArrayList<Group>>>(){}));
         }
@@ -130,16 +101,18 @@ public class AppState {
      * @param examBank The exam bank to be saved
      */
     public static void saveExamBank(ExamBank examBank) {
-        checkDataDirectoryExists();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            FileOutputStream outFile = new FileOutputStream(EXAMS_PATH, false);
-            objectMapper.writeValue(outFile, examBank.getGroups());
-            outFile.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        runInBackground(() -> {
+            checkDataDirectoryExists();
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                FileOutputStream outFile = new FileOutputStream(EXAMS_PATH, false);
+                objectMapper.writeValue(outFile, examBank.getGroups());
+                outFile.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -148,11 +121,11 @@ public class AppState {
      * Import general options for the application
      *
      */
-    public static Options loadOptions() {
+    public static Options loadOptions(String path) {
         checkDataDirectoryExists();
         ObjectMapper mapper = new ObjectMapper();
         try {
-            File file = new File(OPTIONS_PATH);
+            File file = new File(path);
             return mapper.readValue(file, Options.class);
         }
         catch (IOException e) {
@@ -168,16 +141,44 @@ public class AppState {
      *
      */
     public static void saveOptions(Options options) {
-        checkDataDirectoryExists();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            FileOutputStream outFile = new FileOutputStream(OPTIONS_PATH, false);
-            objectMapper.writeValue(outFile, options);
-            outFile.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        runInBackground(() -> {
+            checkDataDirectoryExists();
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                FileOutputStream outFile = new FileOutputStream(OPTIONS_PATH, false);
+                objectMapper.writeValue(outFile, options);
+                outFile.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private static void runInBackground(Runnable function) {
+        Service<Void> service = new Service<Void>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        //Background work
+                        final CountDownLatch latch = new CountDownLatch(1);
+                        Platform.runLater(() -> {
+                            try{
+                                function.run();
+                            }finally{
+                                latch.countDown();
+                            }
+                        });
+                        latch.await();
+                        //Keep with the background work
+                        return null;
+                    }
+                };
+            }
+        };
+        service.start();
     }
 
     /**

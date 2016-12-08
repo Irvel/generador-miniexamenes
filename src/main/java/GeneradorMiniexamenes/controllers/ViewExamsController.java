@@ -165,6 +165,10 @@ public class ViewExamsController {
      */
     public void loadViewExamsForm() {
         if (mExamBank.getGroups().isEmpty()) {
+            if (mExamListView != null) {
+                mExamListView.clear();
+            }
+
             cbSubjectViewExams.setDisable(true);
             cbGroupViewExams.setDisable(true);
             disableAllButtons();

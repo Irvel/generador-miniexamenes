@@ -5,6 +5,7 @@ import GeneradorMiniexamenes.model.Group;
 import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -36,7 +37,7 @@ public class ExamListView {
     public ExamListView(AnchorPane parentContainer, ChangeListener examListListener) {
         mExamListView = new JFXListView<Exam>();
         mExamListView.getSelectionModel().selectedItemProperty().addListener(examListListener);
-
+        mExamListView.setPlaceholder(new Label("No existe ningún exámen generado."));
         AnchorPane.setLeftAnchor(mExamListView, 0.0);
         AnchorPane.setRightAnchor(mExamListView, 0.0);
         AnchorPane.setTopAnchor(mExamListView, 0.0);
@@ -68,5 +69,9 @@ public class ExamListView {
             return new ArrayList<Exam>(mExamListView.getSelectionModel().getSelectedItems());
         }
         return null;
+    }
+
+    public void clear() {
+        mExamListView.getItems().clear();
     }
 }

@@ -4,7 +4,9 @@ import GeneradorMiniexamenes.model.Exam;
 import GeneradorMiniexamenes.model.Group;
 import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
+import javafx.event.EventHandler;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.ArrayList;
@@ -15,9 +17,26 @@ import java.util.ArrayList;
 public class ExamListView {
     private JFXListView<Exam> mExamListView;
 
+    public ExamListView(AnchorPane parentContainer, ChangeListener examListListener,
+                        EventHandler<MouseEvent> mouseVersion) {
+        mExamListView = new JFXListView<Exam>();
+        mExamListView.getSelectionModel().selectedItemProperty().addListener(examListListener);
+        // Use an additional event listener for mouse movement because on Windows it sometimes
+        // misses the above one
+        mExamListView.setOnMouseMoved(mouseVersion);
+
+        AnchorPane.setLeftAnchor(mExamListView, 0.0);
+        AnchorPane.setRightAnchor(mExamListView, 0.0);
+        AnchorPane.setTopAnchor(mExamListView, 0.0);
+        AnchorPane.setBottomAnchor(mExamListView, 0.0);
+        mExamListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        parentContainer.getChildren().add(mExamListView);
+    }
+
     public ExamListView(AnchorPane parentContainer, ChangeListener examListListener) {
         mExamListView = new JFXListView<Exam>();
         mExamListView.getSelectionModel().selectedItemProperty().addListener(examListListener);
+
         AnchorPane.setLeftAnchor(mExamListView, 0.0);
         AnchorPane.setRightAnchor(mExamListView, 0.0);
         AnchorPane.setTopAnchor(mExamListView, 0.0);

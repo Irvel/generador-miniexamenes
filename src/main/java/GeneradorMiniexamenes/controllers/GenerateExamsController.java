@@ -5,10 +5,12 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -136,8 +138,35 @@ public class GenerateExamsController {
         VBox mainGenContainer = (VBox) mGenerateContainer.getParent();
         // Remove container with the form for generating exams from the view
         mainGenContainer.getChildren().remove(mGenerateContainer);
-        // TODO: Add table with the generated exams
+        EventHandler<MouseEvent> mouseVersion = event -> {
+            if (mGenExamsView == null || mGenExamsView.getSelectedExams() == null) {
+                return;
+            }
+            int selectedAmount = mGenExamsView.getSelectedExams().size();
+            if (selectedAmount == 0) {
+                return;
+            }
+            // Give visual feedback with on the selection with the buttons themselves
+            buttonDownLatexGen.setDisable(false);
+            buttonDownPdfGen.setDisable(false);
+
+            if (selectedAmount == 1) {
+                buttonDownLatexGen.setText("Descargar " + selectedAmount + " examen en formato " +
+                                                   "LaTeX");
+                buttonDownPdfGen.setText("Descargar " + selectedAmount + " examen en formato " +
+                                                 "PDF");
+            }
+            else {
+                buttonDownLatexGen.setText("Descargar " + selectedAmount + " exámenes en formato " +
+                                                   "LaTeX");
+                buttonDownPdfGen.setText("Descargar " + selectedAmount + " exámenes en formato " +
+                                                 "PDF");
+            }
+        };
         ChangeListener examListListener = (ov, t, t1) -> {
+            if (mGenExamsView == null || mGenExamsView.getSelectedExams() == null) {
+                return;
+            }
             int selectedAmount = mGenExamsView.getSelectedExams().size();
             // Give visual feedback with on the selection with the buttons themselves
             buttonDownLatexGen.setDisable(false);
@@ -157,7 +186,7 @@ public class GenerateExamsController {
             }
         };
 
-        mGenExamsView = new ExamListView(parentGenContainer, examListListener);
+        mGenExamsView = new ExamListView(parentGenContainer, examListListener, mouseVersion);
         mGenExamsView.refreshListView(generatedExams);
         // Add buttons for downloading the newly generated exams
         mainGenContainer.getChildren().add(mDownloadContainer);

@@ -49,23 +49,6 @@ public class GenerateExamsController {
     private VBox mDownloadContainer;
     private ExamListView mGenExamsView;
     private boolean mFirstLoad;
-
-    private final String[] MAC_CONVERTER_PATHS = {"/Library/TeX/texbin/pdflatex", "/usr/texbin/pdflatex",
-                                                  "/Library/TeX/Root/bin/x86_64-darwin/pdflatex"};
-
-    private final String[] WIN_CONVERTER_PATHS = {"C:\\Program Files\\MiKTeX " +
-                                                          "2.8\\miktex\\bin\\x64\\pdflatex.exe",
-                                                  "C:\\Program Files\\MiKTeX " +
-                                                          "2.9\\miktex\\bin\\x64\\pdflatex.exe",
-                                                  "C:\\Program Files\\MiKTeX " +
-                                                          "3.0\\miktex\\bin\\x64\\pdflatex.exe",
-                                                  "C:\\Program Files\\MiKTeX " +
-                                                          "2.9\\miktex\\bin\\pdflatex.exe",
-                                                  "C:\\Program Files\\MiKTeX " +
-                                                          "2.8\\miktex\\bin\\pdflatex.exe",
-                                                  "C:\\Program Files\\MiKTeX " +
-                                                          "3.0\\miktex\\bin\\pdflatex.exe"};
-
     
     public GenerateExamsController(QuestionBank questionBank, ExamBank examBank, Options options) {
         mQuestionBank = questionBank;
@@ -577,22 +560,46 @@ public class GenerateExamsController {
         }
     }
 
+    private final String[] MAC_CONVERTER_PATHS = {"/Library/TeX/texbin/pdflatex", "/usr/texbin/pdflatex",
+                                                  "/Library/TeX/Root/bin/x86_64-darwin/pdflatex",
+                                                  "/Library/TeX/Root/bin/x86-darwin/pdflatex"};
+
+    private final String[] WIN_CONVERTER_PATHS = {"C:\\Program Files\\MiKTeX " +
+                                                          "2.8\\miktex\\bin\\x64\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "2.8\\miktex\\bin\\pdflatex.exe",
+                                                  "C:\\Program Files (x86)\\MiKTeX " +
+                                                          "2.8\\miktex\\bin\\pdflatex.exe",
+                                                  "C:\\Program Files (x86)\\MiKTeX " +
+                                                          "2.8\\miktex\\bin\\x64\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "2.9\\miktex\\bin\\x64\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "2.9\\miktex\\bin\\pdflatex.exe",
+                                                  "C:\\Program Files (x86)\\MiKTeX " +
+                                                          "2.9\\miktex\\bin\\pdflatex.exe",
+                                                  "C:\\Program Files (x86)\\MiKTeX " +
+                                                          "2.9\\miktex\\bin\\x64\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "3.0\\miktex\\bin\\x64\\pdflatex.exe",
+                                                  "C:\\Program Files\\MiKTeX " +
+                                                          "3.0\\miktex\\bin\\pdflatex.exe",
+                                                  "C:\\Program Files (x86)\\MiKTeX " +
+                                                          "3.0\\miktex\\bin\\pdflatex.exe",
+                                                  "C:\\Program Files (x86)\\MiKTeX " +
+                                                          "3.0\\miktex\\bin\\x64\\pdflatex.exe"};
+
     private ArrayList<String> getConverterPaths(String systemName) {
-        ArrayList<String> converterPaths = new ArrayList<String>();
+        ArrayList<String> converterPaths = new ArrayList<>();
         // Add the naive pdflatex command. This should work all the time but for some reason it
         // occasionally doesn't.
         converterPaths.add("pdflatex");
+        converterPaths.add(findConverter(systemName.toLowerCase()));
         if (systemName.toLowerCase().startsWith("mac")) {
-            converterPaths.add(findConverter());
             converterPaths.addAll(Arrays.asList(MAC_CONVERTER_PATHS));
         }
         else if (systemName.toLowerCase().startsWith("win")) {
             converterPaths.addAll(Arrays.asList(WIN_CONVERTER_PATHS));
-            converterPaths.addAll(getMikTexPaths());
-        }
-        else {
-            // The OS is linux or something else
-            converterPaths.add(findConverter());
         }
         return converterPaths;
     }
@@ -601,27 +608,30 @@ public class GenerateExamsController {
      * findConverter
      *
      * Attempt to find the location of pdflatex with the "which" command in UNIX based operating
-     * systems. This will fail if the path is not configured properly in the target system.
+     * systems or "Where" in windows. This will fail if the path is not configured properly in the
+     * target system.
      * @return The absolute path to the pdflatex executable
      *
      */
-    private String findConverter() {
-        // Calling just "which" doesn't work for some reason. Using the whole path kind of
-        // defeats the whole purpose of trying to use which to find pdflatex.
-        ProcessBuilder builder = new ProcessBuilder("/usr/bin/which pdflatex");
-        builder.redirectErrorStream(true);
+    private String findConverter(String osName) {
+        String command;
+        if (osName.startsWith("win")) {
+            command = "where pdflatex";
+        }
+        else {
+            command = "which pdflatex";
+        }
         try {
-            Process process = builder.start();
+            Process process = Runtime.getRuntime().exec(command);
             InputStream is = process.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
             String path = reader.readLine();
             if (path != null) {
                 return path;
             }
         }
         catch (IOException e) {
-            System.out.println("Trying to run \"which\" failed. Falling back to hardcoded " +
+            System.out.println("Trying to run" + command + "failed. Falling back to hardcoded " +
                                        "paths...");
         }
         return "";
@@ -646,25 +656,5 @@ public class GenerateExamsController {
                 "encontrado. Favor de instalar pdflatex para habilitar la exportación " +
                 "directa a PDF.");
         return null;
-    }
-
-    // Try to generate multiple version paths for finding the pdflatex in windows
-    // TODO: Remove this ugly hack
-    private ArrayList<String> getMikTexPaths() {
-        ArrayList<String> paths = new ArrayList<>();
-        // Poor attempt at future-proofing
-        for (int i = 1; i < 18; i++) {
-            paths.add("\"C:\\\\Program Files\\\\MikTeX 2." + Integer.toString(i) +
-                              "\"\\\\pdflatex.exe\",");
-            paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 2." + Integer.toString(i) +
-                              "\"\\\\pdflatex.exe\",");
-        }
-        for (int i = 0; i < 10; i++) {
-            paths.add("\"C:\\\\Program Files\\\\MikTeX 3." + Integer.toString(i) +
-                              "\"\\\\pdflatex.exe\",");
-            paths.add("\"C:\\\\Program Files (x86)\\\\MikTeX 3." + Integer.toString(i) +
-                              "\"\\\\pdflatex.exe\",");
-        }
-        return paths;
     }
 }

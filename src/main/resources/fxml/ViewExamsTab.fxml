@@ -38,13 +38,15 @@
     <AnchorPane fx:id="parentContainer" prefHeight="329.0" prefWidth="867.0" />
    <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
       <children>
-          <JFXButton fx:id="buttonDeleteExam" disable="True" onAction="#deleteSelectedExam" prefHeight="27.0" prefWidth="260.0" styleClass="inputBtn" text="Borrar examen seleccionado" />
+          <JFXButton fx:id="buttonDeleteExam" disable="True" onAction="#deleteSelectedExam"
+                     prefHeight="27.0" prefWidth="260.0" styleClass="inputBtn"
+                     text="Borrar selección" />
          <JFXButton fx:id="buttonDownloadLatex" disable="True" onAction="#downLatexSelectedExam"
                     prefHeight="27.0"
-                    prefWidth="260.0" styleClass="inputBtn" text="Descargar examen en LaTeX" />
+                    prefWidth="260.0" styleClass="inputBtn" text="Descargar en LaTeX" />
          <JFXButton fx:id="buttonDownloadPdf" disable="True" onAction="#downPdfSelectedExam"
                     prefHeight="27.0"
-                    prefWidth="260.0" styleClass="inputBtn" text="Descargar examen en PDF" />
+                    prefWidth="260.0" styleClass="inputBtn" text="Descargar en PDF" />
       </children>
       <VBox.margin>
          <Insets top="30.0" />

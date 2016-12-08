@@ -199,7 +199,13 @@ public class ViewExamsController {
             alert.setTitle("Confirmar eliminación de exámenes");
             alert.setContentText("¿Está seguro de querer eliminar " + selectedExams.size() + " exámenes?");
         }
-        alert.getButtonTypes().setAll(btnSi, btnNo);
+        // Maintain consistency with the operating system's style
+        if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+            alert.getButtonTypes().setAll(btnSi, btnNo);
+        }
+        else {
+            alert.getButtonTypes().setAll(btnNo, btnSi);
+        }
         alert.setHeaderText(null);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == btnSi) {

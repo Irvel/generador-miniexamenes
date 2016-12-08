@@ -215,4 +215,10 @@ public class ExamBank {
             saveExamBank(this);
         }
     }
+
+    public void deleteExams(ArrayList<Exam> selectedExams) {
+        for (Exam exam : selectedExams) {
+            deleteExam(exam.getSubject(), exam.getGroup(), exam.getExamNumber());
+        }
+    }
 }

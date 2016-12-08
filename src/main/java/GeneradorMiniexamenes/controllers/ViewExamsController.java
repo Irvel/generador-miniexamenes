@@ -185,21 +185,25 @@ public class ViewExamsController {
      * @param actionEvent The context in which the user click the delete exam button.
      */
     public void deleteSelectedExam(ActionEvent actionEvent) {
-        Exam selectedExam = mExamListView.getSelectedExam();
+        ArrayList<Exam> selectedExams = mExamListView.getSelectedExams();
         ButtonType btnSi = new ButtonType("Si");
         ButtonType btnNo = new ButtonType("No");
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmar eliminación de examen");
-        alert.setContentText("¿Está seguro de querer eliminar el examen " +
-                                     selectedExam.toString() +
-                                    " de la lista de exámenes " +
-                                    "generados en el programa?");
-        alert.getButtonTypes().setAll(btnNo, btnSi);
-        alert.setHeaderText(null);
 
+        if (selectedExams.size() == 1) {
+            alert.setTitle("Confirmar eliminación de examen");
+            alert.setContentText("¿Está seguro de querer eliminar el examen " +
+                                         selectedExams.get(0).toString() + "?");
+        }
+        else {
+            alert.setTitle("Confirmar eliminación de exámenes");
+            alert.setContentText("¿Está seguro de querer eliminar " + selectedExams.size() + " exámenes?");
+        }
+        alert.getButtonTypes().setAll(btnSi, btnNo);
+        alert.setHeaderText(null);
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == btnSi) {
-            mExamBank.deleteExam(selectedExam.getSubject(), selectedExam.getGroup(), selectedExam.getExamNumber());
+        if (result.isPresent() && result.get() == btnSi) {
+            mExamBank.deleteExams(selectedExams);
             // Refresh the entire view to account for the deletion of a group or subject after
             // deleting the exam
             loadViewExamsForm();

@@ -148,6 +148,40 @@ public class GradeExamsController {
         tableMainExam.getSelectionModel().setCellSelectionEnabled(true);
         tableMainExam.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         tableMainExam.setEditable(true);
+        answerColumn.setOnEditCommit(event -> {
+            // This is the index on the ObservableList, so it starts from 0
+            int questionIdx = event.getRowValue().getQuestionNumber() - 1;
+            String enteredValue = event.getNewValue().trim();
+            mQuestionsData.get(questionIdx).setAnswerLetter(enteredValue);
+            if (!isValid(enteredValue)) {
+                //event.getRowValue().setAnswerLetter("");
+                //event.getRowValue().setAnswerWeight("");
+                mQuestionsData.get(questionIdx).setAnswerWeight(null);
+                mQuestionsData.get(questionIdx).setAnswerLetter(null);
+                return;
+            }
+            // When an answer has been entered, try to get the value of that answer
+            char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+            Question question = event.getRowValue().getQuestion();
+            int letterIdx = 0;
+            int targetWeight = 0;
+            for (Answer answer : question.getAnswers()) {
+                if (String.valueOf(alphabet[letterIdx]).equalsIgnoreCase(enteredValue)) {
+                    targetWeight = answer.getWeight();
+                    break;
+                }
+                letterIdx++;
+            }
+            if (letterIdx == question.getAnswers().size()) {
+                mQuestionsData.get(questionIdx).setAnswerLetter(null);
+                mQuestionsData.get(questionIdx).setAnswerWeight(null);
+                //event.getRowValue().setAnswerLetter("");
+            }
+            else {
+                mQuestionsData.get(questionIdx).setAnswerWeight(targetWeight +"");
+                //event.getRowValue().setAnswerWeight(targetWeight + "");
+            }
+        });
 
         /*questionNumberColumn.setCellFactory(new Callback<TableColumn<ExamMainGrade,
                 ExamMainGrade>, TableCell<ExamMainGrade, ExamMainGrade>>() {
@@ -176,7 +210,12 @@ public class GradeExamsController {
         });*/
 
     }
-    
+
+    private boolean isValid(String text) {
+        // Ensure that the user entered a single letter only
+        return text != null && text.length() == 1 && Character.isLetter(text.charAt(0));
+    }
+
     public void setModel(ExamBank examBank) {
         mExamBank = examBank;
     }
@@ -259,8 +298,8 @@ public class GradeExamsController {
     private void populateMainTable(ArrayList<Question> questions) {
         mQuestionsData.clear();
         int questionNumber = 1;
-        for (Question question: questions) {
-            mQuestionsData.add(new ExamMainGrade(questionNumber, "", 0, 100));
+        for (Question question : questions) {
+            mQuestionsData.add(new ExamMainGrade(questionNumber, "", 0, 100, question));
             questionNumber++;
         }
         tableMainExam.setItems(mQuestionsData);
@@ -378,7 +417,7 @@ public class GradeExamsController {
                     number = Integer.parseInt(string);
                 }
                 catch(NumberFormatException e){
-                    number = 0;
+                    number = 100;
                 }
                 return number;
             }

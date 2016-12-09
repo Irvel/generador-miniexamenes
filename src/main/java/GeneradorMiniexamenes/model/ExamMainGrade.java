@@ -14,13 +14,23 @@ public class ExamMainGrade {
     private StringProperty mAnswerLetter;
     private SimpleStringProperty mAnswerWeight;
     private IntegerProperty mQuestionValue;
+    private Question mQuestion;
 
     public ExamMainGrade(int questionNumber, String answerLetter,
-                         int answerWeight, int questionValue) {
+                         int answerWeight, int questionValue, Question question) {
         mQuestionNumber = new SimpleIntegerProperty(questionNumber);
         mAnswerLetter = new SimpleStringProperty(answerLetter);
         mAnswerWeight = new SimpleStringProperty("");
         mQuestionValue = new SimpleIntegerProperty(questionValue);
+        mQuestion = question;
+    }
+
+    public Question getQuestion() {
+        return mQuestion;
+    }
+
+    public void setQuestion(Question question) {
+        mQuestion = question;
     }
 
     public int getQuestionNumber() {
@@ -45,6 +55,10 @@ public class ExamMainGrade {
 
     public String getAnswerWeight() {
         return mAnswerWeight.get();
+    }
+
+    public void setAnswerWeight(String answerWeight) {
+        this.mAnswerWeight.set(answerWeight);
     }
 
     public SimpleStringProperty answerWeightProperty() {

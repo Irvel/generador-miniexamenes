@@ -11,12 +11,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 import java.util.ArrayList;
@@ -34,26 +32,30 @@ public class GradeExamsController {
     // A reference to the Model of the application
     private ExamBank mExamBank;
 
-    private HashMap<Question, Integer> mQuestionToNumber;
-    private HashMap<Integer, Integer> mQuestionNumToValue;
     private ObservableList<ExamMainGrade> mQuestionsData;
+    private ObservableList<ExamAnswers> mAnswersData;
     private boolean mSubjectListenerActive;
     private boolean mGroupListenerActive;
-    private boolean mBackgroundLight;
+    private boolean mTableListenerActive;
 
     @FXML private JFXComboBox comboBoxSubjectGrade;
     @FXML private JFXComboBox comboBoxGroupGrade;
     @FXML private JFXButton buttonLimpiar;
     @FXML private JFXButton buttonCalificar;
     @FXML private Label labelGrade;
+    @FXML private Label answersLabel;
     @FXML private AnchorPane viewGradeExamsContainer;
-    @FXML private ScrollPane viewQuestionsContainer;
     @FXML private TableView<ExamMainGrade> tableMainExam;
+    @FXML private TableView<ExamAnswers> tableAnswers;
     @FXML private TableColumn<ExamMainGrade, Number> questionNumberColumn;
     @FXML private TableColumn<ExamMainGrade, String> answerColumn;
     @FXML private TableColumn<ExamMainGrade, String> weightColumn;
     @FXML private TableColumn<ExamMainGrade, Number> questionValueColumn;
+    @FXML private TableColumn<ExamAnswers, String> answerLetterColumn;
+    @FXML private TableColumn<ExamAnswers, String> answerWeightColumn;
     private JFXListView<Exam> mExamListView;
+
+    private final char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     // Change Listeners for interacting with the grade form
     private ChangeListener mSubjectListener;
@@ -63,18 +65,15 @@ public class GradeExamsController {
     public GradeExamsController() {
         mExamListView = new JFXListView<>();
         mQuestionsData = FXCollections.observableArrayList();
+        mAnswersData = FXCollections.observableArrayList();
         mSubjectListenerActive = false;
         mGroupListenerActive = false;
-        // Alternate between the shade of gray used for the background in the exam questions
-        mBackgroundLight = true;
+        mTableListenerActive = false;
     }
 
     @FXML
     public void initialize(){
         setListeners();
-        comboBoxSubjectGrade.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
-        comboBoxGroupGrade.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
-
         // Exam ListView setup
         // Only show the exam number instead of a more detailed description
         mExamListView.setCellFactory(new Callback<ListView<Exam>, ListCell<Exam>>() {
@@ -167,7 +166,6 @@ public class GradeExamsController {
                 return;
             }
             // When an answer has been entered, try to get the value of that answer
-            char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
             Question question = event.getRowValue().getQuestion();
             int letterIdx = 0;
             int targetWeight = 0;
@@ -185,6 +183,61 @@ public class GradeExamsController {
             else {
                 mQuestionsData.get(questionIdx).setAnswerWeight(targetWeight +"");
                 mQuestionsData.get(questionIdx).setAnswerLetter(enteredValue);
+            }
+        });
+
+        tableAnswers.setPlaceholder(new Label(""));
+        answerLetterColumn.setCellValueFactory(cellData -> cellData.getValue().answerLetterProperty());
+        answerWeightColumn.setCellValueFactory(cellData -> cellData.getValue().answerWeightProperty());
+        tableAnswers.getSelectionModel().setCellSelectionEnabled(false);
+    }
+
+    private void setListeners() {
+        // An Subject from the subject combobox has been selected
+        mSubjectListener = (ov, t, t1) -> {
+            if (mSubjectListenerActive) {
+                resetGradeFields(true, false);
+            }
+        };
+        // An group from the group combobox has been selected
+        mGroupListener = (ov, t, t1) -> {
+            if (mGroupListenerActive) {
+                resetGradeFields(true, true);
+            }
+        };
+        // Called when an exam has been selected from the ListView
+        mExamListListener = (ov, t, t1) -> {
+            buttonLimpiar.setDisable(false);
+            buttonCalificar.setDisable(false);
+            examSelected(mExamListView.getSelectionModel().getSelectedItem());
+        };
+
+        comboBoxSubjectGrade.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
+        comboBoxGroupGrade.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
+
+        // Selecting something from the main table
+
+        tableMainExam.getSelectionModel().selectedItemProperty().addListener((ov, t, t1) -> {
+            if (mTableListenerActive) {
+                if (mAnswersData != null) {
+                    mAnswersData.clear();
+                }
+                if (tableMainExam != null && tableMainExam.getSelectionModel() != null &&
+                        tableMainExam.getSelectionModel().getSelectedItems() != null &&
+                        tableMainExam.getSelectionModel().getSelectedItem() != null) {
+                    tableAnswers.getSelectionModel().clearSelection();
+                    tableAnswers.getItems().removeAll(tableAnswers.getSelectionModel().getSelectedItems());
+                    Question question = ov.getValue().getQuestion();
+                    int letterIdx = 0;
+                    for (Answer answer : question.getAnswers()) {
+                        mAnswersData.add(new ExamAnswers(String.valueOf(alphabet[letterIdx]),
+                                                         Integer.toString(answer.getWeight())));
+                        letterIdx++;
+                    }
+                    answersLabel.setText("Respuestas pregunta #" + ov.getValue()
+                                                                     .getQuestionNumber());
+                    tableAnswers.setItems(mAnswersData);
+                }
             }
         });
     }
@@ -207,7 +260,6 @@ public class GradeExamsController {
      */
     private void resetGradeFields(Boolean subjectWasSelected, Boolean groupWasSelected) {
         // Reset the questions view
-        viewQuestionsContainer.setContent(null);
         if (!subjectWasSelected) {
             // Disable the listener on the combobox to avoid a callback loop when selecting the first subject
             mSubjectListenerActive = false;
@@ -244,6 +296,14 @@ public class GradeExamsController {
         mQuestionsData.clear();
         tableMainExam.getSelectionModel().clearSelection();
         tableMainExam.getItems().removeAll(tableMainExam.getSelectionModel().getSelectedItems());
+        labelGrade.setText("");
+        answersLabel.setText("Respuestas");
+        if (mAnswersData != null) {
+            mAnswersData.clear();
+            tableAnswers.getSelectionModel().clearSelection();
+            tableAnswers.getItems().removeAll(tableAnswers.getSelectionModel().getSelectedItems());
+        }
+        mTableListenerActive = false;
         // Any change in the comboboxes should disable grading exams
         buttonLimpiar.setDisable(true);
         buttonCalificar.setDisable(true);
@@ -258,26 +318,6 @@ public class GradeExamsController {
      * Set the listeners responsible for handling the actions of the grade from view.
      *
      */
-    private void setListeners() {
-        // An Subject from the subject combobox has been selected
-        mSubjectListener = (ov, t, t1) -> {
-            if (mSubjectListenerActive) {
-                resetGradeFields(true, false);
-            }
-        };
-        // An group from the group combobox has been selected
-        mGroupListener = (ov, t, t1) -> {
-            if (mGroupListenerActive) {
-                resetGradeFields(true, true);
-            }
-        };
-        // Called when an exam has been selected from the ListView
-        mExamListListener = (ov, t, t1) -> {
-            buttonLimpiar.setDisable(false);
-            buttonCalificar.setDisable(false);
-            examSelected(mExamListView.getSelectionModel().getSelectedItem());
-        };
-    }
 
     public void examSelected(Exam exam) {
         if (exam == null) {
@@ -285,6 +325,13 @@ public class GradeExamsController {
         }
         populateMainTable(exam.getQuestions());
         labelGrade.setText("");
+        answersLabel.setText("Respuestas");
+        if (mAnswersData != null) {
+            mAnswersData.clear();
+            tableAnswers.getSelectionModel().clearSelection();
+            tableAnswers.getItems().removeAll(tableAnswers.getSelectionModel().getSelectedItems());
+        }
+        mTableListenerActive = true;
     }
 
     private void populateMainTable(ArrayList<Question> questions) {
@@ -298,80 +345,6 @@ public class GradeExamsController {
         tableMainExam.getSelectionModel().selectFirst();
     }
 
-    /**
-     * populateQuestionsList
-     *
-     * Fill the right pane in the view with the questions from the selected exam. Each question
-     * has the option to select an answer and when doing so, the score so far is auto calculated
-     * and the obtained percentage of points is given for that answer.
-     *
-     */
-    private void populateQuestionsList(ArrayList<Question> questions) {
-        int questionIndex = 1;
-        VBox questionsBox = new VBox();
-        mQuestionToNumber = new HashMap<>();
-        mQuestionNumToValue = new HashMap<>();
-        char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-        for (Question question : questions) {
-            mQuestionToNumber.put(question, questionIndex);
-            AnchorPane questionPane = new AnchorPane();
-            questionPane.setPadding(new Insets(20, 0, 10, 20));
-            questionPane.setStyle("-fx-background-color:" + getBackgroundColor());
-            Label questionLabel = new Label("Pregunta #" + Integer.toString(questionIndex) + ":");
-            questionLabel.setStyle("-fx-font-weight: bold");
-            questionLabel.setLayoutX(14.0);
-            questionLabel.setLayoutY(14.0);
-            questionLabel.setId("lblQuestion" + Integer.toString(questionIndex));
-            Label answerLabel = new Label("Opción elegida:");
-            answerLabel.setLayoutX(14.0);
-            answerLabel.setLayoutY(42.0);
-            JFXComboBox answerCb = new JFXComboBox();
-            int letterIdx = 0;
-            for (Answer answer : question.getAnswers()) {
-                answerCb.getItems().add("(" + alphabet[letterIdx] + ") " + answer.getAnswer());
-                letterIdx++;
-            }
-            answerCb.setLayoutX(14);
-            answerCb.setLayoutY(64);
-            answerCb.setUserData(question);
-            answerCb.setOnAction((event) -> {
-                String selectedAnswer = answerCb.getSelectionModel().getSelectedItem().toString();
-                selAnswer(answerCb.getScene(), selectedAnswer, (Question) answerCb.getUserData());
-            });
-            Label scoreLabel = new Label("");
-            scoreLabel.setLayoutX(168.0);
-            scoreLabel.setLayoutY(50.0);
-            scoreLabel.setId("lblScore" + Integer.toString(questionIndex));
-            questionPane.getChildren().addAll(questionLabel, answerLabel, answerCb, scoreLabel);
-            questionsBox.getChildren().add(questionPane);
-            questionIndex++;
-        }
-        viewQuestionsContainer.setContent(questionsBox);
-    }
-
-    private String getBackgroundColor() {
-        if (mBackgroundLight) {
-            mBackgroundLight = false;
-            return "#fafafa";
-        }
-        mBackgroundLight = true;
-        return "#e1e1e1";
-    }
-
-    public void selAnswer(Scene scene, String selectedAnwer, Question question) {
-        Exam exam = mExamListView.getSelectionModel().getSelectedItem();
-        int questionNumber = mQuestionToNumber.get(question);
-        Label scoreLabel = (Label) scene.lookup("#lblScore" + Integer.toString(questionNumber));
-        for (Answer answer : question.getAnswers()) {
-            // The substring is to account for the first 4 characters being the question Letter
-            if (answer.getAnswer().equalsIgnoreCase(selectedAnwer.substring(4))) {
-                scoreLabel.setText("Porcentaje obtenido: " + Integer.toString(answer.getWeight()));
-                mQuestionNumToValue.put(questionNumber, answer.getWeight());
-            }
-        }
-        updateTotalScore(scene, exam);
-    }
-
     public void tabSelected() {
         if(mExamBank.getGroups().isEmpty()) {
             comboBoxSubjectGrade.setDisable(true);
@@ -381,19 +354,7 @@ public class GradeExamsController {
         }
         else {
             resetGradeFields(false, false);
-            viewQuestionsContainer.setContent(null);
         }
-    }
-
-    private void updateTotalScore(Scene scene, Exam exam) {
-        int scoreSum = 0;
-        for (int questionNumber : mQuestionNumToValue.keySet()) {
-            scoreSum += mQuestionNumToValue.get(questionNumber);
-        }
-        labelGrade.setText("Calificación del examen #" +
-                                   Integer.toString(exam.getExamNumber()) + ":   " +
-                                   String.format("%.2f",(scoreSum * 1.0 / exam.getQuestions()
-                                                                              .size())));
     }
 
     public void cleanTableAction(ActionEvent actionEvent) {
@@ -453,7 +414,6 @@ public class GradeExamsController {
             return false;
         }
         // Check that the answer letter exists in the answer options
-        final char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray(); // Convert idx to letter
         boolean exists = false;
         for (int i = 0; i < tableItem.getQuestion().getAnswers().size(); i++) {
             if (String.valueOf(alphabet[i]).equalsIgnoreCase(tableItem.getAnswerLetter())) {

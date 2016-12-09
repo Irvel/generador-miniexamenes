@@ -4,7 +4,6 @@
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -13,74 +12,87 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="gradeExamsTab" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="527.0" prefWidth="882.0" spacing="40.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.GradeExamsController">
-      <children>
-         <HBox alignment="CENTER" spacing="260.0" VBox.vgrow="ALWAYS">
-            <children>
-               <VBox prefHeight="80.0" prefWidth="160.0" spacing="5.0">
-                  <children>
-                     <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" />
-                     <JFXComboBox fx:id="comboBoxSubjectGrade" prefHeight="27.0" prefWidth="152.0" />
-                  </children>
-                  <padding>
-                     <Insets left="10.0" right="10.0" top="10.0" />
-                  </padding>
-               </VBox>
-               <VBox prefHeight="80.0" prefWidth="160.0" spacing="5.0">
-                  <children>
-                     <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" />
-                     <JFXComboBox fx:id="comboBoxGroupGrade" prefHeight="27.0" prefWidth="152.0" />
-                  </children>
-                  <padding>
-                     <Insets left="10.0" right="10.0" top="10.0" />
-                  </padding>
-               </VBox>
-            </children>
-         </HBox>
-         <HBox alignment="CENTER" prefHeight="360.0" prefWidth="865.0" spacing="30.0" VBox.vgrow="ALWAYS">
-            <children>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                      <Label prefWidth="106.0" styleClass="inputLabel" text="Examen:" />
-                     <AnchorPane fx:id="viewGradeExamsContainer" VBox.vgrow="ALWAYS" />
-               </children>
-            </VBox>
-            <VBox spacing="5.0">
-               <children>
-                  <TableView fx:id="tableMainExam" editable="true" prefWidth="280.0" VBox.vgrow="ALWAYS">
-                    <columns>
-                      <TableColumn fx:id="questionNumberColumn" minWidth="20.0" prefWidth="-1.0" resizable="false" sortable="false" text="#" />
-                      <TableColumn fx:id="answerColumn" minWidth="72.0" prefWidth="-1.0" resizable="false" sortable="false" text="Respuesta" />
-                        <TableColumn fx:id="weightColumn" minWidth="43.0" prefWidth="-1.0" resizable="false" sortable="false" text="Valor" />
-                        <TableColumn fx:id="questionValueColumn" minWidth="143.0" prefWidth="-1.0" resizable="false" sortable="false" text="Ponderación pregunta" />
-                    </columns>
-                  </TableView>
-                  <BorderPane VBox.vgrow="NEVER">
-                     <right>
-                        <JFXButton fx:id="buttonLimpiar" buttonType="RAISED" disable="true" onAction="#cleanTableAction" styleClass="inputBtn" text="Limpiar" BorderPane.alignment="CENTER" />
-                     </right>
-                     <left>
-                        <JFXButton fx:id="buttonCalificar" buttonType="RAISED" disable="true" onAction="#gradeTableAction" styleClass="inputBtn" text="Calificar" BorderPane.alignment="CENTER" />
-                     </left>
-                     <VBox.margin>
-                        <Insets top="8.0" />
-                     </VBox.margin>
-                  </BorderPane>
-               </children>
-            </VBox>
-               <ScrollPane fx:id="viewQuestionsContainer" fitToHeight="true" fitToWidth="true" minWidth="-Infinity" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-               </ScrollPane>
-            </children>
+    <HBox alignment="CENTER" spacing="200.0" VBox.vgrow="ALWAYS">
+        <VBox prefHeight="80.0" prefWidth="160.0" spacing="5.0">
             <padding>
-               <Insets left="20.0" right="20.0" />
+                <Insets left="10.0" right="10.0" top="10.0" />
             </padding>
-         </HBox>
-         <HBox alignment="CENTER" prefHeight="8.0" VBox.vgrow="ALWAYS">
-            <children>
-               <Label fx:id="labelGrade" styleClass="calificar" text="">
-                  <HBox.margin>
-                     <Insets bottom="40.0" />
-                  </HBox.margin></Label>
-            </children>
-         </HBox>
-      </children>
+            <Label prefWidth="106.0" styleClass="inputLabel" text="Tema:" />
+            <JFXComboBox fx:id="comboBoxSubjectGrade" prefHeight="27.0" prefWidth="152.0" />
+        </VBox>
+        <VBox prefHeight="80.0" prefWidth="160.0" spacing="5.0">
+            <padding>
+                <Insets left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <Label prefWidth="106.0" styleClass="inputLabel" text="Grupo:" />
+            <JFXComboBox fx:id="comboBoxGroupGrade" prefHeight="27.0" prefWidth="152.0" />
+        </VBox>
+    </HBox>
+    <HBox alignment="CENTER" prefHeight="360.0" prefWidth="865.0" spacing="40.0" VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets bottom="30.0" left="30.0" right="30.0" />
+        </VBox.margin>
+        <VBox prefHeight="200.0" prefWidth="100.0">
+            <HBox.margin>
+                <Insets bottom="70.0" />
+            </HBox.margin>
+            <Label prefWidth="106.0" styleClass="inputLabel" text="Examen:">
+                <VBox.margin>
+                    <Insets bottom="5.0" />
+                </VBox.margin>
+            </Label>
+            <AnchorPane fx:id="viewGradeExamsContainer" VBox.vgrow="ALWAYS" />
+        </VBox>
+        <VBox spacing="5.0">
+            <HBox.margin>
+                <Insets bottom="30.0" />
+            </HBox.margin>
+            <TableView fx:id="tableMainExam" editable="true" prefWidth="299.0" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="questionNumberColumn" minWidth="20.0" prefWidth="-1.0" resizable="false" sortable="false" style="-fx-alignment: center;" text="#" />
+                    <TableColumn fx:id="answerColumn" minWidth="80.0" prefWidth="-1.0" resizable="false" sortable="false" style="-fx-alignment: center;" text="Respuesta" />
+                    <TableColumn fx:id="weightColumn" minWidth="48.0" prefWidth="-1.0" resizable="false" sortable="false" style="-fx-alignment: center;" text="Valor" />
+                    <TableColumn fx:id="questionValueColumn" minWidth="149.0" prefWidth="-1.0" resizable="false" sortable="false" style="-fx-alignment: center;" text="Ponderación pregunta" />
+                </columns>
+            </TableView>
+            <BorderPane VBox.vgrow="NEVER">
+                <right>
+                    <JFXButton fx:id="buttonLimpiar" buttonType="RAISED" disable="true" onAction="#cleanTableAction" styleClass="inputBtn" text="Limpiar" BorderPane.alignment="CENTER" />
+                </right>
+                <left>
+                    <JFXButton fx:id="buttonCalificar" buttonType="RAISED" disable="true" onAction="#gradeTableAction" styleClass="inputBtn" text="Calificar" BorderPane.alignment="CENTER" />
+                </left>
+                <VBox.margin>
+                    <Insets top="8.0" />
+                </VBox.margin>
+            </BorderPane>
+        </VBox>
+        <VBox alignment="CENTER">
+            <HBox.margin>
+                <Insets bottom="100.0" top="10.0" />
+            </HBox.margin>
+            <Label fx:id="labelGrade" styleClass="calificar" text="">
+                <VBox.margin>
+                    <Insets top="10.0" />
+                </VBox.margin>
+            </Label>
+            <HBox alignment="CENTER_LEFT">
+                <VBox.margin>
+                    <Insets top="60.0" />
+                </VBox.margin>
+                <Label fx:id="answersLabel" styleClass="inputLabel" text="Respuestas">
+                    <HBox.margin>
+                        <Insets bottom="5.0" />
+                    </HBox.margin>
+                </Label>
+            </HBox>
+            <TableView fx:id="tableAnswers" minWidth="-Infinity" prefWidth="152.0" style="outline: 0;">
+                <columns>
+                    <TableColumn fx:id="answerLetterColumn" editable="false"
+                                 prefWidth="75.0" resizable="false" sortable="false" style="-fx-alignment: center;" text="Inciso" />
+                    <TableColumn fx:id="answerWeightColumn" editable="false" prefWidth="75.0" resizable="false" sortable="false" style="-fx-alignment: center;" text="Valor" />
+                </columns>
+            </TableView>
+        </VBox>
+    </HBox>
 </VBox>

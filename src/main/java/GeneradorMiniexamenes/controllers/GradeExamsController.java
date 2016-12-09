@@ -6,17 +6,16 @@ import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,14 +106,14 @@ public class GradeExamsController {
         questionValueColumn.setCellValueFactory(cellData -> cellData.getValue()
                                                                     .questionValueProperty());
 
-        answerColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        answerColumn.setCellFactory(column -> EditCell.createStringEditCell());
         answerColumn.setEditable(true);
-        questionValueColumn.setCellFactory(createNumberCellFactory());
+        questionValueColumn.setCellFactory(column -> EditCell.createNumberEditCell());
 
         // switch to edit mode on keypress
         // this must be KeyEvent.KEY_PRESSED so that the key gets forwarded to the editing cell; it wouldn't be forwarded on KEY_RELEASED
         tableMainExam.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if ( event.getCode() == KeyCode.ENTER) {
+            if ( event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {
                 tableMainExam.requestFocus();
                 return;
             }
@@ -130,7 +129,7 @@ public class GradeExamsController {
         });
 
         tableMainExam.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
-            if( event.getCode() == KeyCode.ENTER) {
+            if( event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {
                 // Clear the current selection
                 TablePosition pos = tableMainExam.getFocusModel().getFocusedCell();
 
@@ -153,7 +152,7 @@ public class GradeExamsController {
             int questionIdx = event.getRowValue().getQuestionNumber() - 1;
             String enteredValue = event.getNewValue().trim();
             mQuestionsData.get(questionIdx).setAnswerLetter(enteredValue);
-            if (!isValid(enteredValue)) {
+            if (!isValidLetter(enteredValue)) {
                 //event.getRowValue().setAnswerLetter("");
                 //event.getRowValue().setAnswerWeight("");
                 mQuestionsData.get(questionIdx).setAnswerWeight(null);
@@ -211,7 +210,7 @@ public class GradeExamsController {
 
     }
 
-    private boolean isValid(String text) {
+    private boolean isValidLetter(String text) {
         // Ensure that the user entered a single letter only
         return text != null && text.length() == 1 && Character.isLetter(text.charAt(0));
     }
@@ -290,9 +289,8 @@ public class GradeExamsController {
     }
 
     public void examSelected(Exam exam) {
-        populateQuestionsList(exam.getQuestions());
         populateMainTable(exam.getQuestions());
-        labelGrade.setText("Calificación:");
+        labelGrade.setText("");
     }
 
     private void populateMainTable(ArrayList<Question> questions) {
@@ -380,17 +378,6 @@ public class GradeExamsController {
         updateTotalScore(scene, exam);
     }
 
-    private void updateTotalScore(Scene scene, Exam exam) {
-        int scoreSum = 0;
-        for (int questionNumber : mQuestionNumToValue.keySet()) {
-            scoreSum += mQuestionNumToValue.get(questionNumber);
-        }
-        labelGrade.setText("Calificación del examen #" +
-                                Integer.toString(exam.getExamNumber()) + ":   " +
-                                String.format("%.2f",(scoreSum * 1.0 / exam.getQuestions()
-                                                                           .size())));
-    }
-
     public void tabSelected() {
         if(mExamBank.getGroups().isEmpty()) {
             comboBoxSubjectGrade.setDisable(true);
@@ -399,35 +386,75 @@ public class GradeExamsController {
         else {
             resetGradeFields(false, false);
             viewQuestionsContainer.setContent(null);
-            labelGrade.setText("Calificación:");
         }
     }
 
-    /**
-     * Number cell factory which converts strings to numbers and vice versa.
-     * @return
-     */
-    private Callback<TableColumn<ExamMainGrade, Number>, TableCell<ExamMainGrade, Number>>  createNumberCellFactory() {
-        Callback<TableColumn<ExamMainGrade, Number>,
-                TableCell<ExamMainGrade, Number>> factory = TextFieldTableCell.forTableColumn(new StringConverter<Number>() {
-            @Override
-            public Number fromString(String string) {
-                int number;
-                try {
-                    number = Integer.parseInt(string);
-                }
-                catch(NumberFormatException e){
-                    number = 100;
-                }
-                return number;
-            }
+    private void updateTotalScore(Scene scene, Exam exam) {
+        int scoreSum = 0;
+        for (int questionNumber : mQuestionNumToValue.keySet()) {
+            scoreSum += mQuestionNumToValue.get(questionNumber);
+        }
+        labelGrade.setText("Calificación del examen #" +
+                                   Integer.toString(exam.getExamNumber()) + ":   " +
+                                   String.format("%.2f",(scoreSum * 1.0 / exam.getQuestions()
+                                                                              .size())));
+    }
 
-            @Override
-            public String toString(Number object) {
-                return object.toString();
-            }
-        });
+    public void cleanTableAction(ActionEvent actionEvent) {
+        if (mExamListView == null || mExamListView.getSelectionModel().getSelectedItem() == null) {
+            mExamListView.getSelectionModel().selectFirst();
+        }
+        examSelected(mExamListView.getSelectionModel().getSelectedItem());
+    }
 
-        return factory;
+    public void gradeTableAction(ActionEvent actionEvent) {
+        int scoreSum = 0;
+        int questionsTotal = 0;
+        boolean allRowsAreValid = true;
+        for (ExamMainGrade tableItem : mQuestionsData) {
+            if (rowIsValid(tableItem)){
+                scoreSum += (Integer.parseUnsignedInt(tableItem.getAnswerWeight())) * tableItem.getQuestionValue();
+                questionsTotal += tableItem.getQuestionValue();
+            }
+            else {
+                allRowsAreValid = false;
+            }
+        }
+        if (allRowsAreValid) {
+            scoreSum /= questionsTotal;
+            labelGrade.setText("Calificación: " + scoreSum);
+        }
+    }
+
+    // Checks that all the fields in a row from the table are valid
+    private boolean rowIsValid(ExamMainGrade tableItem) {
+        // Check that nothing is null
+        if (tableItem == null || tableItem.getAnswerLetter() == null ||
+                tableItem.getAnswerWeight() == null || tableItem.getQuestionNumber() < 0 ||
+                tableItem.getQuestionValue() < 0) {
+            return false;
+        }
+
+        // Check that the answer weight is a positive integer
+        try {
+            Integer.parseUnsignedInt(tableItem.getAnswerWeight());
+        }
+        catch(NumberFormatException e){
+            return false;
+        }
+
+        // Check that the answer letter is a valid letter
+        if (!isValidLetter(tableItem.getAnswerLetter())) {
+            return false;
+        }
+        // Check that the answer letter exists in the answer options
+        final char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray(); // Convert idx to letter
+        boolean exists = false;
+        for (int i = 0; i < tableItem.getQuestion().getAnswers().size(); i++) {
+            if (String.valueOf(alphabet[i]).equalsIgnoreCase(tableItem.getAnswerLetter())) {
+                exists = true;
+            }
+        }
+        return exists;
     }
 }

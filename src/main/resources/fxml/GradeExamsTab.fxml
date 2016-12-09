@@ -46,20 +46,20 @@
             </VBox>
             <VBox spacing="5.0">
                <children>
-                  <TableView fx:id="tableMainExam" editable="true" prefWidth="240.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="tableMainExam" editable="true" prefWidth="280.0" VBox.vgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="questionNumberColumn" minWidth="20.0" prefWidth="-1.0" resizable="false" sortable="false" text="#" />
                       <TableColumn fx:id="answerColumn" minWidth="72.0" prefWidth="-1.0" resizable="false" sortable="false" text="Respuesta" />
                         <TableColumn fx:id="weightColumn" minWidth="43.0" prefWidth="-1.0" resizable="false" sortable="false" text="Valor" />
-                        <TableColumn fx:id="questionValueColumn" minWidth="88.0" prefWidth="-1.0" resizable="false" sortable="false" text="Ponderación" />
+                        <TableColumn fx:id="questionValueColumn" minWidth="143.0" prefWidth="-1.0" resizable="false" sortable="false" text="Ponderación pregunta" />
                     </columns>
                   </TableView>
                   <BorderPane VBox.vgrow="NEVER">
                      <right>
-                        <JFXButton fx:id="buttonLimpiar" buttonType="RAISED" onAction="#cleanTableAction" styleClass="inputBtn" text="Limpiar" BorderPane.alignment="CENTER" />
+                        <JFXButton fx:id="buttonLimpiar" buttonType="RAISED" disable="true" onAction="#cleanTableAction" styleClass="inputBtn" text="Limpiar" BorderPane.alignment="CENTER" />
                      </right>
                      <left>
-                        <JFXButton fx:id="buttonCalificar" buttonType="RAISED" onAction="#gradeTableAction" styleClass="inputBtn" text="Calificar" BorderPane.alignment="CENTER" />
+                        <JFXButton fx:id="buttonCalificar" buttonType="RAISED" disable="true" onAction="#gradeTableAction" styleClass="inputBtn" text="Calificar" BorderPane.alignment="CENTER" />
                      </left>
                      <VBox.margin>
                         <Insets top="8.0" />
@@ -67,7 +67,7 @@
                   </BorderPane>
                </children>
             </VBox>
-               <ScrollPane fx:id="viewQuestionsContainer" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+               <ScrollPane fx:id="viewQuestionsContainer" fitToHeight="true" fitToWidth="true" minWidth="-Infinity" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                </ScrollPane>
             </children>
             <padding>

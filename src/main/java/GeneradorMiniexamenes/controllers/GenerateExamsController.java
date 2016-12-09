@@ -233,15 +233,6 @@ public class GenerateExamsController {
      *
      */
     private boolean areFieldsInvalid() {
-        // Validate that a group was entered
-        // TODO: Do this only when adding a new group
-        /*
-        if (cbGenFieldGroup.getText() == null || cbGenFieldGroup.getText().equals("")) {
-            AlertMaker.displayError("Error", "Favor de ingresar un grupo");
-            return true;
-        }
-        */
-
         // Validate that the entered amount of exams is larger than 0
         if (spinnerAmount.getValue() == null ||
                 Integer.parseInt(spinnerAmount.getValue().toString()) <= 0) {

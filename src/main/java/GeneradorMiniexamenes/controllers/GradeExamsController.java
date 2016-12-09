@@ -1,6 +1,7 @@
 package GeneradorMiniexamenes.controllers;
 
 import GeneradorMiniexamenes.model.*;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
@@ -9,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -41,6 +43,8 @@ public class GradeExamsController {
 
     @FXML private JFXComboBox comboBoxSubjectGrade;
     @FXML private JFXComboBox comboBoxGroupGrade;
+    @FXML private JFXButton buttonLimpiar;
+    @FXML private JFXButton buttonCalificar;
     @FXML private Label labelGrade;
     @FXML private AnchorPane viewGradeExamsContainer;
     @FXML private ScrollPane viewQuestionsContainer;
@@ -100,6 +104,11 @@ public class GradeExamsController {
         AnchorPane.setBottomAnchor(mExamListView, 0.0);
 
         // Setup the grading table
+        Label placeholder = new Label("Seleccionar un examen de la izquierda para comenzar a calificar.");
+        placeholder.setWrapText(true);
+        placeholder.setAlignment(Pos.CENTER);
+        placeholder.setPadding(new Insets(0,18,0,18));
+        tableMainExam.setPlaceholder(placeholder);
         questionNumberColumn.setCellValueFactory(cellData -> cellData.getValue().questionNumberProperty());
         answerColumn.setCellValueFactory(cellData -> cellData.getValue().answerLetterProperty());
         weightColumn.setCellValueFactory(cellData -> cellData.getValue().answerWeightProperty());
@@ -153,8 +162,6 @@ public class GradeExamsController {
             String enteredValue = event.getNewValue().trim();
             mQuestionsData.get(questionIdx).setAnswerLetter(enteredValue);
             if (!isValidLetter(enteredValue)) {
-                //event.getRowValue().setAnswerLetter("");
-                //event.getRowValue().setAnswerWeight("");
                 mQuestionsData.get(questionIdx).setAnswerWeight(null);
                 mQuestionsData.get(questionIdx).setAnswerLetter(null);
                 return;
@@ -174,45 +181,17 @@ public class GradeExamsController {
             if (letterIdx == question.getAnswers().size()) {
                 mQuestionsData.get(questionIdx).setAnswerLetter(null);
                 mQuestionsData.get(questionIdx).setAnswerWeight(null);
-                //event.getRowValue().setAnswerLetter("");
             }
             else {
                 mQuestionsData.get(questionIdx).setAnswerWeight(targetWeight +"");
-                //event.getRowValue().setAnswerWeight(targetWeight + "");
+                mQuestionsData.get(questionIdx).setAnswerLetter(enteredValue);
             }
         });
-
-        /*questionNumberColumn.setCellFactory(new Callback<TableColumn<ExamMainGrade,
-                ExamMainGrade>, TableCell<ExamMainGrade, ExamMainGrade>>() {
-            @Override
-            public TableCell<ExamMainGrade, ExamMainGrade> call(TableColumn<ExamMainGrade, ExamMainGrade> param) {
-                return new TableCell<ExamMainGrade, ExamMainGrade>() {
-                    @Override protected void updateItem(ExamMainGrade item, boolean empty) {
-                        super.updateItem(item, empty);
-
-                        if (this.getTableRow() != null) {
-                            int index = this.getTableRow().getIndex();
-                            if(index < tableMainExam.getItems().size()) {
-                                int rowNum = index + 1;
-                                setText( String.valueOf(rowNum));
-                            } else {
-                                setText("");
-                            }
-
-                        } else {
-                            setText("");
-                        }
-
-                    }
-                };
-            }
-        });*/
-
     }
 
     private boolean isValidLetter(String text) {
         // Ensure that the user entered a single letter only
-        return text != null && text.length() == 1 && Character.isLetter(text.charAt(0));
+        return (text != null && text.length() == 1 && Character.isLetter(text.charAt(0)));
     }
 
     public void setModel(ExamBank examBank) {
@@ -229,7 +208,6 @@ public class GradeExamsController {
     private void resetGradeFields(Boolean subjectWasSelected, Boolean groupWasSelected) {
         // Reset the questions view
         viewQuestionsContainer.setContent(null);
-        labelGrade.setText("Calificación:");
         if (!subjectWasSelected) {
             // Disable the listener on the combobox to avoid a callback loop when selecting the first subject
             mSubjectListenerActive = false;
@@ -255,10 +233,21 @@ public class GradeExamsController {
         }
 
         // Update the list of exams view
-        mExamListView.getItems().clear();
+        if (mExamListView != null && mExamListView.getItems() != null) {
+            mExamListView.getItems().clear();
+        }
         ArrayList<Exam> exams = mExamBank.getExams(comboBoxSubjectGrade.getValue().toString(),
                                                                          comboBoxGroupGrade.getValue().toString());
         mExamListView.getItems().addAll(exams);
+
+        // Clean the grading TableView
+        mQuestionsData.clear();
+        tableMainExam.getSelectionModel().clearSelection();
+        tableMainExam.getItems().removeAll(tableMainExam.getSelectionModel().getSelectedItems());
+        // Any change in the comboboxes should disable grading exams
+        buttonLimpiar.setDisable(true);
+        buttonCalificar.setDisable(true);
+
         mSubjectListenerActive = true;
         mGroupListenerActive = true;
     }
@@ -284,11 +273,16 @@ public class GradeExamsController {
         };
         // Called when an exam has been selected from the ListView
         mExamListListener = (ov, t, t1) -> {
+            buttonLimpiar.setDisable(false);
+            buttonCalificar.setDisable(false);
             examSelected(mExamListView.getSelectionModel().getSelectedItem());
         };
     }
 
     public void examSelected(Exam exam) {
+        if (exam == null) {
+            return;
+        }
         populateMainTable(exam.getQuestions());
         labelGrade.setText("");
     }
@@ -382,6 +376,8 @@ public class GradeExamsController {
         if(mExamBank.getGroups().isEmpty()) {
             comboBoxSubjectGrade.setDisable(true);
             comboBoxGroupGrade.setDisable(true);
+            buttonLimpiar.setDisable(true);
+            buttonCalificar.setDisable(true);
         }
         else {
             resetGradeFields(false, false);
@@ -420,18 +416,25 @@ public class GradeExamsController {
                 allRowsAreValid = false;
             }
         }
-        if (allRowsAreValid) {
+        if (allRowsAreValid && !mQuestionsData.isEmpty()) {
             scoreSum /= questionsTotal;
             labelGrade.setText("Calificación: " + scoreSum);
+        }
+        else {
+            AlertMaker.displayError("Error", "Favor de ingresar todos los campos en la " +
+                    "tabla antes de calificar");
         }
     }
 
     // Checks that all the fields in a row from the table are valid
+    // This method also alerts the user because it knows what is wrong
     private boolean rowIsValid(ExamMainGrade tableItem) {
         // Check that nothing is null
         if (tableItem == null || tableItem.getAnswerLetter() == null ||
                 tableItem.getAnswerWeight() == null || tableItem.getQuestionNumber() < 0 ||
                 tableItem.getQuestionValue() < 0) {
+            AlertMaker.displayError("Faltan datos", "Favor de ingresar todos los campos en la " +
+                    "tabla antes de calificar");
             return false;
         }
 
@@ -445,6 +448,8 @@ public class GradeExamsController {
 
         // Check that the answer letter is a valid letter
         if (!isValidLetter(tableItem.getAnswerLetter())) {
+            AlertMaker.displayError("Error", "Favor de ingresar una letra que corresponda a " +
+                    "alguna de las respuestas de la pregunta número " + tableItem.getQuestionNumber());
             return false;
         }
         // Check that the answer letter exists in the answer options
@@ -454,6 +459,10 @@ public class GradeExamsController {
             if (String.valueOf(alphabet[i]).equalsIgnoreCase(tableItem.getAnswerLetter())) {
                 exists = true;
             }
+        }
+        if (!exists) {
+            AlertMaker.displayError("Error", "Favor de ingresar una letra que corresponda a " +
+                    "alguna de las respuestas de la pregunta número " + tableItem.getQuestionNumber());
         }
         return exists;
     }

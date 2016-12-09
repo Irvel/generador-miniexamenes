@@ -71,12 +71,18 @@ public class EditCell<S, T> extends TableCell<S, T> {
 
         @Override
         public String toString(String object) {
-            return object;
+            if (object != null) {
+                return object.toLowerCase();
+            }
+            return null;
         }
 
         @Override
         public String fromString(String string) {
-            return string;
+            if (string != null) {
+                return string.toLowerCase();
+            }
+            return null;
         }
 
     };
@@ -129,7 +135,9 @@ public class EditCell<S, T> extends TableCell<S, T> {
     @Override
     public void startEdit() {
         super.startEdit();
-        textField.setText(converter.toString(getItem()));
+        if (getItem() != null) {
+            textField.setText(converter.toString(getItem()));
+        }
         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         textField.requestFocus();
     }

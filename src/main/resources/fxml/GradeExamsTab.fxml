@@ -4,20 +4,13 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="gradeExamsTab"
-      alignment="CENTER"
-      maxHeight="-Infinity"
-      maxWidth="-Infinity"
-      minHeight="-Infinity"
-      minWidth="-Infinity"
-      prefHeight="200.0"
-      prefWidth="100.0"
-      spacing="40.0"
-      xmlns="http://javafx.com/javafx/8.0.65"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="GeneradorMiniexamenes.controllers.GradeExamsController">
+<VBox fx:id="gradeExamsTab" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="527.0" prefWidth="882.0" spacing="40.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GeneradorMiniexamenes.controllers.GradeExamsController">
       <children>
          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="240.0" VBox.vgrow="ALWAYS">
             <children>
@@ -43,7 +36,24 @@
          </HBox>
          <HBox alignment="CENTER" prefHeight="245.0" prefWidth="865.0" spacing="30.0" VBox.vgrow="ALWAYS">
             <children>
-               <AnchorPane fx:id="viewGradeExamsContainer" prefHeight="200.0" HBox.hgrow="ALWAYS" />
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                      <Label prefWidth="106.0" styleClass="inputLabel" text="Examen:" />
+                     <AnchorPane fx:id="viewGradeExamsContainer" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+            <TableView fx:id="tableMainExam" editable="true" prefHeight="200.0" prefWidth="240.0">
+              <columns>
+                <TableColumn fx:id="questionNumberColumn" minWidth="20.0" prefWidth="-1.0"
+                             resizable="false" sortable="false" text="#" />
+                <TableColumn fx:id="answerColumn" minWidth="72.0" prefWidth="-1.0"
+                             resizable="false" sortable="false" text="Respuesta" />
+                  <TableColumn fx:id="weightColumn" minWidth="43.0" prefWidth="-1.0"
+                               resizable="false" sortable="false" text="Valor" />
+                  <TableColumn fx:id="questionValueColumn" minWidth="88.0" prefWidth="-1.0"
+                               resizable="false" sortable="false" text="Ponderación" />
+              </columns>
+            </TableView>
                <ScrollPane fx:id="viewQuestionsContainer" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                </ScrollPane>
             </children>

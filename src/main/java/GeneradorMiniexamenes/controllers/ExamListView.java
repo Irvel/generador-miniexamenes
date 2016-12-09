@@ -60,10 +60,6 @@ public class ExamListView {
         }
     }
 
-    public Exam getSelectedExam() {
-        return mExamListView.getSelectionModel().getSelectedItem();
-    }
-
     public ArrayList<Exam> getSelectedExams() {
         if (mExamListView.getSelectionModel().getSelectedItems() != null) {
             return new ArrayList<Exam>(mExamListView.getSelectionModel().getSelectedItems());

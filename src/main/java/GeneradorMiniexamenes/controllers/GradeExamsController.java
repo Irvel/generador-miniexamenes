@@ -4,16 +4,23 @@ import GeneradorMiniexamenes.model.*;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 
 /**
  * GradeExamsController
@@ -26,20 +33,24 @@ public class GradeExamsController {
     // A reference to the Model of the application
     private ExamBank mExamBank;
 
-    private HashMap<Integer, Integer> mExamIdxToNumber;
     private HashMap<Question, Integer> mQuestionToNumber;
     private HashMap<Integer, Integer> mQuestionNumToValue;
+    private ObservableList<ExamMainGrade> mQuestionsData;
     private boolean mSubjectListenerActive;
     private boolean mGroupListenerActive;
     private boolean mBackgroundLight;
-    private boolean mFirstGradeViewLoad;
 
     @FXML private JFXComboBox comboBoxSubjectGrade;
     @FXML private JFXComboBox comboBoxGroupGrade;
     @FXML private Label labelGrade;
     @FXML private AnchorPane viewGradeExamsContainer;
     @FXML private ScrollPane viewQuestionsContainer;
-    private JFXListView mListView;
+    @FXML private TableView<ExamMainGrade> tableMainExam;
+    @FXML private TableColumn<ExamMainGrade, Number> questionNumberColumn;
+    @FXML private TableColumn<ExamMainGrade, String> answerColumn;
+    @FXML private TableColumn<ExamMainGrade, String> weightColumn;
+    @FXML private TableColumn<ExamMainGrade, Number> questionValueColumn;
+    private JFXListView<Exam> mExamListView;
 
     // Change Listeners for interacting with the grade form
     private ChangeListener mSubjectListener;
@@ -47,13 +58,123 @@ public class GradeExamsController {
     private ChangeListener mExamListListener;
 
     public GradeExamsController() {
+        mExamListView = new JFXListView<>();
+        mQuestionsData = FXCollections.observableArrayList();
         mSubjectListenerActive = false;
         mGroupListenerActive = false;
         // Alternate between the shade of gray used for the background in the exam questions
         mBackgroundLight = true;
+    }
+
+    @FXML
+    public void initialize(){
         setListeners();
-        // This makes the app load the listeners for a theme and group change
-        mFirstGradeViewLoad = true;
+        comboBoxSubjectGrade.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
+        comboBoxGroupGrade.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
+
+        // Exam ListView setup
+        // Only show the exam number instead of a more detailed description
+        mExamListView.setCellFactory(new Callback<ListView<Exam>, ListCell<Exam>>() {
+            @Override
+            public ListCell<Exam> call(ListView<Exam> param) {
+                return new ListCell<Exam>(){
+                    @Override
+                    public void updateItem(Exam exam, boolean bln) {
+                        super.updateItem(exam, bln);
+                        if (exam != null) {
+                            setText(exam.getExamNumber() +  "");
+                        }
+                        else {
+                            setText("");
+                        }
+                    }
+
+                };
+            }
+        });
+        mExamListView.setPrefWidth(20.0);
+        viewGradeExamsContainer.getChildren().add(mExamListView);
+        mExamListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
+        AnchorPane.setLeftAnchor(mExamListView, 0.0);
+        AnchorPane.setRightAnchor(mExamListView, 0.0);
+        AnchorPane.setTopAnchor(mExamListView, 0.0);
+        AnchorPane.setBottomAnchor(mExamListView, 0.0);
+
+        // Setup the grading table
+        questionNumberColumn.setCellValueFactory(cellData -> cellData.getValue().questionNumberProperty());
+        answerColumn.setCellValueFactory(cellData -> cellData.getValue().answerLetterProperty());
+        weightColumn.setCellValueFactory(cellData -> cellData.getValue().answerWeightProperty());
+        questionValueColumn.setCellValueFactory(cellData -> cellData.getValue()
+                                                                    .questionValueProperty());
+
+        answerColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        answerColumn.setEditable(true);
+        questionValueColumn.setCellFactory(createNumberCellFactory());
+
+        // switch to edit mode on keypress
+        // this must be KeyEvent.KEY_PRESSED so that the key gets forwarded to the editing cell; it wouldn't be forwarded on KEY_RELEASED
+        tableMainExam.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if ( event.getCode() == KeyCode.ENTER) {
+                tableMainExam.requestFocus();
+                return;
+            }
+
+            // switch to edit mode on keypress, but only if we aren't already in edit mode
+            if( tableMainExam.getEditingCell() == null) {
+                if( event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
+                    TablePosition focusedCellPosition = tableMainExam.getFocusModel().getFocusedCell();
+                    tableMainExam.edit(focusedCellPosition.getRow(), focusedCellPosition.getTableColumn());
+                }
+            }
+
+        });
+
+        tableMainExam.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+            if( event.getCode() == KeyCode.ENTER) {
+                // Clear the current selection
+                TablePosition pos = tableMainExam.getFocusModel().getFocusedCell();
+
+                if (pos.getRow() == -1) {
+                    tableMainExam.getSelectionModel().select(0);
+                }
+                // select next row, but same column as the current selection
+                else if (pos.getRow() < tableMainExam.getItems().size() -1) {
+                    tableMainExam.getSelectionModel().clearAndSelect( pos.getRow() + 1, pos.getTableColumn());
+                    tableMainExam.requestFocus();
+                }
+            }
+        });
+        // single cell selection mode
+        tableMainExam.getSelectionModel().setCellSelectionEnabled(true);
+        tableMainExam.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        tableMainExam.setEditable(true);
+
+        /*questionNumberColumn.setCellFactory(new Callback<TableColumn<ExamMainGrade,
+                ExamMainGrade>, TableCell<ExamMainGrade, ExamMainGrade>>() {
+            @Override
+            public TableCell<ExamMainGrade, ExamMainGrade> call(TableColumn<ExamMainGrade, ExamMainGrade> param) {
+                return new TableCell<ExamMainGrade, ExamMainGrade>() {
+                    @Override protected void updateItem(ExamMainGrade item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (this.getTableRow() != null) {
+                            int index = this.getTableRow().getIndex();
+                            if(index < tableMainExam.getItems().size()) {
+                                int rowNum = index + 1;
+                                setText( String.valueOf(rowNum));
+                            } else {
+                                setText("");
+                            }
+
+                        } else {
+                            setText("");
+                        }
+
+                    }
+                };
+            }
+        });*/
+
     }
     
     public void setModel(ExamBank examBank) {
@@ -94,29 +215,12 @@ public class GradeExamsController {
             }
             comboBoxGroupGrade.getSelectionModel().selectFirst();
         }
-        if (mListView != null) {
-            viewGradeExamsContainer.getChildren().remove(mListView);
-        }
-        mListView = new JFXListView<String>();
+
+        // Update the list of exams view
+        mExamListView.getItems().clear();
         ArrayList<Exam> exams = mExamBank.getExams(comboBoxSubjectGrade.getValue().toString(),
                                                                          comboBoxGroupGrade.getValue().toString());
-        // Map the real exam number with its index in the listView
-        mExamIdxToNumber = new HashMap<>();
-        int examIdx = 0;
-        for (Exam exam : exams) {
-            mListView.getItems().add("Examen #" +
-                                             exam.getExamNumber() +
-                                             " - Grupo: " + comboBoxGroupGrade.getValue().toString());
-            mExamIdxToNumber.put(examIdx, exam.getExamNumber());
-            examIdx++;
-        }
-        mListView.getSelectionModel().selectedItemProperty().addListener(mExamListListener);
-        mListView.setPrefWidth(150.0);
-        viewGradeExamsContainer.getChildren().add(mListView);
-        AnchorPane.setLeftAnchor(mListView, 0.0);
-        AnchorPane.setRightAnchor(mListView, 0.0);
-        AnchorPane.setTopAnchor(mListView, 0.0);
-        AnchorPane.setBottomAnchor(mListView, 0.0);
+        mExamListView.getItems().addAll(exams);
         mSubjectListenerActive = true;
         mGroupListenerActive = true;
     }
@@ -128,11 +232,13 @@ public class GradeExamsController {
      *
      */
     private void setListeners() {
+        // An Subject from the subject combobox has been selected
         mSubjectListener = (ov, t, t1) -> {
             if (mSubjectListenerActive) {
                 resetGradeFields(true, false);
             }
         };
+        // An group from the group combobox has been selected
         mGroupListener = (ov, t, t1) -> {
             if (mGroupListenerActive) {
                 resetGradeFields(true, true);
@@ -140,18 +246,25 @@ public class GradeExamsController {
         };
         // Called when an exam has been selected from the ListView
         mExamListListener = (ov, t, t1) -> {
-            if (mGroupListenerActive) {
-                examSelected(mExamIdxToNumber.get(mListView.getSelectionModel().getSelectedIndex()));
-            }
+            examSelected(mExamListView.getSelectionModel().getSelectedItem());
         };
     }
 
-    public void examSelected(int examNumber) {
-        String subject = comboBoxSubjectGrade.getValue().toString();
-        String group = comboBoxGroupGrade.getValue().toString();
-        Exam exam = mExamBank.getExam(subject, group, examNumber);
+    public void examSelected(Exam exam) {
         populateQuestionsList(exam.getQuestions());
+        populateMainTable(exam.getQuestions());
         labelGrade.setText("Calificación:");
+    }
+
+    private void populateMainTable(ArrayList<Question> questions) {
+        mQuestionsData.clear();
+        int questionNumber = 1;
+        for (Question question: questions) {
+            mQuestionsData.add(new ExamMainGrade(questionNumber, "", 0, 100));
+            questionNumber++;
+        }
+        tableMainExam.setItems(mQuestionsData);
+        tableMainExam.getSelectionModel().selectFirst();
     }
 
     /**
@@ -215,12 +328,7 @@ public class GradeExamsController {
     }
 
     public void selAnswer(Scene scene, String selectedAnwer, Question question) {
-        String subject = comboBoxSubjectGrade.getValue().toString();
-        String group = comboBoxGroupGrade.getValue().toString();
-        Exam exam = mExamBank.getExam(subject,
-                                      group,
-                                      mExamIdxToNumber.get(mListView.getSelectionModel()
-                                                                    .getSelectedIndex()));
+        Exam exam = mExamListView.getSelectionModel().getSelectedItem();
         int questionNumber = mQuestionToNumber.get(question);
         Label scoreLabel = (Label) scene.lookup("#lblScore" + Integer.toString(questionNumber));
         for (Answer answer : question.getAnswers()) {
@@ -249,19 +357,38 @@ public class GradeExamsController {
             comboBoxSubjectGrade.setDisable(true);
             comboBoxGroupGrade.setDisable(true);
         }
-        else if(mFirstGradeViewLoad) {
-            mFirstGradeViewLoad = false;
-            setListeners();
-            comboBoxSubjectGrade.setDisable(false);
-            comboBoxGroupGrade.setDisable(false);
-            resetGradeFields(false, false);
-            comboBoxSubjectGrade.getSelectionModel().selectedItemProperty().addListener(mSubjectListener);
-            comboBoxGroupGrade.getSelectionModel().selectedItemProperty().addListener(mGroupListener);
-        }
         else {
             resetGradeFields(false, false);
             viewQuestionsContainer.setContent(null);
             labelGrade.setText("Calificación:");
         }
+    }
+
+    /**
+     * Number cell factory which converts strings to numbers and vice versa.
+     * @return
+     */
+    private Callback<TableColumn<ExamMainGrade, Number>, TableCell<ExamMainGrade, Number>>  createNumberCellFactory() {
+        Callback<TableColumn<ExamMainGrade, Number>,
+                TableCell<ExamMainGrade, Number>> factory = TextFieldTableCell.forTableColumn(new StringConverter<Number>() {
+            @Override
+            public Number fromString(String string) {
+                int number;
+                try {
+                    number = Integer.parseInt(string);
+                }
+                catch(NumberFormatException e){
+                    number = 0;
+                }
+                return number;
+            }
+
+            @Override
+            public String toString(Number object) {
+                return object.toString();
+            }
+        });
+
+        return factory;
     }
 }
